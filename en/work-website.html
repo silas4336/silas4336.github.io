@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website & Content CMS · Silas Chen</title>
+<meta name="description" content="The company's public site and the CMS its marketing team publishes from — bilingual, SEO, scheduled publishing and one-click newsletters.">
+<meta name="author" content="Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-website.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-website.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-website.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-website.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Website & Content CMS · Silas Chen">
+<meta property="og:description" content="The company's public site and the CMS its marketing team publishes from — bilingual, SEO, scheduled publishing and one-click newsletters.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-website.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Website & Content CMS · Silas Chen">
+<meta name="twitter:description" content="The company's public site and the CMS its marketing team publishes from — bilingual, SEO, scheduled publishing and one-click newsletters.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a><a href="../work-website.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#work">← Back</a>
+<header class="case-head">
+  <div class="eyebrow">Project · Nov 2025 – Jul 2026</div>
+  <h1 style="margin-top:14px">Website &amp; Content CMS</h1>
+  <p class="dek">The company's public site, and the content back-office the marketing team runs themselves. Mine from the first commit to handover.</p>
+</header>
+<div class="prose">
+  <p>Bilingual, with SEO, performance and accessibility work and a responsive rebuild. <b>The content back-office lives in the same project</b>: the marketing team schedules its own posts, reads version history and an audit log, and sends the newsletter in one click — no more copying things out of Notion.</p>
+  <p>Campaign lead forms write straight into the CRM and open a task for sales automatically. I also built an analytics page, reworked the services page, and rewrote how the product line is presented — turning the official deck into a product matrix and an adoption path.</p>
+  <p>Built with AI-assisted development (Claude Code).</p>
+</div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/website_home-zh.jpg" alt="Home" loading="lazy"></div><figcaption>Home</figcaption></figure><figure><div class="frame"><img src="../assets/website_home-en.jpg" alt="English version" loading="lazy"></div><figcaption>English version</figcaption></figure><figure><div class="frame"><img src="../assets/cms-demo_cms-08-post-editor.jpg" alt="CMS editor" loading="lazy"></div><figcaption>CMS editor</figcaption></figure><figure><div class="frame"><img src="../assets/cms-demo_cms-09-version-history.jpg" alt="Version history" loading="lazy"></div><figcaption>Version history</figcaption></figure><figure><div class="frame"><img src="../assets/cms-demo_cms-05-audit-log.jpg" alt="Audit log" loading="lazy"></div><figcaption>Audit log</figcaption></figure><figure><div class="frame"><img src="../assets/website-public_08-vivatech-event-form.jpg" alt="Campaign lead form" loading="lazy"></div><figcaption>Campaign lead form</figcaption></figure>
+</div>
+<a class="back" href="work-maigpt.html">Next project: MaiGPT →</a>
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">CRM and CMS screenshots come from demo environments — accounts, company names and figures are all sample data; website screenshots are public pages. The source code belongs to my former employer and is not published here.</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "\u2600" : "\u263e"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+</body>
+</html>

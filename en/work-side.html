@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Side projects · Silas Chen</title>
+<meta name="description" content="Four projects built independently: a quiz that matches you with a companion animal, an event microsite, a native macOS app, and a stock watcher.">
+<meta name="author" content="Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-side.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-side.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-side.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-side.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Side projects · Silas Chen">
+<meta property="og:description" content="Four projects built independently: a quiz that matches you with a companion animal, an event microsite, a native macOS app, and a stock watcher.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-side.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Side projects · Silas Chen">
+<meta name="twitter:description" content="Four projects built independently: a quiz that matches you with a companion animal, an event microsite, a native macOS app, and a stock watcher.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a><a href="../work-side.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#side">← Back</a>
+<header class="case-head">
+  <div class="eyebrow">Side projects</div>
+  <h1 style="margin-top:14px">Things I built on my own time</h1>
+  <p class="dek">All four are mine end to end.</p>
+</header>
+
+<section id="buddy">
+  <div class="sec-title"><h2>Find Your Buddy</h2><span class="note"><a href="https://find-your-buddy-seven.vercel.app">live ↗</a></span></div>
+  <div class="prose">
+    <p>A 10-question quiz that matches you with one of 14 companion animals. Three languages, and it generates a card you can post to a story.</p>
+    <p>The part that took longest was not the questions — it was <b>calibrating the match percentage</b>. The first version put almost everyone around 60%, which reads as a shrug. After reweighting, a typical result lands where it feels like it is actually about you.</p>
+  </div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/side_buddy-quiz.jpg" alt="Question screen" loading="lazy"></div><figcaption>Question screen</figcaption></figure><figure><div class="frame"><img src="../assets/side_buddy-home.jpg" alt="Home" loading="lazy"></div><figcaption>Home</figcaption></figure>
+</div>
+</section>
+
+<section id="interview">
+  <div class="sec-title"><h2>Interview Challenge</h2><span class="note"><a href="https://interview-quiz-ten.vercel.app">live ↗</a></span></div>
+  <div class="prose">
+    <p>A one-page interactive site for a youth event: eight real interview scenarios with feedback at the end. Free, no sign-in, about three minutes — all three written under the button, because that is where sign-ups were being lost.</p>
+  </div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/side_interview.jpg" alt="Event home" loading="lazy"></div><figcaption>Event home</figcaption></figure>
+</div>
+</section>
+
+<section id="fakegps">
+  <div class="sec-title"><h2>FakeGPS</h2><span class="note"><a href="https://github.com/silas4336/FakeGPS">GitHub ↗</a></span></div>
+  <div class="prose">
+    <p>Set your iPhone's GPS location from a Mac. A native SwiftUI + MapKit app with Apple Maps search, tap-to-set, saved places, and a universal binary.</p>
+    <p>This machine only has the Command Line Tools, no full Xcode — so the app is <b>compiled with swiftc from the terminal</b>, with the .app bundle assembled and signed by hand. The source is public under MIT, with install scripts and a cross-platform web build.</p>
+  </div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/side_fakegps.jpg" alt="FakeGPS" loading="lazy"></div><figcaption>FakeGPS</figcaption></figure>
+</div>
+</section>
+
+<section id="monitor">
+  <div class="sec-title"><h2>Stock Watcher</h2><span class="note">Python</span></div>
+  <div class="prose">
+    <p>Watches a few product pages and tells me when something is back in stock. Three sites need three different approaches; one of them detects scrapers, so it takes a more roundabout route.</p>
+    <p>More thought went into <b>when to notify</b> than into fetching: it fires once, on the transition from out-of-stock to in-stock, with state kept locally. Otherwise nobody reads the alerts.</p>
+  </div>
+</section>
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">Source for the side projects lives on my GitHub; some repositories are private.</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "\u2600" : "\u263e"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+</body>
+</html>

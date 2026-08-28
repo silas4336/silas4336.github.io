@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales CRM · Silas Chen</title>
+<meta name="description" content="A team project where I owned the reseller LINE channel, marketing/EDM, batch card scanning and the mobile rebuild.">
+<meta name="author" content="Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-crm.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-crm.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-crm.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-crm.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sales CRM · Silas Chen">
+<meta property="og:description" content="A team project where I owned the reseller LINE channel, marketing/EDM, batch card scanning and the mobile rebuild.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-crm.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sales CRM · Silas Chen">
+<meta name="twitter:description" content="A team project where I owned the reseller LINE channel, marketing/EDM, batch card scanning and the mobile rebuild.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a><a href="../work-crm.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#work">← Back</a>
+<header class="case-head">
+  <div class="eyebrow">Project · Feb – Jul 2026 · team project</div>
+  <h1 style="margin-top:14px">Sales CRM</h1>
+  <p class="dek">The system the sales team works in daily — deals, customers and the reseller channel. A team project; I owned a few modules.</p>
+</header>
+
+<section>
+  <div class="sec-title"><h2>The reseller LINE channel</h2><span class="note">where most of the time went</span></div>
+  <div class="prose">
+    <p>Resellers used to register deals by email and phone, and someone on the sales side keyed them in. The problem was not the manual work — it was <b>collisions</b>. When two resellers were talking to the same end customer, nobody could say who had registered first or whether the protection window was still open, and it turned into an argument between reps.</p>
+    <p>I moved the whole flow onto the company's LINE official account. Resellers submit a registration, check its progress and bind their account straight from the <b>rich menu</b>. The system checks for collisions at submit time, starts a <b>90-day protection window</b> on approval, and warns before it expires. Internally there is a review queue, collision flags, conversion into an opportunity, and an audit trail on every status change.</p>
+    <p>A lot of the work sat in the details: entering a tax ID <b>pulls in the company record</b> from government open data — with an alias table I built so a short trading name still finds the full registered one — a business card can be photographed straight into the form, email OTP verifies identity, and people who do not use LINE can do all of it on the web instead.</p>
+    <p>The last piece was <b>a guide written for the resellers</b>: what each menu item does, how registration and review work, how the protection window and collisions are handled, and an FAQ. A tool nobody knows how to use does not get used.</p>
+  </div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/crm_liff-guide.jpg" alt="Reseller guide" loading="lazy"></div><figcaption>Reseller guide</figcaption></figure><figure><div class="frame"><img src="../assets/crm_registrations.jpg" alt="Internal review queue" loading="lazy"></div><figcaption>Internal review queue</figcaption></figure>
+</div>
+<div class="shots">
+  <figure><div class="frame"><img src="../assets/crm_liff-report.jpg" alt="Registration form inside LINE" loading="lazy"></div><figcaption>Registration form inside LINE</figcaption></figure><figure><div class="frame"><img src="../assets/crm_liff-my.jpg" alt="My registrations" loading="lazy"></div><figcaption>My registrations</figcaption></figure><figure><div class="frame"><img src="../assets/crm_distributors.jpg" alt="Reseller management" loading="lazy"></div><figcaption>Reseller management</figcaption></figure>
+</div>
+</section>
+
+<section>
+  <div class="sec-title"><h2>Other modules</h2></div>
+  <div class="prose">
+    <p><b>Marketing / EDM</b>: subscribers and tags, GDPR requests, AI-generated email templates, blog newsletter automation, open tracking, nurture sequences and attribution.</p>
+    <p><b>Batch card scanning</b>: several cards at once, Taiwanese phone and address formats normalised, duplicate emails flagged, and inline customer creation when there is no match.</p>
+    <p><b>Also</b>: the website lead webhook with retry and automatic task creation, a draggable dashboard, quote-to-order conversion, the mobile responsive rebuild, soft delete with a recycle bin, and order handover.</p>
+    <p>Built with AI-assisted development (Claude Code).</p>
+  </div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/crm_contacts.jpg" alt="Contacts and card scanning" loading="lazy"></div><figcaption>Contacts and card scanning</figcaption></figure><figure><div class="frame"><img src="../assets/crm_newsletter.jpg" alt="Blog newsletter" loading="lazy"></div><figcaption>Blog newsletter</figcaption></figure>
+</div>
+</section>
+<a class="back" href="work-website.html">← Previous project: Website &amp; Content CMS</a>
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">CRM and CMS screenshots come from demo environments — accounts, company names and figures are all sample data; website screenshots are public pages. The source code belongs to my former employer and is not published here.</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "\u2600" : "\u263e"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+</body>
+</html>

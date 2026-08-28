@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MaiGPT · Silas Chen</title>
+<meta name="description" content="Front-end product work on an enterprise AI platform: template library, conversation sharing, knowledge bases, and the AI Store rebrand.">
+<meta name="author" content="Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-maigpt.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-maigpt.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-maigpt.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-maigpt.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MaiGPT · Silas Chen">
+<meta property="og:description" content="Front-end product work on an enterprise AI platform: template library, conversation sharing, knowledge bases, and the AI Store rebrand.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-maigpt.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MaiGPT · Silas Chen">
+<meta name="twitter:description" content="Front-end product work on an enterprise AI platform: template library, conversation sharing, knowledge bases, and the AI Store rebrand.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a><a href="../work-maigpt.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#work">← Back</a>
+<header class="case-head">
+  <div class="eyebrow">Project · Feb – May 2026</div>
+  <h1 style="margin-top:14px">MaiGPT</h1>
+  <p class="dek">The company's enterprise AI platform, used by enterprise customers adopting AI and the admins who manage it. I owned front-end product decisions and their implementation.</p>
+</header>
+<div class="prose">
+  <p>First the advanced features: <b>prompt template management, conversation sharing, and the knowledge-base setup flow</b>. Creating a knowledge base used to start from several different places; I moved it into one, with empty-state guidance and an automatic return once you are done. The template library later went through a full round of improvements.</p>
+  <p>Then the <b>AI Store rebrand and Skills integration</b>: a reworked skill taxonomy, layered display, and <b>the page hierarchy cut from six levels to three</b>. Plus an overview tab and a redesigned filter.</p>
+  <p>Specs as well as features: two PRDs, for conversation sharing and the prompt template library. For conversation sharing I <b>also wrote a reduced and a minimal version</b> — the full scope turned out too large to ship, and only the minimal one actually fit into a cycle. The product spec sheet I rewrote after finding the previous version had been written <b>from documents rather than from using the product</b>: I clicked through every screen in the admin and wrote it again.</p>
+  <p>Built with AI-assisted development (Claude Code).</p>
+</div>
+<div class="shots wide">
+  <figure><div class="frame"><img src="../assets/maigpt_web-demo.jpg" alt="The MaiGPT demo on the public site" loading="lazy"></div><figcaption>The MaiGPT demo on the public site</figcaption></figure><figure><div class="frame"><img src="../assets/maigpt_assistant-store.jpg" alt="AI assistant store" loading="lazy"></div><figcaption>AI assistant store</figcaption></figure><figure><div class="frame"><img src="../assets/maigpt_knowledge-bases.jpg" alt="Knowledge bases" loading="lazy"></div><figcaption>Knowledge bases</figcaption></figure><figure><div class="frame"><img src="../assets/maigpt_chat.jpg" alt="Chat in the admin" loading="lazy"></div><figcaption>Chat in the admin</figcaption></figure>
+</div>
+<a class="back" href="work-crm.html">Next project: Sales CRM →</a>
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">CRM and CMS screenshots come from demo environments — accounts, company names and figures are all sample data; website screenshots are public pages. The source code belongs to my former employer and is not published here.</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "\u2600" : "\u263e"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+</body>
+</html>

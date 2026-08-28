@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>個人專案 · Silas Chen</title>
+<meta name="description" content="獨立完成的四項專案：問答式推薦網站、活動互動測驗、macOS 原生 App，以及供貨監控工具。">
+<meta name="author" content="Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/work-side.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-side.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-side.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-side.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="個人專案 · Silas Chen">
+<meta property="og:description" content="獨立完成的四項專案：問答式推薦網站、活動互動測驗、macOS 原生 App，以及供貨監控工具。">
+<meta property="og:url" content="https://silas4336.github.io/work-side.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="個人專案 · Silas Chen">
+<meta name="twitter:description" content="獨立完成的四項專案：問答式推薦網站、活動互動測驗、macOS 原生 App，以及供貨監控工具。">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="主選單"><a href="index.html#work">公司專案</a><a href="index.html#side">個人專案</a><a href="index.html#experience">經歷</a><a href="en/work-side.html" hreflang="en" lang="en">EN</a><button id="themeToggle" type="button" aria-label="切換深淺色">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#side">← 回首頁</a>
+<header class="case-head">
+  <div class="eyebrow">個人專案</div>
+  <h1 style="margin-top:14px">個人專案</h1>
+  <p class="dek">以下四項皆為獨立完成，無他人參與。</p>
+</header>
+
+<section id="buddy">
+  <div class="sec-title"><h2>Find Your Buddy</h2><span class="note"><a href="https://find-your-buddy-seven.vercel.app">有線上版 ↗</a></span></div>
+  <div class="prose">
+    <p>10 題問答推薦適合的同伴動物，共 14 種結果。支援中英日三語，作答完成後生成可分享至社群的圖卡。</p>
+    <p>投入最多的並非題目設計，而是<b>配對百分比的校準</b>：初版結果多集中在 60% 附近，缺乏鑑別度；調整權重後，典型結果落在具說服力的區間。</p>
+  </div>
+  <div class="shots wide">
+  <figure><div class="frame"><img src="assets/side_buddy-quiz.jpg" alt="答題畫面" loading="lazy"></div><figcaption>答題畫面</figcaption></figure><figure><div class="frame"><img src="assets/side_buddy-home.jpg" alt="首頁" loading="lazy"></div><figcaption>首頁</figcaption></figure>
+</div>
+</section>
+
+<section id="interview">
+  <div class="sec-title"><h2>模擬面試挑戰</h2><span class="note"><a href="https://interview-quiz-ten.vercel.app">有線上版 ↗</a></span></div>
+  <div class="prose">
+    <p>為青年活動製作的單頁互動網站，包含 8 道面試情境與作答回饋。免費、免登入、約三分鐘完成，這三項資訊置於按鈕下方，因報名轉換的主要流失點在此。</p>
+  </div>
+  <div class="shots wide">
+  <figure><div class="frame"><img src="assets/side_interview.jpg" alt="活動首頁" loading="lazy"></div><figcaption>活動首頁</figcaption></figure>
+</div>
+</section>
+
+<section id="fakegps">
+  <div class="sec-title"><h2>FakeGPS</h2><span class="note"><a href="https://github.com/silas4336/FakeGPS">GitHub ↗</a></span></div>
+  <div class="prose">
+    <p>以 Mac 設定 iPhone 的 GPS 位置。SwiftUI + MapKit 原生 App，支援 Apple Maps 搜尋、點選地圖設定與常用地點書籤，打包為通用二進位（arm64 + x86_64）。</p>
+    <p>開發環境僅有 Command Line Tools、未安裝完整 Xcode，因此<b>以命令列 swiftc 編譯，並自行組裝 .app bundle 與簽章</b>。原始碼以 MIT 授權公開，含安裝腳本與跨平台網頁版。</p>
+  </div>
+  <div class="shots wide">
+  <figure><div class="frame"><img src="assets/side_fakegps.jpg" alt="FakeGPS 主畫面" loading="lazy"></div><figcaption>FakeGPS 主畫面</figcaption></figure>
+</div>
+</section>
+
+<section id="monitor">
+  <div class="sec-title"><h2>供貨監控</h2><span class="note">Python</span></div>
+  <div class="prose">
+    <p>監控數個購物網站的商品供貨狀態。三個站點分別採用不同的擷取方式，其中一站具反爬蟲偵測，需以較迂迴的路徑取得。</p>
+    <p>相較於資料擷取，<b>通知時機</b>的判斷更為關鍵：僅於「缺貨轉為有貨」的狀態轉換時發送單次通知，狀態保存於本機，避免重複通知導致訊息被忽略。</p>
+  </div>
+</section>
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">個人專案原始碼置於個人 GitHub，部分為私有 repo。</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "☀" : "☾"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+</body>
+</html>
