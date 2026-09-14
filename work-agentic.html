@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>開發流程 · Silas Chen</title>
+<meta name="description" content="為了同時交付三條產品線而建立的 22 項可重複執行的程序：自動產生驗收頁、手機派任務、每日進度彙整。">
+<meta name="author" content="陳頌然 Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/work-agentic.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-agentic.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-agentic.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-agentic.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="開發流程 · Silas Chen">
+<meta property="og:description" content="為了同時交付三條產品線而建立的 22 項可重複執行的程序：自動產生驗收頁、手機派任務、每日進度彙整。">
+<meta property="og:url" content="https://silas4336.github.io/work-agentic.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="開發流程 · Silas Chen">
+<meta name="twitter:description" content="為了同時交付三條產品線而建立的 22 項可重複執行的程序：自動產生驗收頁、手機派任務、每日進度彙整。">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="主選單"><a href="index.html#work">公司專案</a><a href="index.html#side">個人專案</a><a href="index.html#experience">經歷</a><a href="en/work-agentic.html" hreflang="en" lang="en">EN</a><button id="themeToggle" type="button" aria-label="切換深淺色">☾</button></nav>
+<div class="wrap">
+<a class="back" href="index.html#work">← 回首頁</a>
+<header class="case-head">
+  <div class="eyebrow">交付流程</div>
+  <h1 style="margin-top:14px">開發流程</h1>
+  <p class="dek">同時負責三條產品線，後半段人在東京。這頁記錄我為此建立的 22 項可重複執行的程序。</p>
+</header>
+
+<section id="why">
+  <div class="sec-title"><h2>要解決的問題</h2></div>
+  <div class="prose">
+    <p>三條線的節奏不同：官網持續迭代，CRM 依業務需求推進，MaiGPT 配合改版排程。瓶頸不在寫程式，而在<b>上下文切換</b>：離開一條線兩天再回來，須先重建「上次做到哪、為什麼那樣決定」。加上與團隊有一小時時差，這項成本再往上加。</p>
+    <p>所以流程都指向同一件事：把重複出現的判斷寫成可以重跑的程序。</p>
+  </div>
+</section>
+
+<section id="review">
+  <div class="sec-title"><h2>自動產生驗收頁</h2><span class="note">開發完成後</span></div>
+  <div class="prose">
+    <p>一輪改動完成後，程序會把該次變更整理成一頁驗收清單：每筆改動一張卡片，標題是改了什麼，展開後是 diff 與我的初步判定（已驗收／待確認／註記），每張卡片下方可直接寫回饋。</p>
+    <p>三檔判定有明確分界：<b>已驗收</b>用於改動本身可自證的情況，例如沿用既有樣式、未新增相依；<b>待確認</b>用於有邊界情境或取捨沒把握時，卡片上必須寫出問題是什麼；<b>註記</b>用於不需要決定、但事後會想回頭看的背景。判準先行界定，是為了避免「看起來沒問題」這種模糊結論：沒把握就不能標為已驗收。</p>
+    <p>頁面透過通道服務取得臨時網址推送至手機，通勤時就能逐項確認。<b>驗收因此不必與開發占用同一段時間</b>：開發在桌前，驗收在路上。</p>
+  </div>
+  <div class="shots wide">
+    <figure><div class="frame"><img src="assets/agentic_review-desktop.jpg" alt="驗收頁：改動數、檔案數、進度條與變更卡片" loading="lazy"></div><figcaption>驗收頁：頂部是本輪的改動統計與進度</figcaption></figure>
+    <figure><div class="frame"><img src="assets/agentic_review-diff.jpg" alt="展開後的變更卡片，含 diff、判定與回饋欄" loading="lazy"></div><figcaption>展開後可看到 diff、判定與回饋欄</figcaption></figure>
+  </div>
+</section>
+
+<section id="dispatch">
+  <div class="sec-title"><h2>手機派任務與每日彙整</h2></div>
+  <div class="prose">
+    <p>開發環境接上通訊軟體後，任務可自手機指派、在本機執行、完成後回報。手機情境不適合逐步確認，因此改為先執行後回報，僅在具破壞性或對外發送時才事前確認；這條分界寫在設定檔裡。</p>
+    <p>每日結束時另有一項程序彙整當天的實際產出：版本控制紀錄、任務狀態、文件變更，整理成完成事項與隔日預計工作。遠端工作的可見度由此處理，不需在會議上逐項回想。</p>
+  </div>
+</section>
+
+<section id="conventions">
+  <div class="sec-title"><h2>把慣例寫成流程</h2><span class="note">22 項</span></div>
+  <div class="prose">
+    <p>反覆出現的作業各自寫成獨立程序：需求開單的格式與必填欄位、既有實作的分析、端對端測試（啟動環境、瀏覽器操作、產出驗收文件）、使用者手冊的更新與發布、每日任務狀態檢查。</p>
+    <p>要不要寫成程序，看的是<b>是否需要重複解釋</b>。同一件事向不同對象解釋第三次就值得固定下來；只做一次的不寫。這套做法後來也用在實習以外，另建立四項用於求職素材的程序，包含跨文件的一致性稽核。</p>
+  </div>
+</section>
+
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">截圖為此作品集自身改動所產生的驗收頁。流程本身為個人建置，不含前雇主的原始碼、客戶名稱或內部文件。</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "☀" : "☾"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+<div id="lb" class="lb" hidden><button class="lb-x" type="button" aria-label="關閉">&times;</button><img alt=""></div>
+<script>
+(function(){
+  var lb=document.getElementById("lb"); if(!lb) return;
+  var big=lb.querySelector("img"), last=null;
+  function open(el){ last=el; big.src=el.currentSrc||el.src; big.alt=el.alt||"";
+    lb.hidden=false; document.documentElement.classList.add("lb-open");
+    document.body.style.overflow="hidden"; lb.querySelector(".lb-x").focus(); }
+  function close(){ lb.hidden=true; big.removeAttribute("src"); document.documentElement.classList.remove("lb-open");
+    document.body.style.overflow=""; if(last) last.focus(); }
+  Array.prototype.forEach.call(document.querySelectorAll(".frame img"),function(el){
+    el.tabIndex=0; el.setAttribute("role","button");
+    el.addEventListener("click",function(){ open(el); });
+    el.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(el); } });
+  });
+  lb.addEventListener("click",close);
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!lb.hidden) close(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I Shipped It · Silas Chen</title>
+<meta name="description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta name="author" content="陳頌然 Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-agentic.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-agentic.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-agentic.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-agentic.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A0E11%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2215%22 font-weight=%22700%22 fill=%22%236FB3A6%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0E11">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How I Shipped It · Silas Chen">
+<meta property="og:description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-agentic.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How I Shipped It · Silas Chen">
+<meta name="twitter:description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<nav aria-label="Main"><a href="../index.html#work">Work</a><a href="../index.html#side">Side projects</a><a href="../index.html#experience">Experience</a><a href="../work-agentic.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
+<div class="wrap">
+<a class="back" href="../index.html#work">← Back</a>
+<header class="case-head">
+  <div class="eyebrow">How it shipped</div>
+  <h1 style="margin-top:14px">How I Shipped It</h1>
+  <p class="dek">Three product lines at once, the second half of it from Tokyo. These are the 22 repeatable procedures I built to make that work.</p>
+</header>
+
+<section id="why">
+  <div class="sec-title"><h2>The problem</h2></div>
+  <div class="prose">
+    <p>The three lines moved at different speeds: the website iterated continuously, the CRM followed what sales needed, MaiGPT followed a release schedule. The bottleneck was never writing code — it was <b>context switching</b>. Two days away from a line meant rebuilding where I had stopped and why I had decided what I decided. An hour of time difference with the team added to that cost.</p>
+    <p>So every procedure points at the same thing: take recurring judgment and make it re-runnable.</p>
+  </div>
+</section>
+
+<section id="review">
+  <div class="sec-title"><h2>Auto-generated review pages</h2><span class="note">After each round</span></div>
+  <div class="prose">
+    <p>When a round of changes lands, a procedure turns it into a one-page review: a card per change, titled with what changed, opening onto the diff and my first-pass verdict (accepted / needs a look / noted), with a feedback box under each card.</p>
+    <p>The three verdicts have defined boundaries: <b>accepted</b> is for changes that carry their own proof, such as reusing an existing style or adding no new dependency; <b>needs a look</b> is for edge cases or trade-offs I am not sure about, and the card has to state what the question is; <b>noted</b> is for background I will not decide on now but will want later. Fixing the criteria up front is what keeps "looks fine" from counting as a conclusion: if I am not sure, it cannot be marked accepted.</p>
+    <p>A tunnel gives the page a temporary URL and pushes it to my phone, so I can work through it on a commute. <b>Review no longer has to share a time slot with development</b> — build at the desk, review on the move.</p>
+  </div>
+  <div class="shots wide">
+    <figure><div class="frame"><img src="../assets/agentic_review-desktop.jpg" alt="Review page showing change count, file count, progress bar and change cards" loading="lazy"></div><figcaption>The review page opens with this round's change stats and progress</figcaption></figure>
+    <figure><div class="frame"><img src="../assets/agentic_review-diff.jpg" alt="An expanded change card showing the diff, verdict and feedback box" loading="lazy"></div><figcaption>Expanded: the diff, the verdict, and a feedback box</figcaption></figure>
+  </div>
+</section>
+
+<section id="dispatch">
+  <div class="sec-title"><h2>Phone dispatch and daily digests</h2></div>
+  <div class="prose">
+    <p>With the development environment wired to a messaging app, I can hand off a task from my phone, have it run on my machine, and get a report back. Step-by-step confirmation does not work on a phone, so the rule flips to act first and report after — asking up front only when something is destructive or leaves the building. That boundary lives in a config file.</p>
+    <p>A separate procedure closes the day by collecting what actually shipped — version-control history, task state, document changes — into what got done and what is planned next. That covers the visibility problem of working remotely, without reconstructing the day in a meeting.</p>
+  </div>
+</section>
+
+<section id="conventions">
+  <div class="sec-title"><h2>Conventions as procedures</h2><span class="note">26 of them</span></div>
+  <div class="prose">
+    <p>Recurring work each became its own procedure: the format and required fields for filing a request, analysis of an existing implementation, end-to-end testing (bring up the environment, drive the browser, produce the acceptance document), updating and publishing the user guide, a daily task-status check.</p>
+    <p>What decides whether something becomes a procedure is <b>whether I keep having to explain it</b>. Explaining the same thing to a third person is the signal; one-offs stay one-offs. The approach later moved outside the internship too: four more procedures for job-search material, including a cross-document consistency audit.</p>
+  </div>
+</section>
+
+</div>
+<footer><div class="wrap">
+<div><a href="mailto:silas4336@gmail.com">silas4336@gmail.com</a> · <a href="https://www.linkedin.com/in/silas4336/">LinkedIn</a></div>
+<p class="disclaim">The screenshots are review pages generated from this portfolio's own commits. The workflow is my own; it contains no former-employer source code, client names or internal documents.</p>
+</div></footer>
+<script>
+(function(){
+  var b=document.getElementById("themeToggle"); if(!b) return;
+  function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "☀" : "☾"; }
+  paint();
+  b.addEventListener("click",function(){
+    var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try{ localStorage.setItem("theme", next); }catch(e){}
+    paint();
+  });
+})();
+</script>
+<div id="lb" class="lb" hidden><button class="lb-x" type="button" aria-label="Close">&times;</button><img alt=""></div>
+<script>
+(function(){
+  var lb=document.getElementById("lb"); if(!lb) return;
+  var big=lb.querySelector("img"), last=null;
+  function open(el){ last=el; big.src=el.currentSrc||el.src; big.alt=el.alt||"";
+    lb.hidden=false; document.documentElement.classList.add("lb-open");
+    document.body.style.overflow="hidden"; lb.querySelector(".lb-x").focus(); }
+  function close(){ lb.hidden=true; big.removeAttribute("src"); document.documentElement.classList.remove("lb-open");
+    document.body.style.overflow=""; if(last) last.focus(); }
+  Array.prototype.forEach.call(document.querySelectorAll(".frame img"),function(el){
+    el.tabIndex=0; el.setAttribute("role","button");
+    el.addEventListener("click",function(){ open(el); });
+    el.addEventListener("keydown",function(e){
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(el); } });
+  });
+  lb.addEventListener("click",close);
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!lb.hidden) close(); });
+})();
+</script>
+</body>
+</html>
