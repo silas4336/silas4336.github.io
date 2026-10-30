@@ -63,44 +63,44 @@ d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("
     </div></div>
 </section>
 
-<section class="feature h-r" id="interview">
-  <div class="wrap">
-    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>模擬面試挑戰</h2><p class="sub"><a href="https://interview-quiz-ten.vercel.app">有線上版 ↗</a></p></div>
-    <div class="v rv" style="--d:100ms"><p>為青年活動製作的單頁互動網站，包含 8 道面試情境與作答回饋。免費、免登入、約三分鐘完成，這三項資訊置於按鈕下方，因報名轉換的主要流失點在此。</p></div>
-  </div>
-  <div class="wrap"><div class="gal">
-      <figure class="shot h-r w6 rv"><figcaption>活動首頁</figcaption><div class="fr"><img src="../../../assets/side_interview.jpg" alt="活動首頁" loading="lazy"></div></figure>
-    </div></div>
-</section>
-
-<section class="feature h-y" id="buddy">
-  <div class="wrap">
-    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Find Your Buddy</h2><p class="sub"><a href="https://find-your-buddy-seven.vercel.app">有線上版 ↗</a></p></div>
-    <div class="v rv" style="--d:100ms"><p>10 題問答推薦適合的同伴動物，共 14 種結果。支援中英日三語，作答完成後生成可分享至社群的圖卡。</p><p>投入最多的並非題目設計，而是<b>配對百分比的校準</b>：初版結果多集中在 60% 附近，缺乏鑑別度；調整權重後，不同作答組合的結果才拉得開。</p></div>
-  </div>
-  <div class="wrap"><div class="gal">
-      <figure class="shot h-y rv"><figcaption>答題畫面</figcaption><div class="fr"><img src="../../../assets/side_buddy-quiz.jpg" alt="答題畫面" loading="lazy"></div></figure>
-      <figure class="shot h-r rv"><figcaption>首頁</figcaption><div class="fr"><img src="../../../assets/side_buddy-home.jpg" alt="首頁" loading="lazy"></div></figure>
-    </div></div>
-</section>
-
-<section class="feature h-g" id="fakegps">
+<section class="feature h-r" id="fakegps">
   <div class="wrap">
     <div class="k rv"><div class="no" aria-hidden="true"></div><h2>FakeGPS</h2><p class="sub"><a href="https://github.com/silas4336/FakeGPS">GitHub ↗</a></p></div>
     <div class="v rv" style="--d:100ms"><p>以 Mac 設定 iPhone 的 GPS 位置，用於測試依賴定位的 App。原生 SwiftUI + MapKit，支援 Apple Maps 搜尋、點選地圖設定與常用地點書籤。</p><p>除了設定單一座標，另支援<b>沿真實道路以步行、單車或開車的速度移動</b>：導航與健身類 App 要驗證的是移動過程，停在一個定點測不出來。</p><p>取捨主要放在安裝與日常使用的阻力上。權限改為安裝時設定一次，之後每次啟動不再要求密碼；安裝腳本一併處理相依套件與權限，使用者不需要安裝 Xcode。開發機本身未裝完整 Xcode，因此以命令列 swiftc 編譯並自行組裝 app bundle。原始碼以 MIT 授權公開，含安裝腳本與跨平台網頁版。</p></div>
   </div>
   <div class="wrap"><div class="gal">
-      <figure class="shot h-g w6 rv"><figcaption>FakeGPS 主畫面</figcaption><div class="fr"><img src="../../../assets/side_fakegps.jpg" alt="FakeGPS 主畫面" loading="lazy"></div></figure>
+      <figure class="shot h-r w6 rv"><figcaption>FakeGPS 主畫面</figcaption><div class="fr"><img src="../../../assets/side_fakegps.jpg" alt="FakeGPS 主畫面" loading="lazy"></div></figure>
     </div></div>
 </section>
 
-<section class="feature h-b" id="watchlater">
+<section class="feature h-y" id="watchlater">
   <div class="wrap">
     <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Watch Later Cleaner</h2><p class="sub"><a href="https://github.com/silas4336/watch-later-cleaner">GitHub ↗</a></p></div>
     <div class="v rv" style="--d:100ms"><p>YouTube 的「稍後觀看」累積數千部影片後，官方介面只能逐部手動移除。這個 Chrome 擴充功能可依加入順序、觀看狀態、影片長度、發布時間與關鍵字篩選，預覽確認後批次刪除。</p><p>刪除不模擬點選選單，而是透過 YouTube 頁面本身的指令一次送出一整批，並讀取回應確認成功；失敗時拉長間隔重試。由於<b>刪除無法復原</b>，預設為模擬模式、刪除前另行確認，並可先匯出 CSV 備份。擴充功能不讀取 cookie，也不將資料傳送至其他地方。實測約 3,000 部的清單，刪除 800 部約需 32 秒。原始碼以 MIT 授權公開。</p></div>
   </div>
   <div class="wrap"><div class="gal">
-      <figure class="shot h-b w6 rv"><figcaption>篩選條件與執行設定</figcaption><div class="fr"><img src="../../../assets/side_watch-later.jpg" alt="Watch Later Cleaner 設定面板" loading="lazy"></div></figure>
+      <figure class="shot h-y w6 rv"><figcaption>篩選條件與執行設定</figcaption><div class="fr"><img src="../../../assets/side_watch-later.jpg" alt="Watch Later Cleaner 設定面板" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-g" id="buddy">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Find Your Buddy</h2><p class="sub"><a href="https://find-your-buddy-seven.vercel.app">有線上版 ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>10 題問答推薦適合的同伴動物，共 14 種結果。支援中英日三語，作答完成後生成可分享至社群的圖卡。</p><p>投入最多的並非題目設計，而是<b>配對百分比的校準</b>：初版結果多集中在 60% 附近，缺乏鑑別度；調整權重後，不同作答組合的結果才拉得開。</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-g rv"><figcaption>答題畫面</figcaption><div class="fr"><img src="../../../assets/side_buddy-quiz.jpg" alt="答題畫面" loading="lazy"></div></figure>
+      <figure class="shot h-r rv"><figcaption>首頁</figcaption><div class="fr"><img src="../../../assets/side_buddy-home.jpg" alt="首頁" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-b" id="interview">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>模擬面試挑戰</h2><p class="sub"><a href="https://interview-quiz-ten.vercel.app">有線上版 ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>為青年活動製作的單頁互動網站，包含 8 道面試情境與作答回饋。免費、免登入、約三分鐘完成，這三項資訊置於按鈕下方，因報名轉換的主要流失點在此。</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-b w6 rv"><figcaption>活動首頁</figcaption><div class="fr"><img src="../../../assets/side_interview.jpg" alt="活動首頁" loading="lazy"></div></figure>
     </div></div>
 </section>
 
