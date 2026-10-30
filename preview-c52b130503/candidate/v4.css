@@ -450,6 +450,10 @@ html.leaving body{opacity:1}
 .procs li{padding:8px 14px; border-radius:999px; background:var(--tile-2); font-size:.92rem}
 /* 首頁專案卡：圖填滿面板，不在下方留白 */
 .bento:not(.small) .tile .media:not(.nccu):not(.phone):not(.flowbox) img{height:100%; object-fit:cover; object-position:center top}
+/* 首頁 Open NCCU 卡：排課系統實際畫面 */
+.media.nccu{align-items:center}
+.media.nccu .shot-nccu{flex:1; min-width:0; width:100%; border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.18)}
+@media (max-width:640px){.media.nccu{flex-direction:column; align-items:flex-start}}
 /* 首頁開發流程卡：流程縮圖 */
 .tile .media.flowbox{display:flex; align-items:center; justify-content:center; padding:clamp(20px,2.6vw,32px)!important}
 .flow.mini{grid-template-columns:repeat(4,auto); gap:10px; align-items:center; justify-content:center}

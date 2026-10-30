@@ -211,6 +211,10 @@ a.tile:hover h3{color:var(--accent)}
 .flow.mini li{padding:10px 16px; border-radius:var(--r-btn,999px); background:var(--accent); color:var(--on-accent,#fff)}
 .flow.mini li b{font-size:.95rem}
 .flow.mini li:not(:last-child)::after{right:-15px}
+/* 首頁 Open NCCU 卡：排課系統實際畫面（教師姓名已模糊） */
+.media.nccu{align-items:center}
+.media.nccu .shot-nccu{flex:1; min-width:0; width:100%; border-radius:calc(var(--r,16px) * .6); border:1px solid var(--rule)}
+@media (max-width:640px){.media.nccu{flex-direction:column; align-items:flex-start}}
 
 /* 原站深色（Impeccable：保留原站身分精修）：#0A0E11 深底、青綠強調、Plus Jakarta Sans；
    首頁是索引列（左標題、右標籤、下方灰色描述，hover 左移＋變色），不放截圖；導覽是底部浮動膠囊（不透明）。 */

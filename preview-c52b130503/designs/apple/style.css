@@ -211,6 +211,10 @@ a.tile:hover h3{color:var(--accent)}
 .flow.mini li{padding:10px 16px; border-radius:var(--r-btn,999px); background:var(--accent); color:var(--on-accent,#fff)}
 .flow.mini li b{font-size:.95rem}
 .flow.mini li:not(:last-child)::after{right:-15px}
+/* 首頁 Open NCCU 卡：排課系統實際畫面（教師姓名已模糊） */
+.media.nccu{align-items:center}
+.media.nccu .shot-nccu{flex:1; min-width:0; width:100%; border-radius:calc(var(--r,16px) * .6); border:1px solid var(--rule)}
+@media (max-width:640px){.media.nccu{flex-direction:column; align-items:flex-start}}
 
 /* Apple（emilkowalski/skill 的 apple-design）：
    版面參考 apple.com 產品頁：白／淺灰交替的區塊、置中大標、圖片主導、可滑動的圖片列。
