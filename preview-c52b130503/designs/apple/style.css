@@ -175,6 +175,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important; transition:none!important}}
 /* 開場句短、有標點：只在標點處換行，避免把「問題」這種詞切開 */
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
+/* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
+.shot.tall .fr{aspect-ratio:3/4}
 
 /* Apple（emilkowalski/skill 的 apple-design）：
    版面參考 apple.com 產品頁：白／淺灰交替的區塊、置中大標、圖片主導、可滑動的圖片列。
@@ -294,3 +296,6 @@ a.tile:hover h3{color:inherit}
 .next{text-align:center}
 
 @media (prefers-reduced-motion:reduce){.strip,.gal{scroll-snap-type:none}}
+/* 圖片列裡的直式截圖：窄而高的卡片 */
+.shot.tall{flex:0 0 min(64%,420px)}
+.shot.tall .fr{aspect-ratio:9/14}

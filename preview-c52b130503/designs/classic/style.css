@@ -175,6 +175,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important; transition:none!important}}
 /* 開場句短、有標點：只在標點處換行，避免把「問題」這種詞切開 */
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
+/* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
+.shot.tall .fr{aspect-ratio:3/4}
 
 /* 原站深色（Impeccable：保留原站身分精修）：#0A0E11 深底、青綠強調、Plus Jakarta Sans；
    首頁是索引列（左標題、右標籤、下方灰色描述，hover 左移＋變色），不放截圖；導覽是底部浮動膠囊（不透明）。 */

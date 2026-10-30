@@ -175,6 +175,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important; transition:none!important}}
 /* 開場句短、有標點：只在標點處換行，避免把「問題」這種詞切開 */
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
+/* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
+.shot.tall .fr{aspect-ratio:3/4}
 
 /* 文件（frontend-design）：整站像一份寫得好的規格文件。淺灰綠紙面、單一襯線字族、原子筆藍；
    區塊標題懸在左欄；卡片改成以細線分隔的條目，不用色塊。 */

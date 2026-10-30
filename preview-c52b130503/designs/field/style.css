@@ -175,6 +175,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important; transition:none!important}}
 /* 開場句短、有標點：只在標點處換行，避免把「問題」這種詞切開 */
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
+/* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
+.shot.tall .fr{aspect-ratio:3/4}
 
 /* 墨青色塊（taste-skill）：紙白與墨青兩色；名字是宣言；公司專案是一整片墨青色塊；
    不用細線、不用等寬字，結構靠留白與色階；方角。 */

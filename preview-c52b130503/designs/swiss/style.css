@@ -175,6 +175,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important; transition:none!important}}
 /* 開場句短、有標點：只在標點處換行，避免把「問題」這種詞切開 */
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
+/* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
+.shot.tall .fr{aspect-ratio:3/4}
 
 /* 瑞士極簡（UI/UX Pro Max：Portfolio → Minimalism & Swiss）：黑白加一個藍；12 欄格線；方角、細框、無陰影。 */
 :root{--bg:#FAFAFA; --bar-bg:#FAFAFA; --surface:#FFFFFF; --frame:#F1F1F3; --ink:#09090B; --ink2:#3F3F46; --muted:#52525B;
