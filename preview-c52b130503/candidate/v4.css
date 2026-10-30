@@ -436,6 +436,21 @@ html.leaving body{opacity:1}
 .flow li .n{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:var(--h); color:#fff; font-weight:700; font-size:1.2rem}
 /* 白字在黃底只有 1.7:1；沿用 .feature.h-y .k .no 的深色字。其他三色靠字級達到大字 3:1 */
 .flow li.h-y .n,.flow.mini li.h-y{color:#3c2a00}
+/* 頁尾聲明：避免最後一行只剩一個字（加回「與 CMS」後桌機會剩「開。」） */
+:lang(zh-Hant) .fine p{text-wrap:pretty}
+/* 手機上的漂浮形狀縮小、集中到開場區塊頂端兩角，不壓到標題、開場句與按鈕 */
+@media (max-width:640px){
+  .hero .shapes,.case-hero .shapes{--k:.46}
+  .hero .shapes .s,.case-hero .shapes .s{top:auto!important; bottom:auto!important; left:auto!important; right:auto!important}
+  .hero .shapes .s:nth-child(1),.case-hero .shapes .s:nth-child(1){left:3%!important; top:104px!important}
+  .hero .shapes .s:nth-child(2),.case-hero .shapes .s:nth-child(2){right:3%!important; top:100px!important}
+  .hero .shapes .s:nth-child(3),.case-hero .shapes .s:nth-child(3){left:16%!important; top:146px!important}
+  .hero .shapes .s:nth-child(4),.case-hero .shapes .s:nth-child(4){right:17%!important; top:150px!important}
+}
+/* 有白字的色塊用 Google 深一階的同色，白字達 4.5:1（裝飾用的形狀、圓點維持原色） */
+.flow li.h-b .n,.flow.mini li.h-b{background:#1967d2}
+.flow li.h-r .n,.flow.mini li.h-r{background:#d93025}
+.flow li.h-g .n,.flow.mini li.h-g{background:#188038}
 .flow li b{font-size:clamp(1.3rem,2vw,1.6rem); margin-top:10px}
 .flow li > span:last-child{color:var(--muted); font-size:.95rem}
 .flow li:not(:last-child)::after{content:"→"; position:absolute; right:calc(-1 * clamp(10px,1.4vw,16px) / 2 - .5em); top:50%; transform:translateY(-50%);

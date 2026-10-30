@@ -351,3 +351,7 @@ a.tile:hover h3{color:inherit}
 .flow li .n{color:var(--link)}
 /* 首頁拆出經歷後，個人專案與聯絡兩塊灰底相鄰，中間的 margin 會露出一條黑帶 */
 #side + .contact{margin-top:0}
+/* 窄卡片（MaiGPT）的橫式截圖填滿卡片下半部，不在下方留白（2026/10/30 Silas 確認） */
+.bento:not(.small) .tile:not(.w2):not(.w3) .media:not(.phone):not(.nccu):not(.flowbox){flex:1 1 auto; position:relative; min-height:260px; padding:0}
+.bento:not(.small) .tile:not(.w2):not(.w3) .media:not(.phone):not(.nccu):not(.flowbox) img{position:absolute; left:32px; right:32px; top:32px; bottom:0;
+  width:calc(100% - 64px); height:calc(100% - 32px); aspect-ratio:auto; object-fit:cover; object-position:center top}
