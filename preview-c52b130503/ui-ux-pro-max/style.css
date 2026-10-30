@@ -1,0 +1,131 @@
+/* 版本 C：UI/UX Pro Max（nextlevelbuilder）
+   依它的資料庫查「Portfolio/Personal」（products.csv #11、ui-reasoning.csv #11）：
+   主風格 Motion-Driven + Minimalism & Swiss Style；規則「極簡作品集 → 降低動效」。
+   配色（colors.csv #11）：Monochrome + blue accent —— 底 #FAFAFA、字 #09090B、
+   次要字 #475569、邊線 #E4E4E7、強調 #2563EB。
+   字（typography.csv #11 Geometric Modern，標註適用 portfolios）：Outfit 標題 + Work Sans 內文，
+   中文接 Noto Sans TC。
+   Swiss 規格（styles.csv #1/#50）：12 欄格線、8px 基準、圓角 0、無陰影、單一強調色。
+   優先檢查表：對比 4.5:1、觸控目標 ≥44px、可見焦點、尊重 reduced-motion、不用 emoji 當圖示。
+   動效：只有捲動進場一種，8px、240ms。 */
+:root{
+  --bg:#FAFAFA; --card:#FFFFFF; --ink:#09090B; --muted:#475569; --rule:#E4E4E7; --accent:#2563EB;
+  --frame-bg:#F1F1F3; --u:8px;
+  --head:"Outfit","Noto Sans TC",system-ui,sans-serif;
+  --body:"Work Sans","Noto Sans TC",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#09090B; --card:#111113; --ink:#FAFAFA; --muted:#A1A1AA; --rule:#27272A; --accent:#60A5FA; --frame-bg:#18181B;
+}
+html{color-scheme:light; scroll-behavior:smooth; scroll-padding-top:72px}
+html[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.7;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{margin:0; font-family:var(--head); font-weight:600; letter-spacing:-.02em; text-wrap:balance}
+b{font-weight:600}
+.wrap{max-width:1200px; margin:0 auto; padding:0 calc(var(--u)*3)}
+
+/* 頂部固定導覽：觸控目標 44px */
+nav{position:sticky; top:0; z-index:50; background:var(--bg); border-bottom:1px solid var(--rule);
+  display:flex; align-items:center; gap:var(--u); padding:0 calc(var(--u)*3); min-height:56px;
+  max-width:none}
+nav a{display:inline-flex; align-items:center; min-height:44px; padding:0 calc(var(--u)*1.5);
+  font-size:.92rem; font-weight:500; text-decoration:none; color:var(--muted); transition:color .2s ease}
+nav a:hover,nav a:focus-visible{color:var(--ink)}
+nav a[lang="en"]{margin-left:auto}
+nav button{display:inline-grid; place-items:center; width:44px; height:44px; background:none; border:0;
+  color:var(--muted); cursor:pointer; transition:color .2s ease}
+nav button:hover,nav button:focus-visible{color:var(--ink)}
+nav svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round}
+nav .i-moon{fill:currentColor; stroke:none}
+.i-sun{display:none}
+:root[data-theme="dark"] .i-sun{display:block}
+:root[data-theme="dark"] .i-moon{display:none}
+
+/* 12 欄格線 */
+.grid12,section,.hero,.case-head{display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); column-gap:calc(var(--u)*3)}
+.hero > *,.case-head > *,section > *{grid-column:1/-1}
+@media (min-width:960px){
+  section > .sec-title{grid-column:1 / span 3; align-self:start; position:sticky; top:80px}
+  section > :not(.sec-title){grid-column:4 / span 9}
+  .hero > .sub,.hero > .links{grid-column:1 / span 8}
+  .case-head > *{grid-column:4 / span 9}
+}
+
+.hero{padding:calc(var(--u)*14) 0 calc(var(--u)*10)}
+.hero h1{font-size:clamp(2.75rem,8vw,6rem); line-height:1; letter-spacing:-.035em; font-weight:700}
+.hero .sub{margin-top:calc(var(--u)*4); font-size:1.125rem; color:var(--muted)}
+.links{margin-top:calc(var(--u)*4); display:flex; flex-wrap:wrap; gap:var(--u) calc(var(--u)*3)}
+.links a{display:inline-flex; align-items:center; min-height:44px; color:var(--accent); font-weight:500;
+  text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px}
+.links a:hover{text-decoration-thickness:2px}
+.links span{display:inline-flex; align-items:center}
+
+section{padding:calc(var(--u)*10) 0; border-top:1px solid var(--rule)}
+.sec-title{margin-bottom:calc(var(--u)*3)}
+.sec-title h2{font-size:1.5rem; line-height:1.25}
+.sec-title .note{display:block; margin-top:var(--u); font-size:.875rem; color:var(--muted)}
+
+.row{display:grid; grid-template-columns:1fr auto; gap:var(--u) calc(var(--u)*3); align-items:baseline;
+  padding:calc(var(--u)*3) 0; border-bottom:1px solid var(--rule); text-decoration:none; color:inherit}
+.row:first-of-type{padding-top:0}
+.rt{font-family:var(--head); font-size:1.375rem; font-weight:600; letter-spacing:-.015em; transition:color .2s ease}
+a.row:hover .rt,a.row:focus-visible .rt{color:var(--accent)}
+.arrow{display:inline-block; margin-left:var(--u); color:var(--accent); transition:transform .2s ease}
+a.row:hover .arrow{transform:translateX(4px)}
+.rm{font-size:.8125rem; font-weight:500; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums;
+  padding:2px var(--u); border:1px solid var(--rule)}
+.ro{grid-column:1/-1; font-weight:500}
+.rd{grid-column:1/-1; color:var(--muted); max-width:65ch}
+
+/* 內頁 */
+.back{display:inline-flex; align-items:center; min-height:44px; margin-top:calc(var(--u)*3); font-size:.92rem;
+  font-weight:500; color:var(--accent); text-decoration:none}
+.case-head{padding:calc(var(--u)*6) 0 calc(var(--u)*8)}
+.case-head .eyebrow{font-size:.8125rem; font-weight:500; color:var(--muted); font-variant-numeric:tabular-nums}
+.case-head h1{font-size:clamp(2.25rem,5vw,3.75rem); line-height:1.05; font-weight:700; margin-top:calc(var(--u)*2)}
+.case-head .dek{margin-top:calc(var(--u)*3); font-size:1.125rem; color:var(--muted); max-width:60ch}
+.prose{max-width:68ch}
+.prose > * + *{margin-top:calc(var(--u)*2)}
+.shots{display:grid; gap:calc(var(--u)*3); margin-top:calc(var(--u)*4); grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.shots.wide{grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr))}
+@media (max-width:620px){.shots.wide{grid-template-columns:1fr}}
+.frame{border:1px solid var(--rule)}
+figcaption{margin-top:var(--u); font-size:.8125rem; color:var(--muted)}
+.note{font-size:.875rem; color:var(--muted)}
+.eyebrow{font-size:.8125rem; color:var(--muted)}
+
+footer{border-top:1px solid var(--rule); padding:calc(var(--u)*6) 0 calc(var(--u)*8); color:var(--muted); font-size:.875rem}
+footer a{color:var(--accent)}
+.disclaim{margin-top:calc(var(--u)*1.5); max-width:70ch}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* 捲動進場：只在有 JS 時隱藏，避免沒有 JS 時空白 */
+.js .reveal{opacity:0; transform:translateY(8px); transition:opacity .24s ease-out, transform .24s ease-out}
+.js .reveal.in{opacity:1; transform:none}
+
+/* —— 共用尾段：截圖、燈箱、中文排版（三個重做版共用） —— */
+figure{margin:0}
+.frame{background:var(--frame-bg); overflow:hidden; aspect-ratio:16/10}
+.frame img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; cursor:zoom-in}
+.shots.wide .frame{aspect-ratio:16/9}
+.shots.wide .frame img{object-fit:contain; object-position:center}
+.frame:focus-within{outline:2px solid var(--accent); outline-offset:3px}
+.frame img:focus{outline:none}
+
+.lb{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.92);
+  display:flex; align-items:center; justify-content:center; padding:28px; cursor:zoom-out}
+.lb[hidden]{display:none}
+.lb img{max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; cursor:default}
+.lb-x{position:fixed; top:12px; right:16px; z-index:1; background:none; border:0;
+  color:#fff; font-size:1.9rem; line-height:1; padding:4px 10px; cursor:pointer; opacity:.7}
+.lb-x:hover,.lb-x:focus-visible{opacity:1}
+html.lb-open nav{visibility:hidden}
+
+:lang(zh-Hant){line-break:strict; overflow-wrap:break-word}
+:lang(zh-Hant) .prose p,:lang(zh-Hant) .rd,:lang(zh-Hant) .dek,:lang(zh-Hant) .sub{text-wrap:pretty}
+@supports (text-autospace:normal){:lang(zh-Hant){text-autospace:normal}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}

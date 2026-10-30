@@ -1,0 +1,113 @@
+/* 版本 A：Anthropic frontend-design
+   題材：一個以「寫規格」為工作的人 → 整站排成一份讀得舒服的文件，而不是作品牆。
+   色：淺灰綠紙面＋墨綠字＋原子筆藍（審稿時在規格上批註的那支筆）。
+   字：只用一個家族 —— Source Serif 4（拉丁）＋ Noto Serif TC（中文），靠字級與字重分層。
+   版面：桌機兩欄，區塊標題懸在左欄、內容在右欄；手機單欄。
+   刻意避開技能點名的預設：近黑底配單一亮色、等寬小標籤、全大寫 eyebrow、
+   中點串接 meta、連結後的 →、髮絲線網格、浮動膠囊導覽。
+   大膽只花在一處：名字。 */
+:root{
+  --bg:#EEF1EE; --surface:#E4E8E4; --ink:#16211D; --muted:#56635D; --rule:#C9D1CB;
+  --accent:#2347B5; --frame-bg:#DDE2DE;
+  --serif:"Source Serif 4","Noto Serif TC",Georgia,serif;
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#19211D; --ink:#E3E9E5; --muted:#9AA7A0; --rule:#2A3530;
+  --accent:#9DB4FF; --frame-bg:#0C110F;
+}
+html{color-scheme:light; scroll-behavior:smooth}
+html[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--serif);
+  font-size:17px; line-height:1.85; font-optical-sizing:auto; -webkit-font-smoothing:antialiased}
+::selection{background:var(--accent); color:var(--bg)}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{margin:0; font-weight:600; text-wrap:balance}
+b{font-weight:600}
+.wrap{max-width:1040px; margin:0 auto; padding:0 24px}
+
+/* 導覽：頁首一行文字，不浮動、不模糊 */
+nav{max-width:1040px; margin:0 auto; padding:22px 24px 0; display:flex; justify-content:flex-end;
+  gap:22px; font-size:.95rem}
+nav a{color:var(--muted); text-decoration:none}
+nav a:hover,nav a:focus-visible{color:var(--accent)}
+nav button{font:inherit; color:var(--muted); background:none; border:0; padding:0 2px; cursor:pointer}
+nav button:hover,nav button:focus-visible{color:var(--accent)}
+
+/* hero：唯一的大膽處 */
+.hero{padding:clamp(72px,14vh,140px) 0 clamp(48px,8vw,88px)}
+.hero h1{font-size:clamp(2.9rem,8.4vw,5.6rem); line-height:1.02; letter-spacing:-.025em; font-weight:600}
+.hero .sub{margin-top:28px; font-size:1.18rem; line-height:1.75; color:var(--muted); max-width:34em}
+.links{margin-top:28px; display:flex; flex-wrap:wrap; gap:8px 26px; font-size:1rem}
+.links a{color:var(--accent); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.22em}
+.links a:hover{text-decoration-thickness:2px}
+.links span{color:var(--muted)!important}
+
+/* 區塊：桌機時標題懸在左欄 */
+section{padding:clamp(40px,6vw,72px) 0; border-top:1px solid var(--rule)}
+.sec-title{margin-bottom:18px}
+.sec-title h2{font-size:1.32rem; line-height:1.35}
+.sec-title .note{display:block; margin-top:4px; font-size:.95rem; color:var(--muted)}
+@media (min-width:900px){
+  section{display:grid; grid-template-columns:220px minmax(0,1fr); column-gap:56px}
+  .sec-title{grid-column:1; grid-row:1 / span 20; margin:0; position:sticky; top:28px; align-self:start}
+  section > :not(.sec-title){grid-column:2}
+}
+
+/* 列表：大標題＋說明，連結只用底線表態 */
+.row{display:grid; grid-template-columns:1fr auto; gap:2px 24px; align-items:baseline;
+  padding:18px 0 22px; text-decoration:none; color:inherit}
+.row + .row{border-top:1px solid var(--rule)}
+.rt{font-size:1.4rem; line-height:1.35; font-weight:600}
+a.row .rt{text-decoration:underline; text-decoration-color:transparent; text-decoration-thickness:2px; text-underline-offset:.2em;
+  transition:text-decoration-color .2s ease}
+a.row:hover .rt,a.row:focus-visible .rt{text-decoration-color:var(--accent)}
+a.row:focus-visible{outline:2px solid var(--accent); outline-offset:6px}
+.rm{font-size:.95rem; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums lining-nums}
+.ro{grid-column:1/-1; font-size:1.02rem; color:var(--ink); opacity:.8}
+.rd{grid-column:1/-1; margin-top:6px; color:var(--muted); font-size:1rem; max-width:36em}
+
+/* 專案內頁 */
+.back{display:inline-block; margin-top:36px; font-size:.98rem; color:var(--accent); text-decoration:none}
+.back:hover{text-decoration:underline; text-underline-offset:.2em}
+.case-head{padding:28px 0 48px; max-width:44em}
+.case-head h1{font-size:clamp(2.2rem,5.6vw,3.6rem); line-height:1.1; letter-spacing:-.02em}
+.case-head .meta{margin-top:14px; color:var(--muted); font-size:1rem; font-variant-numeric:tabular-nums}
+.case-head .dek{margin-top:20px; font-size:1.2rem; line-height:1.75; max-width:34em}
+.prose{max-width:36em}
+.prose > * + *{margin-top:16px}
+.shots{display:grid; gap:22px; margin-top:32px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.shots.wide{grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))}
+@media (max-width:620px){.shots.wide{grid-template-columns:1fr}}
+.frame{border-radius:2px}
+figcaption{margin-top:8px; font-size:.92rem; color:var(--muted)}
+.note{font-size:.95rem; color:var(--muted)}
+
+footer{padding:48px 0 72px; border-top:1px solid var(--rule); color:var(--muted); font-size:.98rem}
+footer a{color:var(--accent)}
+.disclaim{margin-top:12px; font-size:.9rem; max-width:40em}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+/* —— 共用尾段：截圖、燈箱、中文排版（三個重做版共用） —— */
+figure{margin:0}
+.frame{background:var(--frame-bg); overflow:hidden; aspect-ratio:16/10}
+.frame img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; cursor:zoom-in}
+.shots.wide .frame{aspect-ratio:16/9}
+.shots.wide .frame img{object-fit:contain; object-position:center}
+.frame:focus-within{outline:2px solid var(--accent); outline-offset:3px}
+.frame img:focus{outline:none}
+
+.lb{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.92);
+  display:flex; align-items:center; justify-content:center; padding:28px; cursor:zoom-out}
+.lb[hidden]{display:none}
+.lb img{max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; cursor:default}
+.lb-x{position:fixed; top:12px; right:16px; z-index:1; background:none; border:0;
+  color:#fff; font-size:1.9rem; line-height:1; padding:4px 10px; cursor:pointer; opacity:.7}
+.lb-x:hover,.lb-x:focus-visible{opacity:1}
+html.lb-open nav{visibility:hidden}
+
+:lang(zh-Hant){line-break:strict; overflow-wrap:break-word}
+:lang(zh-Hant) .prose p,:lang(zh-Hant) .rd,:lang(zh-Hant) .dek,:lang(zh-Hant) .sub{text-wrap:pretty}
+@supports (text-autospace:normal){:lang(zh-Hant){text-autospace:normal}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}

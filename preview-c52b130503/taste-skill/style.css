@@ -1,0 +1,118 @@
+/* 版本 B：taste-skill（Leonxlnx）
+   方向（自 library/directions.json 選）：type-only-statement —— 首屏只有字、色、空間；
+   圖片晚點才出現，大而少。首頁本來就沒有圖，這是誠實的選擇。
+   配色（library/palettes.json）：teal-on-paper，雙色：紙 #F7F9F8、墨青 #06525C，
+   同一個墨青也當整片色塊。沿用原站的青綠血統，通過「配色對題材」檢查。
+   字（library/type.json）：hanken-medium —— Hanken Grotesk 500，字距 -0.05em，行高 0.9，
+   只有一個宣言字級。中文接 Noto Sans TC。
+   想法：「三條同時推進的產品線」→ 每一條公司專案都是一整片全幅色塊。
+   技能禁用、這版照做：等寬小標籤、eyebrow、髮絲線、浮動膠囊模糊導覽、中點 meta、
+   全大寫字距標籤、→。結構改由留白與色階承擔。字級只用五級：15 / 18 / 26 / 48 / 宣言。
+   沒做的一項：技能要求「一個可互動的東西」，但站上沒有真實可互動的素材，
+   硬做就得杜撰內容，違反內容規則，所以略過。 */
+:root{
+  --paper:#F7F9F8; --tone:#E6EEEC; --ink:#06525C; --ink-soft:#3D7179; --field:#06525C; --on-field:#F7F9F8;
+  --bg:var(--paper); --muted:var(--ink-soft); --accent:var(--ink); --frame-bg:#DCE6E4;
+  --sans:"Hanken Grotesk","Noto Sans TC",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --paper:#04363D; --tone:#0A434B; --ink:#EAF3F1; --ink-soft:#A9C6C3; --field:#EAF3F1; --on-field:#04363D;
+  --frame-bg:#032B31;
+}
+html{color-scheme:light; scroll-behavior:smooth}
+html[data-theme="dark"]{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-weight:400;
+  font-size:18px; line-height:1.7; overflow-x:clip; -webkit-font-smoothing:antialiased}
+::selection{background:var(--ink); color:var(--paper)}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{margin:0; font-weight:500; text-wrap:balance}
+b{font-weight:600}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+.full{margin-inline:calc(50% - 50vw); padding-inline:calc(50vw - 50%)}
+
+/* 導覽：一條平實的列 */
+nav{max-width:1120px; margin:0 auto; padding:20px 24px; display:flex; gap:26px; font-size:15px; align-items:center}
+nav a{text-decoration:none; color:var(--ink)}
+nav a:hover,nav a:focus-visible{text-decoration:underline; text-underline-offset:.25em}
+nav a[lang="en"]{margin-left:auto}
+nav button{font:inherit; color:var(--ink); background:none; border:0; padding:0; cursor:pointer}
+
+/* 宣言：名字 */
+.hero{padding:clamp(56px,12vh,120px) 0 clamp(64px,10vw,120px)}
+.hero h1{font-size:clamp(3.4rem,11vw,8.4rem); line-height:.9; letter-spacing:-.05em; font-weight:500}
+.hero .sub{margin-top:40px; font-size:18px; max-width:30em; color:var(--ink)}
+.links{margin-top:28px; display:flex; flex-wrap:wrap; gap:6px 28px; font-size:18px}
+.links a{text-decoration:underline; text-underline-offset:.25em; text-decoration-thickness:2px}
+.links span{color:var(--ink-soft)!important}
+
+section{padding:clamp(56px,8vw,104px) 0}
+.sec-title{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 18px; margin-bottom:28px}
+.sec-title h2{font-size:26px; line-height:1.2; letter-spacing:-.02em}
+.sec-title .note{font-size:15px; color:var(--ink-soft)}
+
+/* 公司專案：整片色塊 */
+section:has(#work){background:var(--field); color:var(--on-field);
+  margin-inline:calc(50% - 50vw); padding-inline:calc(50vw - 50%)}
+section:has(#work) .sec-title .note,section:has(#work) .rd{color:color-mix(in srgb,var(--on-field) 78%,var(--field))}
+section:has(#work) .row{padding:30px 0}
+section:has(#work) .rt{font-size:clamp(32px,7vw,48px); line-height:1.05; letter-spacing:-.04em}
+
+.row{display:grid; grid-template-columns:1fr auto; gap:8px 24px; align-items:baseline; padding:22px 0;
+  text-decoration:none; color:inherit}
+.rt{font-size:26px; line-height:1.2; letter-spacing:-.02em; font-weight:500}
+a.row .rt{text-decoration:underline; text-decoration-color:transparent; text-decoration-thickness:2px; text-underline-offset:.15em; transition:text-decoration-color .2s ease}
+a.row:hover .rt,a.row:focus-visible .rt{text-decoration-color:currentColor}
+.rm{font-size:15px; white-space:nowrap; font-variant-numeric:tabular-nums; opacity:.85}
+.ro{grid-column:1/-1; font-size:18px}
+.rd{grid-column:1/-1; font-size:18px; color:var(--ink-soft); max-width:34em}
+
+/* 個人專案：兩欄，換一種構圖 */
+@media (min-width:860px){
+  section:has(#side){display:grid; grid-template-columns:1fr 1fr; column-gap:56px}
+  section:has(#side) .sec-title{grid-column:1/-1}
+}
+/* 經歷：色階一步 */
+section:has(#experience){background:var(--tone); margin-inline:calc(50% - 50vw); padding-inline:calc(50vw - 50%)}
+
+/* 專案內頁：頁首是一整片色塊 */
+.back{display:inline-block; margin-top:8px; font-size:15px; color:var(--ink); text-decoration:underline; text-underline-offset:.25em}
+.case-head{background:var(--field); color:var(--on-field); margin:20px calc(50% - 50vw) 0; padding:clamp(48px,8vw,96px) calc(50vw - 50%)}
+.case-head h1{font-size:clamp(2.6rem,7vw,5.2rem); line-height:.95; letter-spacing:-.045em}
+.case-head .meta{margin-top:22px; font-size:15px; opacity:.85; font-variant-numeric:tabular-nums}
+.case-head .dek{margin-top:22px; font-size:18px; max-width:32em}
+.prose{max-width:34em}
+.prose > * + *{margin-top:18px}
+.shots{display:grid; gap:24px; margin-top:40px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.shots.wide{grid-template-columns:1fr}
+figcaption{margin-top:10px; font-size:15px; color:var(--ink-soft)}
+.note{font-size:15px; color:var(--ink-soft)}
+
+footer{background:var(--field); color:var(--on-field); padding:56px 0 64px; font-size:15px}
+footer a{color:inherit; text-decoration:underline; text-underline-offset:.25em}
+.disclaim{margin-top:14px; max-width:40em; opacity:.85}
+a:focus-visible,button:focus-visible{outline:2px solid currentColor; outline-offset:4px}
+
+/* —— 共用尾段：截圖、燈箱、中文排版（三個重做版共用） —— */
+figure{margin:0}
+.frame{background:var(--frame-bg); overflow:hidden; aspect-ratio:16/10}
+.frame img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; cursor:zoom-in}
+.shots.wide .frame{aspect-ratio:16/9}
+.shots.wide .frame img{object-fit:contain; object-position:center}
+.frame:focus-within{outline:2px solid var(--accent); outline-offset:3px}
+.frame img:focus{outline:none}
+
+.lb{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.92);
+  display:flex; align-items:center; justify-content:center; padding:28px; cursor:zoom-out}
+.lb[hidden]{display:none}
+.lb img{max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; cursor:default}
+.lb-x{position:fixed; top:12px; right:16px; z-index:1; background:none; border:0;
+  color:#fff; font-size:1.9rem; line-height:1; padding:4px 10px; cursor:pointer; opacity:.7}
+.lb-x:hover,.lb-x:focus-visible{opacity:1}
+html.lb-open nav{visibility:hidden}
+
+:lang(zh-Hant){line-break:strict; overflow-wrap:break-word}
+:lang(zh-Hant) .prose p,:lang(zh-Hant) .rd,:lang(zh-Hant) .dek,:lang(zh-Hant) .sub{text-wrap:pretty}
+@supports (text-autospace:normal){:lang(zh-Hant){text-autospace:normal}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
