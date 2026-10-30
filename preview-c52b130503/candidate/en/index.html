@@ -38,7 +38,7 @@ d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("
 <body>
 <header class="bar"><div class="wrap">
   <a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Silas Chen</a>
-  <nav aria-label="Main"><a href="#work">Work</a><a href="#side">Side projects</a><a href="#experience">Experience</a></nav>
+  <nav aria-label="Main"><a href="index.html" aria-current="page">Work</a><a href="work-side.html">Side projects</a><a href="experience.html">Experience</a></nav>
   <div class="tools"><a href="../" hreflang="zh-Hant" lang="zh-Hant">中</a><button class="theme" type="button" aria-label="Toggle theme"></button></div>
 </div></header>
 
@@ -48,7 +48,7 @@ d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("
   <div class="wrap">
     <h1 id="who" class="rv" style="--d:80ms">Silas Chen<span class="cn" lang="zh-Hant">陳頌然</span></h1>
     <p class="lead rv" style="--d:160ms">Product manager. I work out where a problem is actually stuck before deciding what to build — and when it helps, I build it myself.<br><span class="sub">Business Administration, National Chengchi University; Mandarin, English, Japanese.</span></p>
-    <div class="ctas rv" style="--d:240ms"><a class="btn primary" href="#work">See the work</a><a class="btn ghost" href="mailto:silas4336@gmail.com">Email me</a></div>
+    <div class="ctas rv" style="--d:240ms"><a class="btn primary" href="experience.html">See experience</a><a class="btn ghost" href="mailto:silas4336@gmail.com">Email me</a></div>
   </div>
 </section>
 
@@ -57,8 +57,8 @@ d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("
     <div class="sec-head"><h2 id="h-skills" class="rv">What I do</h2><p class="rv" style="--d:80ms">Each one links to the work behind it.</p></div>
     <ul class="abil">
       <li class="h-b rv" style="--d:0ms"><h3>Specs and scope</h3><p>Feature PRDs, user flows, state transitions and acceptance criteria. When the full scope will not fit one cycle, I split it into full, reduced and minimal versions and put the minimal one into development first.</p><div class="go"><a href="work-maigpt.html">MaiGPT <span aria-hidden="true">→</span></a></div></li>
-      <li class="h-y rv" style="--d:60ms"><h3>Building with AI</h3><p>I ship full-stack features with Claude Code, and turned recurring judgment into 22 re-runnable procedures. Side projects include desktop apps for macOS and Windows.</p><div class="go"><a href="work-agentic.html">How I Shipped It <span aria-hidden="true">→</span></a><a href="#side">Side projects <span aria-hidden="true">→</span></a></div></li>
-      <li class="h-g rv" style="--d:120ms"><h3>Data and coordination</h3><p>Campaign performance analysis and the KPI reports senior managers reviewed; offline events coordinated across teams. Mandarin, English and Japanese, and I kept delivering remotely from Tokyo.</p><div class="go"><a href="#experience">Experience <span aria-hidden="true">→</span></a></div></li>
+      <li class="h-y rv" style="--d:60ms"><h3>Building with AI</h3><p>I ship full-stack features with Claude Code, and turned recurring judgment into 22 re-runnable procedures. Side projects include desktop apps for macOS and Windows.</p><div class="go"><a href="work-agentic.html">How I Shipped It <span aria-hidden="true">→</span></a><a href="work-side.html">Side projects <span aria-hidden="true">→</span></a></div></li>
+      <li class="h-g rv" style="--d:120ms"><h3>Data and coordination</h3><p>Campaign performance analysis and the KPI reports senior managers reviewed; offline events coordinated across teams. Mandarin, English and Japanese, and I kept delivering remotely from Tokyo.</p><div class="go"><a href="experience.html">Experience <span aria-hidden="true">→</span></a></div></li>
     </ul>
   </div>
 </section>
@@ -95,31 +95,18 @@ d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("
   <div class="wrap">
     <div class="sec-head"><h2 id="h-side" class="rv">Side projects</h2><p class="rv" style="--d:80ms">Built independently. <a class="all" href="work-side.html">See all six <span aria-hidden="true">→</span></a></p></div>
     <div class="bento small">
-      <a class="tile h-b rv" href="work-side.html#console" style="--d:0ms"><div class="media"><img src="../../../../assets/side_console-dashboard.jpg" alt="Console Dashboard standard layout" loading="lazy"></div>
+      <a class="tile h-b rv" href="side-console.html" style="--d:0ms"><div class="media"><img src="../../../../assets/side_console-dashboard.jpg" alt="Console Dashboard standard layout" loading="lazy"></div>
         <div class="copy"><div class="tag">Windows app</div><h3>Console Dashboard</h3><p>A game dashboard on the Windows wallpaper. Scans installed games across stores and stops drawing entirely when something fullscreen covers it.</p></div></a>
-      <a class="tile h-r rv" href="work-side.html#fakegps" style="--d:60ms"><div class="media"><img src="../../../../assets/side_fakegps.jpg" alt="FakeGPS main window" loading="lazy"></div>
+      <a class="tile h-r rv" href="side-fakegps.html" style="--d:60ms"><div class="media"><img src="../../../../assets/side_fakegps.jpg" alt="FakeGPS main window" loading="lazy"></div>
         <div class="copy"><div class="tag">macOS app</div><h3>FakeGPS</h3><p>SwiftUI + MapKit, compiled from the command line with swiftc. Source is public.</p></div></a>
-      <a class="tile h-y rv" href="work-side.html#watchlater" style="--d:120ms"><div class="media"><img src="../../../../assets/side_watch-later.jpg" alt="Watch Later Cleaner settings panel" loading="lazy"></div>
+      <a class="tile h-y rv" href="side-watchlater.html" style="--d:120ms"><div class="media"><img src="../../../../assets/side_watch-later.jpg" alt="Watch Later Cleaner settings panel" loading="lazy"></div>
         <div class="copy"><div class="tag">Chrome extension</div><h3>Watch Later Cleaner</h3><p>Filters and bulk-removes videos from YouTube Watch Later. Source is public.</p></div></a>
-      <a class="tile h-g rv" href="work-side.html#buddy" style="--d:180ms"><div class="media"><img src="../../../../assets/side_buddy-home.jpg" alt="Find Your Buddy home" loading="lazy"></div>
+      <a class="tile h-g rv" href="side-buddy.html" style="--d:180ms"><div class="media"><img src="../../../../assets/side_buddy-home.jpg" alt="Find Your Buddy home" loading="lazy"></div>
         <div class="copy"><div class="tag">live</div><h3>Find Your Buddy</h3><p>A 10-question quiz that matches you with a companion animal. Three languages, shareable card.</p></div></a>
       </div>
   </div>
 </section>
 
-<section class="sec" id="experience" aria-labelledby="h-xp">
-  <div class="wrap">
-    <div class="sec-head"><h2 id="h-xp" class="rv">Experience</h2></div>
-    <ul class="spec">
-      <li class="h-g rv"><span class="role">Associate, Product</span><span class="when mono">Oct 2026 –</span><span class="org">Shopee</span></li>
-      <li class="h-b rv"><span class="role">AI Product Manager Intern</span><span class="when mono">Oct 2025 – Jul 2026</span><span class="org">MaiAgent</span><p class="desc">Owned the website and its content CMS, front-end product on MaiGPT, and the reseller channel on the sales CRM &mdash; three lines, spec to handover. Wrote the product spec set and two feature PRDs, and built 22 repeatable procedures to run all three at once.</p></li>
-      <li class="h-b rv"><span class="role">Exchange Student</span><span class="when mono">Apr 2026 – Aug 2026</span><span class="org">Meiji University, Tokyo</span><p class="desc">One semester in Tokyo, while continuing to deliver all three MaiAgent product lines remotely.</p></li>
-      <li class="h-r rv"><span class="role">Sales Operations Specialist (Internship)</span><span class="when mono">Jul 2024 – Feb 2025</span><span class="org">LINE Taiwan</span><p class="desc">Analysed performance across 10+ campaigns, built the KPI reports senior managers reviewed, and coordinated 5+ offline events.</p></li>
-      <li class="h-y rv"><span class="role">PR &amp; Project Manager</span><span class="when mono">Sep 2022 – Jun 2024</span><span class="org">Open NCCU</span><p class="desc">A student team building digital tools for the campus, plugged into the university&rsquo;s official course-selection system. I led the marketing group and ran outside partnerships. The tools reached 15.7k unique users.</p></li>
-      <li class="h-g rv"><span class="role">B.B.A. Business Administration</span><span class="when mono">Sep 2021 – Aug 2026</span><span class="org">National Chengchi University</span><p class="desc">GPA 3.9 / 4.3, English-taught programme in commerce. Languages: Mandarin (native), English (TOEIC 960 / TOEFL 105), Japanese (conversational).</p></li>
-    </ul>
-  </div>
-</section>
 
 <section class="contact" aria-labelledby="h-contact">
   <div class="shapes rv" aria-hidden="true"><span class="s sh-square" data-depth="30" style="left:14%;top:26%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:0ms"><i></i></span><span class="s sh-circle" data-depth="40" style="right:14%;top:18%;width:calc(90px*var(--k));height:calc(90px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:120ms"><i></i></span><span class="s sh-arch" data-depth="50" style="right:22%;bottom:18%;width:calc(100px*var(--k));height:calc(50px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:240ms"><i></i></span><span class="s sh-pill" data-depth="40" style="left:20%;bottom:14%;width:calc(120px*var(--k));height:calc(48px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:360ms"><i></i></span></div>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console Dashboard · Silas Chen</title>
+<meta name="description" content="置於 Windows 桌面最底層的遊戲儀表板：其他視窗照常使用，切回桌面時看到的是遊戲牆、時鐘與硬體狀態。以 Tauri 2（Rust）與 React 開發，自動掃描 Steam、Epic、GOG 與 Xbox 已安裝的遊戲並補上直式封面。">
+<meta name="robots" content="noindex">
+<meta name="author" content="陳頌然 Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/side-console.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/side-console.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/side-console.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/side-console.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%229.5%22 cy=%229.5%22 r=%226%22 fill=%22%234285f4%22/%3E%3Ccircle cx=%2222.5%22 cy=%229.5%22 r=%226%22 fill=%22%23ea4335%22/%3E%3Ccircle cx=%229.5%22 cy=%2222.5%22 r=%226%22 fill=%22%23fbbc04%22/%3E%3Ccircle cx=%2222.5%22 cy=%2222.5%22 r=%226%22 fill=%22%2334a853%22/%3E%3C/svg%3E">
+<meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Console Dashboard · Silas Chen">
+<meta property="og:description" content="置於 Windows 桌面最底層的遊戲儀表板：其他視窗照常使用，切回桌面時看到的是遊戲牆、時鐘與硬體狀態。以 Tauri 2（Rust）與 React 開發，自動掃描 Steam、Epic、GOG 與 Xbox 已安裝的遊戲並補上直式封面。">
+<meta property="og:url" content="https://silas4336.github.io/side-console.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v3.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Console Dashboard · Silas Chen">
+<meta name="twitter:description" content="置於 Windows 桌面最底層的遊戲儀表板：其他視窗照常使用，切回桌面時看到的是遊戲牆、時鐘與硬體狀態。以 Tauri 2（Rust）與 React 開發，自動掃描 Steam、Epic、GOG 與 Xbox 已安裝的遊戲並補上直式封面。">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v3.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(d){try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t}catch(e){}
+d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("js")},3000)})(document.documentElement);
+</script>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Silas Chen</a>
+  <nav aria-label="主選單"><a href="index.html">專案</a><a href="work-side.html" aria-current="page">個人專案</a><a href="experience.html">經歷</a></nav>
+  <div class="tools"><a href="en/side-console.html" hreflang="en" lang="en">EN</a><button class="theme" type="button" aria-label="切換深淺色"></button></div>
+</div></header>
+
+<main>
+<header class="case-hero h-b">
+  <div class="wrap">
+    <a class="back rv" href="work-side.html">← 個人專案</a>
+    <h1 class="rv" style="--d:120ms">Console Dashboard</h1>
+    <p class="lead rv" style="--d:180ms">置於 Windows 桌面最底層的遊戲儀表板：其他視窗照常使用，切回桌面時看到的是遊戲牆、時鐘與硬體狀態。以 Tauri 2（Rust）與 React 開發，自動掃描 Steam、Epic、GOG 與 Xbox 已安裝的遊戲並補上直式封面。</p>
+    <div class="chips rv" style="--d:240ms"><span class="chip h-b">個人專案</span><a class="chip h-g" href="https://github.com/silas4336/console-dashboard-releases/releases/latest" target="_blank" rel="noopener">下載 ↗</a></div>
+  </div>
+  <figure class="stage rv" style="--d:320ms">
+    <div class="device"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Console Dashboard</span></div><img src="../../../assets/side_console-dashboard.jpg" alt="Console Dashboard 標準版面"></div>
+    <figcaption>標準版面（遊戲庫與播放內容為示範資料）</figcaption>
+  </figure>
+</header>
+
+<section class="feature h-b" id="about">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>做法與取捨</h2></div>
+    <div class="v rv" style="--d:100ms"><p>取捨集中在<b>常駐程式的成本</b>：全螢幕遊戲或最大化視窗蓋住儀表板後，即暫停所有繪製與更新；使用者在其他程式中時，各項資料的更新間隔放慢為三倍，切回時立即補抓。</p><p>實驗性的外掛小工具在沙盒中執行，發布前以一個刻意設計的惡意外掛測試；修正測試中找到的兩個漏洞後，51 項攻擊全數攔下。原始碼為私有，安裝檔透過公開的 release repo 發布。</p></div>
+  </div>
+</section>
+
+<section class="feature" aria-labelledby="h-gal">
+  <div class="wrap" style="display:block">
+    <div class="sec-head"><h2 id="h-gal" class="rv">實際畫面</h2><p class="rv" style="--d:80ms">點圖看原尺寸。</p></div>
+    <div class="gal">
+      <figure class="shot h-b rv"><figcaption>編輯模式：拖曳與縮放小工具</figcaption><div class="fr"><img src="../../../assets/side_console-edit.jpg" alt="編輯模式：拖曳與縮放小工具" loading="lazy"></div></figure>
+      <figure class="shot h-b rv"><figcaption>新增小工具與切換版面</figcaption><div class="fr"><img src="../../../assets/side_console-drawer.jpg" alt="新增小工具與切換版面" loading="lazy"></div></figure>
+      <figure class="shot h-b rv"><figcaption>全部小工具</figcaption><div class="fr"><img src="../../../assets/side_console-widgets.jpg" alt="全部小工具" loading="lazy"></div></figure>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><a class="next rv" href="side-fakegps.html"><span class="sr">下一個：</span><span class="t">FakeGPS <span aria-hidden="true">→</span></span></a></div>
+
+<section class="contact" aria-labelledby="h-contact">
+  <div class="shapes rv" aria-hidden="true"><span class="s sh-square" data-depth="30" style="left:14%;top:26%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:0ms"><i></i></span><span class="s sh-circle" data-depth="40" style="right:14%;top:18%;width:calc(90px*var(--k));height:calc(90px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:120ms"><i></i></span><span class="s sh-arch" data-depth="50" style="right:22%;bottom:18%;width:calc(100px*var(--k));height:calc(50px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:240ms"><i></i></span><span class="s sh-pill" data-depth="40" style="left:20%;bottom:14%;width:calc(120px*var(--k));height:calc(48px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:360ms"><i></i></span></div>
+  <div class="wrap">
+    <h2 id="h-contact" class="rv">聯絡</h2>
+    <p class="rv" style="--d:80ms">silas4336@gmail.com</p>
+    <div class="ctas rv" style="--d:160ms"><a class="btn primary" href="mailto:silas4336@gmail.com">寄信</a><a class="btn ghost" href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a></div>
+  </div>
+</section>
+</main>
+<footer class="fine"><div class="wrap">
+  <p>CRM 與 CMS 截圖皆取自示範環境，帳號、公司名稱與數字均為示範資料；官網截圖為公開頁面。程式碼屬前雇主所有，未在此公開。</p>
+  <nav><a href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="en/work-side.html" hreflang="en" lang="en">English</a></nav>
+</div></footer>
+<div id="lb" class="lb" hidden><button class="lb-x" type="button" aria-label="關閉"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button><img alt=""></div>
+<script src="v4.js" defer></script>
+</body>
+</html>
