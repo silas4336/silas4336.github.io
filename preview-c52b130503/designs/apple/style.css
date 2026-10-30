@@ -185,6 +185,8 @@ a.tile:hover h3{color:var(--accent)}
 @media (max-width:700px){.shot.tall .fr{padding-inline:24%}}
 .bento:not(.small) .tile .media:not(.nccu):not(.phone):not(.flowbox) img{aspect-ratio:16/10; object-fit:cover; object-position:center top}
 :lang(zh-Hant) .feature .k h2,:lang(zh-Hant) .sec-head h2,:lang(zh-Hant) .case-hero h1,:lang(zh-Hant) .tile h3{text-wrap:balance}
+/* 標了 <wbr> 的中文字串只在標記處換行；沒標的不套。每段要短（2–5 字），否則窄欄放不下會被強制斷開，標點反而落到行首 */
+:lang(zh-Hant) :is(h1,h2,h3,p,span):has(> wbr){word-break:keep-all}
 /* 開發流程：流程四步、三檔判定、兩條規則、程序清單 */
 .flow-stage{max-width:var(--max,1080px); margin:clamp(40px,6vw,72px) auto 0; padding:0 24px}
 .flow{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
@@ -207,10 +209,10 @@ a.tile:hover h3{color:var(--accent)}
 .procs ul{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px}
 .procs li{padding:6px 12px; border-radius:var(--r-btn,999px); border:1px solid var(--rule); font-size:.9rem}
 .tile .media.flowbox{display:flex; align-items:center; justify-content:center; min-height:160px}
-.flow.mini{display:flex; flex-wrap:wrap; gap:18px; justify-content:center}
+.flow.mini{display:flex; flex-wrap:wrap; gap:30px; justify-content:center}
 .flow.mini li{padding:10px 16px; border-radius:var(--r-btn,999px); background:var(--accent); color:var(--on-accent,#fff)}
 .flow.mini li b{font-size:.95rem}
-.flow.mini li:not(:last-child)::after{right:-15px}
+.flow.mini li:not(:last-child)::after{right:-22px; width:14px}
 /* 首頁 Open NCCU 卡：排課系統實際畫面（教師姓名已模糊） */
 .media.nccu{align-items:center}
 .media.nccu .shot-nccu{flex:1; min-width:0; width:100%; border-radius:calc(var(--r,16px) * .6); border:1px solid var(--rule)}
@@ -335,8 +337,17 @@ a.tile:hover h3{color:inherit}
 
 @media (prefers-reduced-motion:reduce){.strip,.gal{scroll-snap-type:none}}
 /* 圖片列裡的直式截圖：窄而高的卡片 */
+/* 同一列框高要一致（手機一次只看到一張，直式框維持原寬）：寬圖不另外拉寬壓扁，直式框的寬度由橫式框的高度反推（16:10 → 9:14） */
+.shot.w6{flex-basis:min(84%,780px)}
+.shot.w6 .fr{aspect-ratio:16/10}
 .shot.tall{flex:0 0 min(64%,420px)}
+@media (min-width:700px){.shot.tall{flex-basis:calc(min(84%,780px) * .4018)}}
 .shot.tall .fr{aspect-ratio:9/14}
 .shot.tall .fr{padding:clamp(18px,3vw,36px) clamp(18px,3vw,36px) 0}
 .shot .fr img{border-radius:10px 10px 0 0}
 .flow li,.trio li,.duo li,.procs{background:var(--alt); border-radius:22px}
+/* 深色的 #0A84FF 配白字只有 3.6:1；按鈕與流程藥丸沿用 apple.com 兩種模式共用的 #0071E3（4.7:1） */
+.btn.primary,.flow.mini li{background:#0071E3}
+.flow li .n{color:var(--link)}
+/* 首頁拆出經歷後，個人專案與聯絡兩塊灰底相鄰，中間的 margin 會露出一條黑帶 */
+#side + .contact{margin-top:0}

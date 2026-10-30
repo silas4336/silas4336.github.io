@@ -427,11 +427,15 @@ html.leaving body{opacity:1}
 @media (max-width:760px){.shot.tall .fr{padding-inline:24%}}
 /* 標題：中文依長度平均分行，避免「讓行銷團／隊自己上線」 */
 :lang(zh-Hant) .feature .k h2,:lang(zh-Hant) .sec-head h2,:lang(zh-Hant) .case-hero h1,:lang(zh-Hant) .tile h3{text-wrap:balance}
+/* 標了 <wbr> 的中文字串只在標記處換行；沒標的不套。每段要短（2–5 字），否則窄欄放不下會被強制斷開，標點反而落到行首 */
+:lang(zh-Hant) :is(h1,h2,h3,p,span):has(> wbr){word-break:keep-all}
 /* 開發流程：流程四步、三檔判定、兩條規則、程序清單 */
 .flow-stage{max-width:1120px; margin-inline:auto}
 .flow{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(10px,1.4vw,16px); counter-reset:s}
 .flow li{position:relative; background:var(--tile); border-radius:var(--r-lg,24px); padding:clamp(20px,2.4vw,28px); display:flex; flex-direction:column; gap:8px; text-align:left}
-.flow li .n{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:var(--h); color:#fff; font-weight:600; font-size:.95rem}
+.flow li .n{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:var(--h); color:#fff; font-weight:700; font-size:1.2rem}
+/* 白字在黃底只有 1.7:1；沿用 .feature.h-y .k .no 的深色字。其他三色靠字級達到大字 3:1 */
+.flow li.h-y .n,.flow.mini li.h-y{color:#3c2a00}
 .flow li b{font-size:clamp(1.3rem,2vw,1.6rem); margin-top:10px}
 .flow li > span:last-child{color:var(--muted); font-size:.95rem}
 .flow li:not(:last-child)::after{content:"→"; position:absolute; right:calc(-1 * clamp(10px,1.4vw,16px) / 2 - .5em); top:50%; transform:translateY(-50%);
@@ -456,8 +460,8 @@ html.leaving body{opacity:1}
 @media (max-width:640px){.media.nccu{flex-direction:column; align-items:flex-start}}
 /* 首頁開發流程卡：流程縮圖 */
 .tile .media.flowbox{display:flex; align-items:center; justify-content:center; padding:clamp(20px,2.6vw,32px)!important}
-.flow.mini{grid-template-columns:repeat(4,auto); gap:10px; align-items:center; justify-content:center}
+.flow.mini{grid-template-columns:repeat(4,auto); gap:10px 30px; align-items:center; justify-content:center}
 .flow.mini li{padding:12px 18px; border-radius:999px; background:var(--h); color:#fff; flex-direction:row}
 .flow.mini li b{font-size:1rem; margin:0}
-.flow.mini li:not(:last-child)::after{right:-15px; color:var(--muted)}
+.flow.mini li:not(:last-child)::after{right:-23px; color:var(--muted)}
 @media (max-width:760px){.flow.mini{grid-template-columns:1fr 1fr}}
