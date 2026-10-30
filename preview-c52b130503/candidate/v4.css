@@ -410,3 +410,7 @@ html.leaving body{opacity:1}
 .hero h1 .cn{font-size:max(.2em,1.1rem)}
 .hero .lead{text-wrap:balance}
 .hero .lead .sub{display:inline-block; margin-top:6px; font-size:.82em; color:var(--muted)}
+
+/* 內容修改：專長三欄；個人專案「看全部」連結 */
+@media (min-width:900px){.abil{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sec-head p .all{margin-left:.6em; color:var(--accent); font-weight:500; white-space:nowrap}
