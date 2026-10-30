@@ -177,6 +177,40 @@ a.tile:hover h3{color:var(--accent)}
 :lang(zh-Hant) .hero .lead,:lang(zh-Hant) .case-hero .lead{word-break:keep-all}
 /* 直式截圖（手機畫面、長頁面）用直式框，不要被縮成小圖 */
 .shot.tall .fr{aspect-ratio:3/4}
+/* 第二輪修正（2026/10/30）：截圖一律填滿框、從頂端裁切（點開看整張）；手機畫面置中 */
+.shot .fr,.shot.tall .fr{aspect-ratio:16/10; padding:clamp(10px,1.6vw,18px) clamp(10px,1.6vw,18px) 0; place-items:stretch; container-type:normal}
+.shot .fr img{width:100%; height:100%; max-width:none; max-height:none; object-fit:cover; object-position:top; border-radius:6px 6px 0 0}
+.shot.w6 .fr{aspect-ratio:21/9}
+.shot.tall .fr{padding-inline:30%}
+@media (max-width:700px){.shot.tall .fr{padding-inline:24%}}
+.bento:not(.small) .tile .media:not(.nccu):not(.phone):not(.flowbox) img{aspect-ratio:16/10; object-fit:cover; object-position:center top}
+:lang(zh-Hant) .feature .k h2,:lang(zh-Hant) .sec-head h2,:lang(zh-Hant) .case-hero h1,:lang(zh-Hant) .tile h3{text-wrap:balance}
+/* 開發流程：流程四步、三檔判定、兩條規則、程序清單 */
+.flow-stage{max-width:var(--max,1080px); margin:clamp(40px,6vw,72px) auto 0; padding:0 24px}
+.flow{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+.flow li{position:relative; background:var(--surface); border:var(--card-border,0); border-radius:var(--r,16px); padding:clamp(18px,2.2vw,26px); display:flex; flex-direction:column; gap:6px; text-align:left}
+.flow li .n{font-family:var(--mono); font-size:.8rem; color:var(--accent)}
+.flow li b{font-family:var(--display); font-size:clamp(1.2rem,1.8vw,1.45rem); font-weight:var(--display-w,600)}
+.flow li > span:last-child{color:var(--muted); font-size:.92rem}
+.flow li:not(:last-child)::after{content:"→"; position:absolute; right:-12px; top:50%; transform:translateY(-50%); width:10px; text-align:center; color:var(--muted)}
+@media (max-width:760px){.flow{grid-template-columns:1fr 1fr}.flow li::after{display:none}}
+.trio,.duo{list-style:none; margin:clamp(28px,4vw,44px) 0 0; padding:0; display:grid; gap:14px}
+.trio{grid-template-columns:repeat(3,minmax(0,1fr))}
+.duo{grid-template-columns:repeat(2,minmax(0,1fr))}
+.trio li,.duo li{background:var(--surface); border:var(--card-border,0); border-radius:var(--r,16px); padding:clamp(18px,2.2vw,26px)}
+.trio li::before,.duo li::before{content:""; display:block; width:28px; height:4px; border-radius:2px; background:var(--accent); margin-bottom:14px}
+.trio b,.duo b{font-size:1.15rem}
+.trio p,.duo p{margin-top:6px; color:var(--muted)}
+@media (max-width:760px){.trio,.duo{grid-template-columns:1fr}}
+.procs{margin-top:clamp(28px,4vw,44px); background:var(--surface); border:var(--card-border,0); border-radius:var(--r,16px); padding:clamp(18px,2.2vw,26px)}
+.procs p{color:var(--muted); font-size:.92rem}
+.procs ul{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px}
+.procs li{padding:6px 12px; border-radius:var(--r-btn,999px); border:1px solid var(--rule); font-size:.9rem}
+.tile .media.flowbox{display:flex; align-items:center; justify-content:center; min-height:160px}
+.flow.mini{display:flex; flex-wrap:wrap; gap:18px; justify-content:center}
+.flow.mini li{padding:10px 16px; border-radius:var(--r-btn,999px); background:var(--accent); color:var(--on-accent,#fff)}
+.flow.mini li b{font-size:.95rem}
+.flow.mini li:not(:last-child)::after{right:-15px}
 
 /* 文件（frontend-design）：整站像一份寫得好的規格文件。淺灰綠紙面、單一襯線字族、原子筆藍；
    區塊標題懸在左欄；卡片改成以細線分隔的條目，不用色塊。 */
