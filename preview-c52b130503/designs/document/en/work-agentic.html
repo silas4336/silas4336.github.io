@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I Shipped It · Silas Chen</title>
+<meta name="description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta name="robots" content="noindex">
+<meta name="author" content="陳頌然 Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-agentic.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-agentic.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-agentic.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-agentic.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%229.5%22 cy=%229.5%22 r=%226%22 fill=%22%234285f4%22/%3E%3Ccircle cx=%2222.5%22 cy=%229.5%22 r=%226%22 fill=%22%23ea4335%22/%3E%3Ccircle cx=%229.5%22 cy=%2222.5%22 r=%226%22 fill=%22%23fbbc04%22/%3E%3Ccircle cx=%2222.5%22 cy=%2222.5%22 r=%226%22 fill=%22%2334a853%22/%3E%3C/svg%3E">
+<meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How I Shipped It · Silas Chen">
+<meta property="og:description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-agentic.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v3.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How I Shipped It · Silas Chen">
+<meta name="twitter:description" content="The 22 repeatable procedures I built to deliver three product lines at once: auto-generated review pages, dispatching work from my phone, daily delivery digests.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v3.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>
+(function(d){try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t}catch(e){}
+d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("js")},3000)})(document.documentElement);
+</script>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Silas Chen</a>
+  <nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a></nav>
+  <div class="tools"><a href="../work-agentic.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button class="theme" type="button" aria-label="Toggle theme"></button></div>
+</div></header>
+
+<main>
+<header class="case-hero h-g">
+  <div class="shapes rv" aria-hidden="true"><span class="s sh-circle" data-depth="30" style="left:5%;top:22%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:0ms"><i></i></span><span class="s sh-pill" data-depth="50" style="right:6%;top:30%;width:calc(120px*var(--k));height:calc(50px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:120ms"><i></i></span><span class="s sh-square" data-depth="40" style="right:16%;top:8%;width:calc(48px*var(--k));height:calc(48px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:240ms"><i></i></span><span class="s sh-arch" data-depth="40" style="left:14%;top:62%;width:calc(84px*var(--k));height:calc(42px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:360ms"><i></i></span></div>
+  <div class="wrap">
+    <a class="back rv" href="index.html#work">← All work</a>
+    <h1 class="rv" style="--d:120ms">How I Shipped It</h1>
+    <p class="lead rv" style="--d:180ms">Three product lines at once, the second half of it from Tokyo. These are the 22 repeatable procedures I built to make that work.</p>
+    
+  </div>
+  <figure class="stage rv" style="--d:320ms">
+    <div class="device"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>review page</span></div><img src="../../../../assets/agentic_review-desktop.jpg" alt="Review page showing change count, file count, progress bar and change cards"></div>
+    <figcaption>The review page opens with this round's change stats and progress</figcaption>
+  </figure>
+</header>
+
+<section class="feature h-g" id="why">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>The problem</h2></div>
+    <div class="v rv" style="--d:100ms"><p>The three lines moved at different speeds: the website iterated continuously, the CRM followed what sales needed, MaiGPT followed a release schedule. The bottleneck was never writing code — it was <b>context switching</b>. Two days away from a line meant rebuilding where I had stopped and why I had decided what I decided. An hour of time difference with the team added to that cost.</p><p>So every procedure points at the same thing: take recurring judgment and make it re-runnable.</p></div>
+  </div>
+  
+</section>
+
+<section class="feature h-b" id="review">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Auto-generated review pages</h2><p class="sub">After each round</p></div>
+    <div class="v rv" style="--d:100ms"><p>When a round of changes lands, a procedure turns it into a one-page review: a card per change, titled with what changed, opening onto the actual change and my first-pass verdict (accepted / needs a look / noted), with a feedback box under each card.</p><p>The three verdicts have defined boundaries: <b>accepted</b> is for changes that carry their own proof, such as reusing an existing style or adding no new dependency; <b>needs a look</b> is for edge cases or trade-offs I am not sure about, and the card has to state what the question is; <b>noted</b> is for background I will not decide on now but will want later. Fixing the criteria up front is what keeps "looks fine" from counting as a conclusion: if I am not sure, it cannot be marked accepted.</p><p>The page gets a temporary URL and is pushed to my phone, so I can work through it on a commute. <b>Review no longer has to share a time slot with development</b> — build at the desk, review on the move.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-b w6 rv"><figcaption>Expanded: the change, the verdict, and a feedback box</figcaption><div class="fr"><img src="../../../../assets/agentic_review-diff.jpg" alt="An expanded change card showing the diff, verdict and feedback box" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-r" id="dispatch">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Phone dispatch and daily digests</h2></div>
+    <div class="v rv" style="--d:100ms"><p>With the development environment wired to a messaging app, I can hand off a task from my phone, have it run on my machine, and get a report back. Step-by-step confirmation does not work on a phone, so the rule flips to act first and report after — asking up front only when something is destructive or leaves the building. That boundary lives in a config file.</p><p>A separate procedure closes the day by collecting what actually shipped — version-control history, task state, document changes — into what got done and what is planned next. That covers the visibility problem of working remotely, without reconstructing the day in a meeting.</p></div>
+  </div>
+  
+</section>
+
+<section class="feature h-y" id="conventions">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Conventions as procedures</h2><p class="sub">22 of them</p></div>
+    <div class="v rv" style="--d:100ms"><p>Recurring work each became its own procedure: the format and required fields for filing a request, analysis of an existing implementation, end-to-end testing (bring up the environment, drive the browser, produce the acceptance document), updating and publishing the user guide, a daily task-status check.</p><p>What decides whether something becomes a procedure is <b>whether I keep having to explain it</b>. Explaining the same thing to a third person is the signal; one-offs stay one-offs.</p></div>
+  </div>
+  
+</section>
+
+<div class="wrap"><a class="next rv" href="work-side.html"><span class="sr">Next project: </span><span class="t">Side projects <span aria-hidden="true">→</span></span></a></div>
+
+<section class="contact" aria-labelledby="h-contact">
+  <div class="shapes rv" aria-hidden="true"><span class="s sh-square" data-depth="30" style="left:14%;top:26%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:0ms"><i></i></span><span class="s sh-circle" data-depth="40" style="right:14%;top:18%;width:calc(90px*var(--k));height:calc(90px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:120ms"><i></i></span><span class="s sh-arch" data-depth="50" style="right:22%;bottom:18%;width:calc(100px*var(--k));height:calc(50px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:240ms"><i></i></span><span class="s sh-pill" data-depth="40" style="left:20%;bottom:14%;width:calc(120px*var(--k));height:calc(48px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:360ms"><i></i></span></div>
+  <div class="wrap">
+    <h2 id="h-contact" class="rv">Contact</h2>
+    <p class="rv" style="--d:80ms">silas4336@gmail.com</p>
+    <div class="ctas rv" style="--d:160ms"><a class="btn primary" href="mailto:silas4336@gmail.com">Email me</a><a class="btn ghost" href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a></div>
+  </div>
+</section>
+</main>
+<footer class="fine"><div class="wrap">
+  <p>CRM and CMS screenshots come from demo environments — accounts, company names and figures are all sample data; website screenshots are public pages. The source code belongs to my former employer and is not published here.</p>
+  <nav><a href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="../work-agentic.html" hreflang="zh-Hant" lang="zh-Hant">中文</a></nav>
+</div></footer>
+<div id="lb" class="lb" hidden><button class="lb-x" type="button" aria-label="Close"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button><img alt=""></div>
+<script src="../v4.js" defer></script>
+</body>
+</html>

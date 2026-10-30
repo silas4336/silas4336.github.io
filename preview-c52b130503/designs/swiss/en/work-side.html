@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Side projects · Silas Chen</title>
+<meta name="description" content="Six projects built independently: a Windows desktop game dashboard, a native macOS app, a YouTube clean-up extension, a companion-animal quiz, an event microsite, and a stock watcher.">
+<meta name="robots" content="noindex">
+<meta name="author" content="陳頌然 Silas Chen">
+<link rel="canonical" href="https://silas4336.github.io/en/work-side.html">
+<link rel="alternate" hreflang="en" href="https://silas4336.github.io/en/work-side.html">
+<link rel="alternate" hreflang="zh-Hant" href="https://silas4336.github.io/work-side.html">
+<link rel="alternate" hreflang="x-default" href="https://silas4336.github.io/work-side.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%229.5%22 cy=%229.5%22 r=%226%22 fill=%22%234285f4%22/%3E%3Ccircle cx=%2222.5%22 cy=%229.5%22 r=%226%22 fill=%22%23ea4335%22/%3E%3Ccircle cx=%229.5%22 cy=%2222.5%22 r=%226%22 fill=%22%23fbbc04%22/%3E%3Ccircle cx=%2222.5%22 cy=%2222.5%22 r=%226%22 fill=%22%2334a853%22/%3E%3C/svg%3E">
+<meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Side projects · Silas Chen">
+<meta property="og:description" content="Six projects built independently: a Windows desktop game dashboard, a native macOS app, a YouTube clean-up extension, a companion-animal quiz, an event microsite, and a stock watcher.">
+<meta property="og:url" content="https://silas4336.github.io/en/work-side.html">
+<meta property="og:image" content="https://silas4336.github.io/og-v3.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Side projects · Silas Chen">
+<meta name="twitter:description" content="Six projects built independently: a Windows desktop game dashboard, a native macOS app, a YouTube clean-up extension, a companion-animal quiz, an event microsite, and a stock watcher.">
+<meta name="twitter:image" content="https://silas4336.github.io/og-v3.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../style.css">
+<script>
+(function(d){try{var t=localStorage.getItem("theme");if(t)d.dataset.theme=t}catch(e){}
+d.classList.add("js");setTimeout(function(){if(!window.__v4)d.classList.remove("js")},3000)})(document.documentElement);
+</script>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Silas Chen</a>
+  <nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a></nav>
+  <div class="tools"><a href="../work-side.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button class="theme" type="button" aria-label="Toggle theme"></button></div>
+</div></header>
+
+<main>
+<header class="case-hero h-b">
+  <div class="shapes rv" aria-hidden="true"><span class="s sh-circle" data-depth="30" style="left:5%;top:22%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:0ms"><i></i></span><span class="s sh-pill" data-depth="50" style="right:6%;top:30%;width:calc(120px*var(--k));height:calc(50px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:120ms"><i></i></span><span class="s sh-square" data-depth="40" style="right:16%;top:8%;width:calc(48px*var(--k));height:calc(48px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:240ms"><i></i></span><span class="s sh-arch" data-depth="40" style="left:14%;top:62%;width:calc(84px*var(--k));height:calc(42px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:360ms"><i></i></span></div>
+  <div class="wrap">
+    <a class="back rv" href="index.html#side">← All work</a>
+    <h1 class="rv" style="--d:120ms">Things I built on my own time</h1>
+    <p class="lead rv" style="--d:180ms">All six are mine end to end.</p>
+    
+  </div>
+</header>
+
+<section class="feature h-b" id="console">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Console Dashboard</h2><p class="sub"><a href="https://github.com/silas4336/console-dashboard-releases/releases/latest">download ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>A game dashboard that lives on the Windows wallpaper instead of on top of the desktop: other windows work as usual, and going back to the desktop shows your game wall, a clock and system stats. Tauri 2 (Rust) and React; it scans installed games from Steam, Epic, GOG and Xbox and fills in portrait covers.</p><p>Most of the trade-offs are about <b>the cost of something that runs all day</b>. When a fullscreen game or a maximised window covers it, it stops drawing and updating entirely; while you're in another app, everything it polls slows to a third of the rate and catches up the moment you come back.</p><p>There's also an experimental sandboxed plugin system — before shipping it I wrote a deliberately hostile plugin to attack it, fixed the two holes that turned up, and then all 51 attacks were blocked. The source is private; installers ship through a public release repo.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-b w6 rv"><figcaption>Standard layout (library and now-playing are sample data)</figcaption><div class="fr"><img src="../../../../assets/side_console-dashboard.jpg" alt="Console Dashboard standard layout" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-r" id="fakegps">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>FakeGPS</h2><p class="sub"><a href="https://github.com/silas4336/FakeGPS">GitHub ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>Set your iPhone's GPS location from a Mac, for testing apps that depend on location. A native SwiftUI + MapKit app with Apple Maps search, tap-to-set and saved places.</p><p>Beyond setting one coordinate, it can <b>move along a real road route at walking, cycling or driving speed</b>: navigation and fitness apps have to be tested against movement, which a fixed point cannot produce.</p><p>The trade-offs went into install and everyday friction. Permissions are granted once at install, so launching never asks for a password again, and the install script handles dependencies and permissions so nobody needs Xcode. My own machine has no full Xcode either, so the app is compiled with swiftc from the terminal and the bundle assembled by hand. The source is public under MIT, with install scripts and a cross-platform web build.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-r w6 rv"><figcaption>FakeGPS</figcaption><div class="fr"><img src="../../../../assets/side_fakegps.jpg" alt="FakeGPS" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-y" id="watchlater">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Watch Later Cleaner</h2><p class="sub"><a href="https://github.com/silas4336/watch-later-cleaner">GitHub ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>YouTube only lets you remove Watch Later videos one at a time, which stops being an option once there are a few thousand. This Chrome extension filters by when a video was added, watch status, length, publish date and keywords, then removes the matches in bulk after a preview.</p><p>Instead of clicking through menus, it sends each batch through YouTube's own command system and reads the response to confirm it worked, backing off when it doesn't. <b>Removals can't be undone</b>, so it starts in dry-run mode, asks before deleting and can export a CSV first. It doesn't read cookies or send anything anywhere. On a list of about 3,000 videos, removing 800 took about 32 seconds. MIT-licensed.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-y w6 rv"><figcaption>Filters and run settings</figcaption><div class="fr"><img src="../../../../assets/side_watch-later.jpg" alt="Watch Later Cleaner settings panel" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-g" id="buddy">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Find Your Buddy</h2><p class="sub"><a href="https://find-your-buddy-seven.vercel.app">live ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>A 10-question quiz that matches you with one of 14 companion animals. Three languages, and it generates a card you can post to a story.</p><p>The part that took longest was not the questions — it was <b>calibrating the match percentage</b>. The first version put almost everyone around 60%, which reads as a shrug. After reweighting, different answer patterns finally lead to different results.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-g rv"><figcaption>Question screen</figcaption><div class="fr"><img src="../../../../assets/side_buddy-quiz.jpg" alt="Question screen" loading="lazy"></div></figure>
+      <figure class="shot h-r rv"><figcaption>Home</figcaption><div class="fr"><img src="../../../../assets/side_buddy-home.jpg" alt="Home" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-b" id="interview">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Interview Challenge</h2><p class="sub"><a href="https://interview-quiz-ten.vercel.app">live ↗</a></p></div>
+    <div class="v rv" style="--d:100ms"><p>A one-page interactive site for a youth event: eight real interview scenarios with feedback at the end. Free, no sign-in, about three minutes — all three written under the button, because that is where sign-ups were being lost.</p></div>
+  </div>
+  <div class="wrap"><div class="gal">
+      <figure class="shot h-b w6 rv"><figcaption>Event home</figcaption><div class="fr"><img src="../../../../assets/side_interview.jpg" alt="Event home" loading="lazy"></div></figure>
+    </div></div>
+</section>
+
+<section class="feature h-r" id="monitor">
+  <div class="wrap">
+    <div class="k rv"><div class="no" aria-hidden="true"></div><h2>Stock Watcher</h2><p class="sub">Python</p></div>
+    <div class="v rv" style="--d:100ms"><p>Watches a few product pages and tells me when something is back in stock. The question is not how to fetch the data, it is <b>when to send anything</b>: it fires once, on the transition from out-of-stock to in-stock, with state kept locally, so the same thing is never announced twice.</p><p>Three sites need three different approaches; one of them detects scrapers and is handled separately.</p></div>
+  </div>
+  
+</section>
+
+<div class="wrap"><a class="next rv" href="work-website.html"><span class="sr">Next project: </span><span class="t">Website & Content CMS <span aria-hidden="true">→</span></span></a></div>
+
+<section class="contact" aria-labelledby="h-contact">
+  <div class="shapes rv" aria-hidden="true"><span class="s sh-square" data-depth="30" style="left:14%;top:26%;width:calc(70px*var(--k));height:calc(70px*var(--k));--dur:10s;--r0:14deg;--r1:26deg;--sd:0ms"><i></i></span><span class="s sh-circle" data-depth="40" style="right:14%;top:18%;width:calc(90px*var(--k));height:calc(90px*var(--k));--dur:9s;--r0:0deg;--r1:0deg;--sd:120ms"><i></i></span><span class="s sh-arch" data-depth="50" style="right:22%;bottom:18%;width:calc(100px*var(--k));height:calc(50px*var(--k));--dur:12s;--r0:0deg;--r1:10deg;--sd:240ms"><i></i></span><span class="s sh-pill" data-depth="40" style="left:20%;bottom:14%;width:calc(120px*var(--k));height:calc(48px*var(--k));--dur:11s;--r0:-18deg;--r1:-8deg;--sd:360ms"><i></i></span></div>
+  <div class="wrap">
+    <h2 id="h-contact" class="rv">Contact</h2>
+    <p class="rv" style="--d:80ms">silas4336@gmail.com</p>
+    <div class="ctas rv" style="--d:160ms"><a class="btn primary" href="mailto:silas4336@gmail.com">Email me</a><a class="btn ghost" href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a></div>
+  </div>
+</section>
+</main>
+<footer class="fine"><div class="wrap">
+  <p>CRM and CMS screenshots come from demo environments — accounts, company names and figures are all sample data; website screenshots are public pages. The source code belongs to my former employer and is not published here.</p>
+  <nav><a href="https://www.linkedin.com/in/silas4336/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="../work-side.html" hreflang="zh-Hant" lang="zh-Hant">中文</a></nav>
+</div></footer>
+<div id="lb" class="lb" hidden><button class="lb-x" type="button" aria-label="Close"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button><img alt=""></div>
+<script src="../v4.js" defer></script>
+</body>
+</html>
