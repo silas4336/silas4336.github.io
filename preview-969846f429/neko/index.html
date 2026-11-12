@@ -1154,7 +1154,7 @@
   .xmark {
     width: 78%;
     height: 78%;
-    color: var(--x-color, var(--mark));
+    color: #ffffff;
     pointer-events: none;
     animation: markIn 0.16s ease-out;
   }
@@ -2037,7 +2037,8 @@ padding:6px 10px;background:#fff7d6;color:#5b4a00;border:1px solid #eadb9a;borde
     <path d="M7 34h8M6.5 40h8.5M57 34h-8M57.5 40h-8.5" stroke="var(--feature, #39424a)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
   </symbol>
   <symbol id="x-icon" viewBox="0 0 24 24">
-    <path d="M5 5 19 19M19 5 5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M5 5 19 19M19 5 5 19" style="stroke: var(--x-edge, rgba(40, 46, 52, 0.55))" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M5 5 19 19M19 5 5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/>
   </symbol>
 </svg>
 
@@ -2045,28 +2046,19 @@ padding:6px 10px;background:#fff7d6;color:#5b4a00;border:1px solid #eadb9a;borde
 (() => {
   "use strict";
 
-  // 依底色挑 ✕ 的顏色：同色系加深或白色，取對比較高的那個
-  function markColorFor(hex) {
+  // ✕ 的描邊：用格子本身的顏色加深，白色 ✕ 在淺色格子上也站得出來
+  function markEdgeFor(hex) {
     const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim());
     if (!m) return "";
     const n = parseInt(m[1], 16);
-    const rgb = [n >> 16 & 255, n >> 8 & 255, n & 255];
-    const lum = c => {
-      const v = c.map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
-      return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
-    };
-    const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
-    const base = lum(rgb);
-    const dark = rgb.map(x => Math.round(x * 0.36));
-    if (ratio(base, lum(dark)) >= ratio(base, 1) * 0.9) return "rgb(" + dark.join(",") + ")";
-    return "rgba(255,255,255,0.92)";
+    return "rgb(" + [n >> 16 & 255, n >> 8 & 255, n & 255].map(x => Math.round(x * 0.42)).join(",") + ")";
   }
 
   function paintCellColor(el, color) {
     el.style.backgroundColor = color;
-    const x = markColorFor(color);
-    if (x) el.style.setProperty("--x-color", x);
-    else el.style.removeProperty("--x-color");
+    const edge = markEdgeFor(color);
+    if (edge) el.style.setProperty("--x-edge", edge);
+    else el.style.removeProperty("--x-edge");
   }
 
   function hslToHex(h, s, l) {
