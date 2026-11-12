@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f766e">
+  <title>【八大智能數學邏輯組】你的生活想法被數學邏輯影響嗎？</title>
+  <link rel="stylesheet" href="static/styles.css">
+<style>
+.demo-banner{position:fixed;left:10px;bottom:10px;z-index:9999;display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:min(560px,calc(100vw - 20px));box-sizing:border-box;
+padding:6px 10px;background:#fff7d6;color:#5b4a00;border:1px solid #eadb9a;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);font:12px/1.5 system-ui,"Noto Sans TC",sans-serif;opacity:.95}
+.demo-banner button{font:inherit;padding:1px 10px;border:1px solid #c9b45c;border-radius:6px;background:#fff;color:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="demo-banner">示範版：資料都是虛構的，只存在你的瀏覽器，不會送到正式網站。後台密碼 demo。<button type="button" onclick="__surveyDemoReset()">清除示範資料</button></div>
+  <header class="site-header">
+    <a class="brand" href="#/">
+      <span class="brand-mark">∑</span>
+      <span>八大智能數學邏輯組</span>
+    </a>
+    <nav class="site-nav" aria-label="主要導覽">
+      <a href="#/">首頁</a>
+      <a href="#/watch">觀看答覆</a>
+      <a href="#/admin">後台</a>
+    </nav>
+  </header>
+
+  <main class="site-main">
+    <section id="view-home" class="view">
+      <div class="hero">
+        <p class="eyebrow">活動填答 × 即時分享</p>
+        <h1 class="hero-title">【八大智能數學邏輯組】<br><span class="hero-title-sub">你的生活想法被數學邏輯影響嗎？</span></h1>
+        <p class="lead">掃描 QR Code 輸入暱稱，選一個最有感的類別，寫下你的想法。送出後可以繼續填寫，也可以隨時結束離開。</p>
+      </div>
+
+      <div class="home-layout">
+        <article class="card qr-card">
+          <div class="card-heading">
+            <span class="step-badge">1</span>
+            <div>
+              <h2>掃碼參加</h2>
+              <p>用手機掃描後即可開始填寫</p>
+            </div>
+          </div>
+          <div id="qr-code" class="qr-box" aria-label="參加填寫的 QR Code"></div>
+          <p class="qr-hint">若無法掃描，請直接開啟下方連結</p>
+          <div class="join-url-row">
+            <code id="join-url">載入中…</code>
+            <button type="button" class="btn btn-small" id="copy-url">複製連結</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-heading">
+            <span class="step-badge">2</span>
+            <div>
+              <h2>填寫範例說明</h2>
+              <p>一次填寫一則，可以連續送出多則</p>
+            </div>
+          </div>
+          <ol class="instruction-list">
+            <li>
+              <strong>輸入參加者暱稱</strong>
+              <span>暱稱只須填寫一次，之後的每則回答都會顯示這個暱稱。</span>
+            </li>
+            <li>
+              <strong>選擇一個類別</strong>
+              <span>從五個選項中選出您這次要填寫的一類。</span>
+            </li>
+            <li>
+              <strong>寫下你的回答</strong>
+              <span>可以是一句話、一個生活例子，或一段想說的話；不同重點請分則填寫。</span>
+            </li>
+            <li>
+              <strong>送出並繼續，或結束離開</strong>
+              <span>按「送出並繼續填寫」會回到同一頁；按「結束離開」會登出填寫頁面。</span>
+            </li>
+          </ol>
+
+          <details class="example-box">
+            <summary>展開五個類別的回答範例</summary>
+            <div class="example-list">
+              <div class="example-item">
+                <span class="example-tag">1</span>
+                <div class="example-body">
+                  <p class="example-question">我覺得這個習慣/做法很具有數學邏輯</p>
+                  <p>我習慣把每天待辦事項依重要性排序，這是一種優先順序的邏輯。</p>
+                </div>
+              </div>
+              <div class="example-item">
+                <span class="example-tag">2</span>
+                <div class="example-body">
+                  <p class="example-question">我受不了這些沒有數學/邏輯的行為</p>
+                  <p>排隊時一直有人插隊，完全沒有先來後到的規則，讓我受不了。</p>
+                </div>
+              </div>
+              <div class="example-item">
+                <span class="example-tag">3</span>
+                <div class="example-body">
+                  <p class="example-question">我會運用數學邏輯的思維進行什麼事?</p>
+                  <p>我會用數學邏輯分析【花時間讀某個科目】跟【提高總分】的報酬率。</p>
+                </div>
+              </div>
+              <div class="example-item">
+                <span class="example-tag">4</span>
+                <div class="example-body">
+                  <p class="example-question">如果我的數學邏輯更強一點，在【什麼事上】應該可以更如魚得水?</p>
+                  <p>在對AI下指令的時候我應該可以更有效率達成目的。</p>
+                </div>
+              </div>
+              <div class="example-item">
+                <span class="example-tag">5</span>
+                <div class="example-body">
+                  <p class="example-question">其他【我就是有話要說】</p>
+                  <p>我想說：數學邏輯不是只有計算，也是一種把事情說清楚的方法。</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </article>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#/watch">觀看答覆資料</a>
+        <a class="btn" href="#/join">直接開啟填寫頁</a>
+      </div>
+    </section>
+
+    <section id="view-join" class="view" hidden>
+      <div class="page-head compact">
+        <p class="eyebrow">參加者填寫</p>
+        <h1>你的生活想法被數學邏輯影響嗎?</h1>
+        <p class="lead">填寫的內容會即時出現在觀看頁面，請放心寫下你的真實想法。</p>
+      </div>
+
+      <div id="join-nickname-step" class="card form-card narrow">
+        <form id="nickname-form" novalidate>
+          <label class="field-label" for="nickname">參加者暱稱</label>
+          <p class="field-help">請輸入你希望顯示在回答旁邊的名字。</p>
+          <input id="nickname" name="nickname" type="text" maxlength="30" autocomplete="nickname" placeholder="例如：小明、數學教室 A 組" required>
+          <p id="nickname-error" class="form-error" role="alert"></p>
+          <button type="submit" class="btn btn-primary btn-block">開始填寫</button>
+        </form>
+      </div>
+
+      <div id="join-response-step" class="form-card" hidden>
+        <div class="join-greeting">
+          <div>
+            <p class="eyebrow">正在填寫</p>
+            <h2>哈囉，<span id="join-name">參加者</span></h2>
+          </div>
+          <button type="button" id="change-name" class="link-button">換一位參加者</button>
+        </div>
+
+        <form id="response-form" novalidate>
+          <fieldset class="category-fieldset">
+            <legend>選擇一個類別</legend>
+            <div class="category-options">
+              <label class="category-option">
+                <input type="radio" name="category" value="1">
+                <span><b>1.</b> 我覺得這個習慣/做法很具有數學邏輯</span>
+              </label>
+              <label class="category-option">
+                <input type="radio" name="category" value="2">
+                <span><b>2.</b> 我受不了這些沒有數學/邏輯的行為</span>
+              </label>
+              <label class="category-option">
+                <input type="radio" name="category" value="3">
+                <span><b>3.</b> 我會運用數學邏輯的思維進行什麼事?</span>
+              </label>
+              <label class="category-option">
+                <input type="radio" name="category" value="4">
+                <span><b>4.</b> 如果我的數學邏輯更強一點，在【什麼事上】應該可以更如魚得水?</span>
+              </label>
+              <label class="category-option">
+                <input type="radio" name="category" value="5">
+                <span><b>5.</b> 其他【我就是有話要說】</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="field-label" for="response-text">你的回答</label>
+          <p class="field-help">最多 2000 個字，送出後仍可以繼續填寫下一則。</p>
+          <textarea id="response-text" name="text" maxlength="2000" rows="6" placeholder="請在這裡寫下你的回答…" required></textarea>
+          <p id="response-count" class="char-count" aria-live="polite">0 / 2000</p>
+          <p id="response-error" class="form-error" role="alert"></p>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submit-response">送出並繼續填寫</button>
+            <button type="button" class="btn btn-danger" id="finish-response">結束離開</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="join-thanks" class="card form-card narrow thanks-card" hidden>
+        <div class="thanks-mark">✓</div>
+        <h2>謝謝您的答覆</h2>
+        <p>你的回答已經送出，歡迎稍後回到觀看頁面看看大家的想法。</p>
+        <div class="form-actions centered">
+          <a class="btn btn-primary" href="#/">回到首頁</a>
+          <button type="button" class="btn" id="restart-join">重新開始</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-watch" class="view" hidden>
+      <div class="page-head">
+        <p class="eyebrow">觀看答覆資料</p>
+        <h1>選擇觀看方式</h1>
+        <p class="lead">可以依收到時間一則一則觀看，也可以先選類別，再看該類別的所有回答。</p>
+      </div>
+
+      <div class="choice-grid">
+        <a class="choice-card" href="#/watch/live">
+          <span class="choice-icon">▶</span>
+          <h2>即時觀看</h2>
+          <p>依照參加者填寫的時間順序，一次顯示一則。有新資料時會自動接收。</p>
+          <span class="choice-link">進入即時觀看 →</span>
+        </a>
+        <a class="choice-card" href="#/watch/categories">
+          <span class="choice-icon">▦</span>
+          <h2>依類別觀看</h2>
+          <p>先選擇五個類別中的一項，再依序觀看該類別收到的回答。</p>
+          <span class="choice-link">選擇類別 →</span>
+        </a>
+      </div>
+      <p class="status-line centered">目前共有 <strong id="watch-total">0</strong> 則回答。</p>
+    </section>
+
+    <section id="view-live" class="view" hidden>
+      <div class="page-head compact viewer-head">
+        <a id="live-back" class="back-link" href="#/watch">← 返回觀看方式</a>
+        <h1 id="live-title">即時觀看</h1>
+        <p id="live-subtitle" class="lead">收到新回答時會自動更新。</p>
+      </div>
+
+      <div class="viewer-card" id="live-card">
+        <div id="live-empty" class="viewer-empty">
+          <div class="empty-mark">…</div>
+          <p>目前還沒有回答，收到新資料時會自動顯示。</p>
+        </div>
+        <div id="live-content" hidden>
+          <div class="viewer-meta">
+            <span id="live-nickname" class="viewer-nickname"></span>
+            <time id="live-time" class="viewer-time"></time>
+          </div>
+          <div id="live-category" class="category-pill"></div>
+          <blockquote id="live-text" class="viewer-text"></blockquote>
+        </div>
+      </div>
+
+      <div class="viewer-controls">
+        <span id="live-progress" class="viewer-progress">尚未載入</span>
+        <div class="viewer-buttons">
+          <button type="button" id="live-prev" class="btn" disabled>上一則</button>
+          <button type="button" id="live-next" class="btn btn-primary">下一則</button>
+        </div>
+      </div>
+      <p class="viewer-keys">投影時可用鍵盤方向鍵或簡報筆切換上一則／下一則</p>
+      <p id="live-new-badge" class="new-badge" hidden>有新的回答，按「下一則」查看。</p>
+      <p id="live-status" class="status-line centered"></p>
+    </section>
+
+    <section id="view-categories" class="view" hidden>
+      <div class="page-head compact">
+        <a class="back-link" href="#/watch">← 返回觀看方式</a>
+        <h1>依類別觀看</h1>
+        <p class="lead">選擇一個類別，進入後可依序觀看該類別的回答。</p>
+      </div>
+      <div id="category-grid" class="category-grid"></div>
+    </section>
+
+    <section id="view-admin" class="view" hidden>
+      <div class="page-head compact admin-head">
+        <div>
+          <p class="eyebrow">主辦單位後台</p>
+          <h1>回覆管理與彙整</h1>
+          <p class="lead">可搜尋、篩選、標記精選、撰寫備註，並匯出 CSV 或列印彙整結果。</p>
+        </div>
+        <button type="button" class="btn btn-small" id="admin-logout" hidden>登出後台</button>
+      </div>
+
+      <div id="admin-login" class="card form-card narrow" hidden>
+        <h2>後台登入</h2>
+        <p class="field-help">請輸入主辦單位設定的後台密碼。</p>
+        <form id="admin-login-form" novalidate>
+          <label class="field-label" for="admin-password">後台密碼</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required>
+          <p id="admin-login-error" class="form-error" role="alert"></p>
+          <button type="submit" class="btn btn-primary btn-block" id="admin-login-submit">登入</button>
+        </form>
+      </div>
+
+      <div id="admin-content" hidden>
+        <div id="admin-stats" class="stats-grid"></div>
+
+        <div class="admin-toolbar">
+          <label class="toolbar-field grow">
+            <span>搜尋</span>
+            <input id="admin-search" type="search" placeholder="搜尋暱稱、內容或備註">
+          </label>
+          <label class="toolbar-field">
+            <span>類別</span>
+            <select id="admin-category-filter">
+              <option value="">全部類別</option>
+            </select>
+          </label>
+          <label class="toolbar-field">
+            <span>排序</span>
+            <select id="admin-sort">
+              <option value="asc">時間舊 → 新</option>
+              <option value="desc">時間新 → 舊</option>
+            </select>
+          </label>
+          <label class="toolbar-check">
+            <input id="admin-only-highlight" type="checkbox">
+            <span>只看精選</span>
+          </label>
+          <button type="button" class="btn btn-small" id="admin-refresh">重新整理</button>
+          <a class="btn btn-small" id="admin-export" href="api/admin/export.csv">匯出 CSV</a>
+          <button type="button" class="btn btn-small btn-primary" id="admin-curated-btn">彙整檢視</button>
+        </div>
+
+        <div id="admin-curated" class="curated-panel" hidden>
+          <div class="curated-head">
+            <div>
+              <h2>彙整檢視</h2>
+              <p>只顯示標記為「精選」的回答，可列印或另存 PDF。</p>
+            </div>
+            <div class="curated-actions">
+              <button type="button" class="btn btn-small" id="admin-print">列印</button>
+              <button type="button" class="btn btn-small" id="admin-curated-close">關閉</button>
+            </div>
+          </div>
+          <div id="admin-curated-content"></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>序號</th>
+                  <th>暱稱</th>
+                  <th>類別</th>
+                  <th>填寫內容</th>
+                  <th>收到時間</th>
+                  <th>精選</th>
+                  <th>後台備註</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tbody"></tbody>
+            </table>
+          </div>
+          <p id="admin-empty" class="empty-state" hidden>目前沒有符合條件的回覆。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>八大智能數學邏輯組 · 活動填答系統</p>
+  </footer>
+
+  <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <h2 id="modal-title">通知</h2>
+      <p id="modal-text"></p>
+      <button type="button" class="btn btn-primary" id="modal-close">關閉</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+
+  <noscript>
+    <p class="noscript">此頁需要啟用 JavaScript 才能填寫與觀看回答。</p>
+  </noscript>
+
+  <script src="static/survey-demo.js"></script>
+  <script src="static/vendor/qrcode.min.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>
