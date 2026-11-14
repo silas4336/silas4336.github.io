@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22white%22 font-weight=%22bold%22%3E%E2%88%91%3C/text%3E%3C/svg%3E">
+<title>數字讀心術 1～100｜八大智能數學邏輯組</title>
+<style>
+  :root { --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #6b6159; --line: #e6dccf; --accent: #0f766e; --accent-soft: #d8efe9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  .deck { position: relative; height: 100vh; height: 100dvh; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 4vh 6vw 10vh; text-align: center; opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(30px); transition: opacity 0.35s, transform 0.35s; }
+  .slide.active { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+  .slide.prev { transform: translateX(-30px); }
+  .eyebrow { color: var(--accent); font-weight: 800; letter-spacing: 0.12em; font-size: clamp(14px, 1.8vw, 22px); margin: 0 0 1vh; }
+  h1 { font-size: clamp(40px, 7vw, 96px); margin: 0 0 2vh; line-height: 1.15; }
+  h2 { font-size: clamp(28px, 4.2vw, 58px); margin: 0 0 2.5vh; line-height: 1.25; }
+  p, li { font-size: clamp(18px, 2.4vw, 32px); line-height: 1.6; margin: 0.6vh 0; }
+  .muted { color: var(--muted); }
+  .big-emoji { font-size: clamp(60px, 10vw, 140px); margin-bottom: 1vh; }
+  .steps { text-align: left; display: inline-block; margin: 0; padding-left: 1.4em; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .slide:focus { outline: none; }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 0.2em 0.8em; font-weight: 800; }
+
+  /* 數字卡 */
+  .card-label { display: flex; align-items: center; gap: 0.6em; font-size: clamp(22px, 3vw, 40px); font-weight: 800; margin-bottom: 2vh; }
+  .card-label .dot { width: 0.9em; height: 0.9em; border-radius: 50%; }
+  .numcard { background: var(--card); border-radius: 24px; padding: clamp(12px, 2.4vh, 28px) clamp(14px, 2.4vw, 36px);
+    box-shadow: 0 10px 30px rgba(60, 40, 20, 0.1); border-top: 10px solid var(--c); }
+  .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: clamp(4px, 0.8vh, 10px) clamp(6px, 1.2vw, 18px); }
+  .grid span { font-size: clamp(18px, min(3vw, 5vh), 48px); font-weight: 800; font-variant-numeric: tabular-nums; min-width: 1.9em; padding: 0.05em 0; border-radius: 10px; }
+  .answer { display: flex; gap: 16px; margin-top: 3vh; }
+  .ans { border: 0; font: inherit; font-weight: 800; font-size: clamp(18px, 2.2vw, 28px); padding: 0.55em 1.6em; border-radius: 16px; cursor: pointer; }
+  .ans.yes { background: var(--accent); color: #fff; }
+  .ans.no { background: #e9e0d4; color: var(--ink); }
+  .ans.picked { outline: 4px solid #f59e0b; outline-offset: 3px; }
+  .question { font-size: clamp(20px, 2.6vw, 34px); font-weight: 800; margin-top: 2vh; }
+
+  /* 揭曉 */
+  .reveal-num { font-size: clamp(110px, 22vw, 280px); font-weight: 900; color: var(--accent); line-height: 1; margin: 2vh 0; transition: transform 0.5s; }
+  .reveal-num.hidden-num { color: transparent; text-shadow: 0 0 40px rgba(15, 118, 110, 0.6); }
+  .btn { border: 0; background: var(--accent); color: #fff; border-radius: 16px; padding: 0.6em 1.6em; font: inherit; font-weight: 800; font-size: clamp(18px, 2.2vw, 28px); cursor: pointer; }
+  .btn.soft { background: var(--accent-soft); color: var(--accent); }
+
+  /* 解謎 */
+  .chips { display: flex; gap: clamp(8px, 1.4vw, 20px); justify-content: center; flex-wrap: wrap; margin: 2vh 0; }
+  .chip { min-width: 2.7em; padding: 0.4em 0.6em; border-radius: 18px; background: var(--card); box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08);
+    font-size: clamp(22px, 3.1vw, 46px); font-weight: 900; border-top: 8px solid var(--c); }
+  .chip small { display: block; font-size: 0.38em; color: var(--muted); font-weight: 700; }
+  .chip.off { opacity: 0.25; }
+  .eq { font-size: clamp(26px, 4vw, 56px); font-weight: 900; margin: 2vh 0; }
+  .bits { display: flex; gap: clamp(8px, 1.4vw, 20px); justify-content: center; margin: 2vh 0; }
+  .bit { width: clamp(64px, 9vw, 120px); padding: 1vh 0; border-radius: 18px; background: #e9e0d4; transition: background 0.25s, color 0.25s; }
+  .bit .lamp { font-size: clamp(32px, 5vw, 64px); font-weight: 900; }
+  .bit small { display: block; font-size: clamp(13px, 1.5vw, 20px); font-weight: 700; color: var(--muted); }
+  .bit.on { background: #fde68a; }
+  .bit.on .lamp { color: #92400e; }
+  .try { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .try input { font: inherit; font-size: clamp(24px, 3.2vw, 44px); font-weight: 800; width: 3.6em; text-align: center; border: 3px solid var(--line); border-radius: 16px; padding: 0.15em; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; text-align: left; max-width: 1200px; }
+  .box { background: var(--card); border-radius: 22px; padding: 2.4vh 2.4vw; box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08); }
+  .box h3 { margin: 0 0 1vh; font-size: clamp(20px, 2.4vw, 32px); color: var(--accent); }
+  .box p { font-size: clamp(16px, 2vw, 28px); line-height: 1.5; }
+
+  /* 導覽 */
+  nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 10px 16px; z-index: 5; }
+  nav button { border: 1px solid var(--line); background: var(--card); color: var(--ink); width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+  nav button.text { width: auto; border-radius: 999px; padding: 0 16px; font: inherit; font-size: 14px; }
+  nav a.home { display: inline-grid; place-items: center; height: 46px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0 16px; font-size: 14px; text-decoration: none; }
+  .progress { flex: 1; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); transition: width 0.3s; }
+  .count { font-size: 14px; color: var(--muted); min-width: 4em; text-align: right; font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) {
+    .slide { overflow-y: auto; justify-content: safe center; padding-bottom: 84px; }
+    #fsBtn { display: none; }
+    .two-col { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: repeat(5, 1fr); }
+    .bits { gap: 6px; width: 100%; }
+    .bit { width: auto; flex: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide">
+    <p class="eyebrow">八大智能數學邏輯組</p>
+    <div class="big-emoji">🔮</div>
+    <h1>數字讀心術・挑戰 100</h1>
+    <p class="muted">只要回答 7 次「有」或「沒有」，我就知道你心裡想的數字</p>
+  </section>
+
+  <section class="slide">
+    <h2>遊戲規則</h2>
+    <ol class="steps">
+      <li>在心裡選一個 <span class="pill">1 ～ 100</span> 的數字，不要說出來</li>
+      <li>接下來會出現 <b>7 張數字卡</b></li>
+      <li>每張卡只要回答：你的數字<b>有沒有</b>在上面？</li>
+      <li>7 張看完，讀心師就會說出你的數字！</li>
+    </ol>
+  </section>
+
+  <!-- 7 張數字卡由程式產生，插在這裡 -->
+  <div id="cardSlot" hidden></div>
+
+  <section class="slide" id="revealSlide">
+    <p class="eyebrow">讀心時刻</p>
+    <h2>你心裡想的數字是……</h2>
+    <div class="reveal-num hidden-num" id="revealNum">?</div>
+    <p class="muted" id="revealNote" aria-live="polite">按下按鈕揭曉</p>
+    <div class="answer">
+      <button class="btn" type="button" id="revealBtn">揭曉！</button>
+      <button class="btn soft" type="button" id="restartBtn">再玩一次</button>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 1</p>
+    <h2>秘密藏在每張卡的「第一個數字」</h2>
+    <div class="chips" id="firstChips"></div>
+    <p>把你回答「<b>有</b>」的那幾張卡，第一個數字<b>加起來</b>，就是答案。</p>
+    <div class="eq" id="exampleEq"></div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 2</p>
+    <h2>1、2、4、8、16、32、64 是一排「開關」</h2>
+    <p>1～127 的每個數字，都能用這 7 個數字（每個最多用一次）<b>剛好一種</b>方法加出來。<br>開＝1，關＝0，這就是電腦用的<b>二進位</b>。</p>
+    <div class="bits" id="bits"></div>
+    <div class="try">
+      <p>試試看：</p>
+      <input type="number" id="tryNum" min="1" max="127" value="85" aria-label="輸入 1 到 127 的數字">
+      <p class="eq" id="tryEq" style="margin:0"></p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 3</p>
+    <h2>每張卡，就是一個開關</h2>
+    <div class="two-col">
+      <div class="box">
+        <h3>卡片怎麼做出來？</h3>
+        <p>第 1 張卡：所有「1 號開關」打開的數字</p>
+        <p>第 2 張卡：所有「2 號開關」打開的數字</p>
+        <p>……以此類推到第 7 張（64）</p>
+        <p class="muted">所以你回答「有／沒有」，其實就是在告訴我每個開關是開還是關。</p>
+      </div>
+      <div class="box">
+        <h3>為什麼是 7 張、到 100？</h3>
+        <p>7 個開關最大能加到<br><b>1+2+4+8+16+32+64 = 127</b></p>
+        <p>所以 7 張卡最多能猜 1 ～ 127。</p>
+        <p class="muted">這一版只用 1～100，是因為整數比較好記；所以加起來超過 100，就表示有一張卡答錯了。</p>
+        <p class="muted">6 張卡只能猜到 63，所以 1～60 版用 6 張就夠；想猜到 100，就要多一張「64」的卡。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">數學邏輯智能</p>
+    <h2>每問一次，可能的答案就少一半</h2>
+    <div class="chips">
+      <div class="chip" style="--c:#0f766e">100<small>開始</small></div>
+      <div class="chip" style="--c:#0f766e">50<small>1 題後</small></div>
+      <div class="chip" style="--c:#0f766e">25<small>2 題後</small></div>
+      <div class="chip" style="--c:#0f766e">13<small>3 題後</small></div>
+      <div class="chip" style="--c:#0f766e">7<small>4 題後</small></div>
+      <div class="chip" style="--c:#0f766e">4<small>5 題後</small></div>
+      <div class="chip" style="--c:#0f766e">2<small>6 題後</small></div>
+      <div class="chip" style="--c:#0f766e">1<small>7 題後</small></div>
+    </div>
+    <p>「猜數字」「二十個問題」、電腦存檔、QR Code，<br>背後都是同一個想法：<b>用「是／否」一步步縮小範圍</b>。</p>
+    <p class="muted">讀心術不是魔法，是邏輯。</p>
+  </section>
+
+</div>
+
+<nav>
+  <button type="button" id="prevBtn" aria-label="上一頁">←</button>
+  <button type="button" id="nextBtn" aria-label="下一頁">→</button>
+  <div class="progress"><i id="bar"></i></div>
+  <span class="count" id="count"></span>
+  <button type="button" class="text" id="fsBtn">全螢幕</button>
+  <a class="text home" href="./" aria-label="回總覽">總覽</a>
+</nav>
+
+<script>
+(() => {
+  const MAX = 100;
+  const CARDS = [
+    { v: 1, name: "紅色卡", c: "#ef6f6c" },
+    { v: 2, name: "橘色卡", c: "#f2a541" },
+    { v: 4, name: "黃色卡", c: "#e3c23d" },
+    { v: 8, name: "綠色卡", c: "#5bb37a" },
+    { v: 16, name: "藍色卡", c: "#4f8fd6" },
+    { v: 32, name: "紫色卡", c: "#9a7bd5" },
+    { v: 64, name: "粉紅卡", c: "#e26fa8" }
+  ];
+  const answers = Array(CARDS.length).fill(null);
+  const $ = id => document.getElementById(id);
+  // 從主持流程頁（host.html）進來時網址帶 ?host=N：最後一頁再按 → 回流程頁第 N 步，第一頁按 ← 回上一步
+  const HOST = parseInt(new URLSearchParams(location.search).get("host"), 10);
+  const toHost = step => { location.href = "host.html#" + step; };
+
+  // 產生 7 張數字卡
+  const slot = $("cardSlot");
+  CARDS.forEach((card, i) => {
+    const s = document.createElement("section");
+    s.className = "slide card-slide";
+    const nums = [];
+    for (let n = 1; n <= MAX; n++) if (n & card.v) nums.push(n);
+    s.innerHTML = `
+      <div class="card-label"><span class="dot" style="background:${card.c}"></span>第 ${i + 1} 張・${card.name}</div>
+      <div class="numcard" style="--c:${card.c}"><div class="grid">${nums.map(n => `<span>${n}</span>`).join("")}</div></div>
+      <p class="question">你的數字有在這張卡上嗎？</p>
+      <div class="answer">
+        <button class="ans yes" type="button" data-card="${i}" data-val="1">有</button>
+        <button class="ans no" type="button" data-card="${i}" data-val="0">沒有</button>
+      </div>`;
+    slot.before(s);
+  });
+  slot.remove();
+
+  const slides = [...document.querySelectorAll(".slide")];
+  slides.forEach(s => s.setAttribute("tabindex", "-1"));
+  let idx = 0;
+  function go(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => { s.classList.toggle("active", i === idx); s.classList.toggle("prev", i < idx); });
+    // 換頁時焦點移到新的一頁：不然 Enter 會再按到上一頁的按鈕、輸入框會吃掉簡報筆的按鍵；
+    // 用 Tab 的人也能直接從這一頁的按鈕開始
+    slides[idx].focus({ preventScroll: true });
+    $("bar").style.width = ((idx + 1) / slides.length * 100) + "%";
+    $("count").textContent = (idx + 1) + " / " + slides.length;
+  }
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".ans");
+    if (!b) return;
+    const slide = b.closest(".slide");
+    if (!slide.classList.contains("active")) return;
+    const i = +b.dataset.card;
+    answers[i] = +b.dataset.val;
+    b.parentElement.querySelectorAll(".ans").forEach(x => x.classList.toggle("picked", x === b));
+    resetReveal(); // 改過答案，舊的揭曉結果就不能留著
+    const target = slides.indexOf(slide) + 1; // 固定目標頁，連點兩下也不會跳過下一張卡
+    setTimeout(() => go(target), 250);
+  });
+
+  let revealTimer = null, revealDone = null;
+  function resetReveal() {
+    clearInterval(revealTimer); clearTimeout(revealDone);
+    $("revealNum").textContent = "?";
+    $("revealNum").classList.add("hidden-num");
+    $("revealNote").textContent = "按下按鈕揭曉";
+    setExample(85, false);
+  }
+  $("revealBtn").addEventListener("click", () => {
+    const missing = answers.findIndex(a => a === null);
+    const el = $("revealNum");
+    if (missing >= 0) { $("revealNote").textContent = `第 ${missing + 1} 張卡還沒回答喔`; return; }
+    const sum = CARDS.reduce((s, c, i) => s + (answers[i] ? c.v : 0), 0);
+    el.classList.remove("hidden-num");
+    if (sum === 0) { el.textContent = "?"; $("revealNote").textContent = "每張都說沒有？1～100 的數字一定會出現在某張卡上，再想一次吧！"; return; }
+    if (sum > MAX) { el.textContent = "?"; $("revealNote").textContent = "咦，好像有一張答錯了，再玩一次看看！"; return; }
+    clearInterval(revealTimer); clearTimeout(revealDone);
+    revealTimer = setInterval(() => { el.textContent = Math.floor(Math.random() * MAX) + 1; }, 60);
+    revealDone = setTimeout(() => {
+      clearInterval(revealTimer); el.textContent = sum;
+      $("revealNote").innerHTML = `<span class="sr-only">你的數字是 ${sum}。</span>猜對了嗎？`;
+      setExample(sum, true);
+    }, 1200);
+  });
+  $("restartBtn").addEventListener("click", () => {
+    answers.fill(null);
+    document.querySelectorAll(".ans.picked").forEach(x => x.classList.remove("picked"));
+    resetReveal();
+    go(1);
+  });
+
+  // 解謎 1
+  $("firstChips").innerHTML = CARDS.map((c, i) => `<div class="chip" style="--c:${c.c}">${c.v}<small>第 ${i + 1} 張</small></div>`).join("");
+  // 例子用觀眾剛才的數字；還沒揭曉就用 85
+  function setExample(n, mine) {
+    const on = CARDS.map((c, i) => ({ c, i })).filter(x => n & x.c.v);
+    $("exampleEq").innerHTML = (mine ? "剛才的 " + n : "例：想 " + n) + " → 第 " + on.map(x => x.i + 1).join("、") + " 張有<br>"
+      + on.map(x => x.c.v).join(" + ") + " = <span style='color:var(--accent)'>" + n + "</span>";
+    document.querySelectorAll("#firstChips .chip").forEach((chip, i) => chip.classList.toggle("off", !(n & CARDS[i].v)));
+  }
+
+  // 解謎 2：開關
+  const bitsEl = $("bits");
+  const order = [...CARDS].reverse();
+  bitsEl.innerHTML = order.map(c => `<div class="bit" data-v="${c.v}"><div class="lamp">0</div><small>${c.v}</small></div>`).join("");
+  function showBits() {
+    const raw = $("tryNum").value;
+    const n = Math.max(1, Math.min(127, parseInt(raw, 10) || 1));
+    if (raw !== "" && raw !== String(n)) $("tryNum").value = n; // 超出 1～127 就改回框內，免得出現「200 = 127」
+    const parts = [];
+    bitsEl.querySelectorAll(".bit").forEach(b => {
+      const v = +b.dataset.v, on = (n & v) !== 0;
+      b.classList.toggle("on", on);
+      b.querySelector(".lamp").textContent = on ? "1" : "0";
+      if (on) parts.push(v);
+    });
+    $("tryEq").textContent = "= " + parts.join(" + ");
+  }
+  $("tryNum").addEventListener("input", showBits);
+  showBits();
+  setExample(85, false);
+
+  // 導覽
+  function forward() { if (HOST && idx === slides.length - 1) toHost(HOST); else go(idx + 1); }
+  function backward() { if (HOST && idx === 0) toHost(HOST - 1); else go(idx - 1); }
+  if (HOST) { const home = document.querySelector("nav a.home"); home.href = "host.html#" + (HOST - 1); home.textContent = "流程"; home.setAttribute("aria-label", "回主持流程"); }
+  $("prevBtn").addEventListener("click", backward);
+  $("nextBtn").addEventListener("click", forward);
+  // iPhone Safari 等不支援全螢幕的瀏覽器就不顯示按鈕
+  const canFs = !!document.documentElement.requestFullscreen;
+  if (!canFs) $("fsBtn").hidden = true;
+  $("fsBtn").addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => { $("fsBtn").hidden = true; });
+  });
+  document.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT" && !["PageDown", "PageUp"].includes(e.key)) return;
+    const cur = slides[idx], k = e.key.toLowerCase();
+    // 鍵盤作答：Y／1＝有，N／0＝沒有；揭曉頁按 Enter 揭曉
+    if (cur.classList.contains("card-slide") && "yn10".includes(k) && k) { cur.querySelector(k === "y" || k === "1" ? ".ans.yes" : ".ans.no").click(); return; }
+    if (cur.id === "revealSlide" && e.key === "Enter") { e.preventDefault(); $("revealBtn").click(); return; }
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); forward(); }
+    if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); backward(); }
+    if ((e.key === "f" || e.key === "F") && canFs) $("fsBtn").click();
+  });
+  let tx = null;
+  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) { if (dx < 0) forward(); else backward(); }
+    tx = null;
+  });
+  go(0);
+})();
+</script>
+</body>
+</html>
