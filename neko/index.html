@@ -2038,18 +2038,21 @@
   .level-card h2 { margin: 0 0 4px; font-size: 20px; letter-spacing: 0.02em; }
   .level-sub, .level-rule { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--muted); }
   .level-head .act-btn { min-height: 44px; padding: 8px 16px; font-size: 14px; }
-  .level-chapter h3 { margin: 6px 0 8px; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+  .level-chapter h3 { margin: 8px 0 4px; font-size: 14.5px; display: flex; justify-content: space-between; gap: 8px; }
   .level-chapter h3 span { color: var(--muted); font-weight: 600; font-size: 12.5px; }
-  .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+  .level-chapter .ch-desc { margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
   .level-btn {
-    min-height: 52px; padding: 4px 2px; border-radius: 12px; border: 1px solid var(--line-soft);
+    min-height: 58px; padding: 4px 2px; border-radius: 12px; border: 1px solid var(--line-soft);
     background: var(--pill-bg); color: var(--ink); font: inherit; font-weight: 700; font-size: 15px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; cursor: pointer;
   }
+  .level-btn .sz { font-size: 10px; font-weight: 600; color: var(--muted); line-height: 1.1; }
   .level-btn .stars { font-size: 10px; letter-spacing: 1px; color: #e0a526; min-height: 12px; }
   .level-btn .stars i { font-style: normal; color: var(--line-soft); }
   .level-btn.cleared { background: var(--accent-soft); border-color: var(--accent); }
   .level-btn.current { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 8px 18px -10px var(--accent-dark); }
+  .level-btn.current .sz { color: rgba(255, 255, 255, 0.85); }
   .level-btn.current .stars { color: #fff; }
   .level-btn:disabled { opacity: 0.38; cursor: default; }
   .level-backup { border-top: 1px solid var(--line-soft); padding-top: 10px; font-size: 13px; }
@@ -2733,6 +2736,19 @@
 
   /* ===== 闖關模式：關卡資料與進度（只存在這台裝置） ===== */
   const LEVEL_DIGITS = "0123456789abc";
+  const CHAPTERS = Array.isArray(window.NEKO_CHAPTERS) && window.NEKO_CHAPTERS.length ? window.NEKO_CHAPTERS : null;
+  function levelStageLabel(index) {
+    if (!CHAPTERS) return "";
+    let at = 0;
+    for (const ch of CHAPTERS) {
+      if (index < at + ch.count) {
+        const parts = ch.name.split(" · ");
+        return parts[1] || ch.name;
+      }
+      at += ch.count;
+    }
+    return "";
+  }
   const LEVELS = (window.NEKO_LEVELS || []).map(code => {
     const n = parseInt(code[0], 16);
     const body = code.slice(1);
@@ -4956,7 +4972,8 @@
       if (state.level === null) saveSize(n);
       else {
         levelLabelEl.textContent = "第 " + (state.level + 1) + " 關";
-        levelSizeEl.textContent = n + "×" + n + " · 共 " + LEVELS.length + " 關";
+        const stage = levelStageLabel(state.level);
+        levelSizeEl.textContent = n + "×" + n + " · " + (stage || "共 " + LEVELS.length + " 關");
       }
     }
 
@@ -5539,18 +5556,34 @@
     document.getElementById("levelContinueBtn").textContent =
       cleared === 0 ? "從第 1 關開始" : cleared === LEVELS.length ? "全部破關！" : "繼續第 " + (next + 1) + " 關";
     levelChaptersEl.innerHTML = "";
-    let start = 0;
-    while (start < LEVELS.length) {
-      const size = LEVELS[start].size;
-      let end = start;
-      while (end < LEVELS.length && LEVELS[end].size === size) end++;
+    const sections = [];
+    if (CHAPTERS) {
+      let at = 0;
+      for (const ch of CHAPTERS) {
+        const end = Math.min(LEVELS.length, at + ch.count);
+        if (end > at) sections.push({ title: ch.name, desc: ch.desc || "", start: at, end });
+        at = end;
+      }
+      if (at < LEVELS.length) sections.push({ title: "其他關卡", desc: "", start: at, end: LEVELS.length });
+    } else {
+      let start = 0;
+      while (start < LEVELS.length) {
+        const size = LEVELS[start].size;
+        let end = start;
+        while (end < LEVELS.length && LEVELS[end].size === size) end++;
+        sections.push({ title: size + "×" + size + " · " + (DIFFICULTY[size] || ""), desc: "", start, end });
+        start = end;
+      }
+    }
+    for (const sec of sections) {
       const chapter = document.createElement("section");
       chapter.className = "level-chapter";
       const title = document.createElement("h3");
-      title.innerHTML = size + "×" + size + " · " + (DIFFICULTY[size] || "") + "<span>第 " + (start + 1) + "～" + end + " 關</span>";
+      title.innerHTML = sec.title + "<span>第 " + (sec.start + 1) + "～" + sec.end + " 關</span>";
       const grid = document.createElement("div");
       grid.className = "level-grid";
-      for (let i = start; i < end; i++) {
+      for (let i = sec.start; i < sec.end; i++) {
+        const sz = LEVELS[i].size;
         const rec = levelRecord(progress, i);
         const btn = document.createElement("button");
         btn.type = "button";
@@ -5558,13 +5591,19 @@
         btn.dataset.level = String(i);
         const open = isLevelUnlocked(progress, i);
         btn.disabled = !open;
-        btn.setAttribute("aria-label", "第 " + (i + 1) + " 關" + (rec ? "，" + rec.s + " 顆星" : open ? "" : "，尚未開放"));
-        btn.innerHTML = "<span>" + (i + 1) + "</span><span class=\"stars\">" + (rec ? starText(rec.s) : "") + "</span>";
+        btn.setAttribute("aria-label", "第 " + (i + 1) + " 關，" + sz + "×" + sz + (rec ? "，" + rec.s + " 顆星" : open ? "" : "，尚未開放"));
+        btn.innerHTML = "<span>" + (i + 1) + "</span><span class=\"sz\">" + sz + "×" + sz + "</span><span class=\"stars\">" + (rec ? starText(rec.s) : "") + "</span>";
         grid.appendChild(btn);
       }
-      chapter.append(title, grid);
+      if (sec.desc) {
+        const desc = document.createElement("p");
+        desc.className = "ch-desc";
+        desc.textContent = sec.desc;
+        chapter.append(title, desc, grid);
+      } else {
+        chapter.append(title, grid);
+      }
       levelChaptersEl.appendChild(chapter);
-      start = end;
     }
     backupCodeEl.value = makeBackupCode(progress);
     const current = levelChaptersEl.querySelector(".level-btn.current");
