@@ -2978,7 +2978,8 @@
       if (repaired) return { regions: repaired, solution };
     }
 
-    return fallback;
+    // 隨機出題一直修不成唯一解時，改用題庫裡確定只有一種解的盤面
+    return pickPracticePreset(N) || fallback;
   }
 
   function pickChallengePreset(n, variant) {
@@ -3821,27 +3822,63 @@
 
   function findChainHint(N, regions, cats, marks) {
     const catList = [...cats];
+    const catSet = new Set(catList);
     const markSet = new Set(marks);
-    let best = null;
-    for (let i = 0; i < N * N; i++) {
-      if (cats.has ? cats.has(i) : catList.includes(i)) continue;
-      if (markSet.has(i)) continue;
+    const isBlocked = i => {
       const r = Math.floor(i / N);
       const c = i % N;
-      const blocked = catList.some(cat => {
+      return catList.some(cat => {
         const cr = Math.floor(cat / N);
         const cc = cat % N;
         return cr === r || cc === c || regions[cat] === regions[i] ||
           (Math.abs(cr - r) === 1 && Math.abs(cc - c) === 1);
       });
-      if (blocked) continue;
+    };
+    const open = [];
+    for (let i = 0; i < N * N; i++) {
+      if (catSet.has(i) || markSet.has(i) || isBlocked(i)) continue;
+      open.push(i);
+    }
+    // 每個空格都假設放一隻貓試試，收集所有會推出矛盾的格子
+    const bad = new Map();
+    let best = null;
+    for (const i of open) {
       const sub = analyzeTutorial(N, regions, [...catList, i], [...markSet]);
-      if (sub.contradiction && (!best || sub.actions.length < best.steps)) {
-        best = { cell: i, steps: sub.actions.length, unit: sub.contradiction };
-        if (best.steps <= 1) break;
+      if (!sub.contradiction) continue;
+      const item = { cell: i, steps: sub.actions.length, unit: sub.contradiction };
+      bad.set(i, item);
+      if (!best || item.steps < best.steps) best = item;
+    }
+    if (!best) return null;
+
+    // 某一列、欄或色塊只剩一格不會矛盾：貓一定在那格
+    const regionCount = Math.max(...regions) + 1;
+    const units = [];
+    for (let r = 0; r < N; r++) units.push({ kind: "row", index: r, test: i => Math.floor(i / N) === r });
+    for (let c = 0; c < N; c++) units.push({ kind: "col", index: c, test: i => i % N === c });
+    for (let g = 0; g < regionCount; g++) units.push({ kind: "region", index: g, test: i => regions[i] === g });
+    let forced = null;
+    for (const u of units) {
+      if (catList.some(u.test)) continue;
+      const cand = open.filter(u.test);
+      if (cand.length < 2) continue;
+      const alive = cand.filter(i => !bad.has(i));
+      if (alive.length !== 1) continue;
+      const removed = cand.filter(i => bad.has(i));
+      const score = removed.reduce((s, i) => s + bad.get(i).steps, 0);
+      if (!forced || removed.length < forced.removed.length ||
+        (removed.length === forced.removed.length && score < forced.score)) {
+        forced = { unit: { kind: u.kind, index: u.index }, cat: alive[0], removed, score };
       }
     }
-    return best;
+
+    const all = [...bad.values()].sort((a, b) => a.steps - b.steps);
+    return {
+      cell: best.cell, steps: best.steps, unit: best.unit,
+      cells: all.map(item => item.cell),
+      items: all,
+      forced: forced ? { unit: forced.unit, cat: forced.cat, items: forced.removed.map(i => bad.get(i)) } : null
+    };
   }
 
   const TUTORIAL_HUE_LABELS = [
@@ -5417,8 +5454,12 @@
       const chain = findChainHint(N, state.regions, new Set(analysis.cats), marks);
       if (chain) {
         seen.set(HINT_TECH.chain[0], HINT_TECH.chain[1]);
-        cats = analysis.cats;
-        marks.push(chain.cell);
+        if (chain.forced) {
+          cats = [...analysis.cats, chain.forced.cat];
+        } else {
+          cats = analysis.cats;
+          marks.push(...chain.cells);
+        }
         continue;
       }
       seen.set(HINT_TECH.fallback[0], HINT_TECH.fallback[1]);
@@ -5516,23 +5557,58 @@
     // 基本技巧推不動時，先找連鎖推理（假設 → 矛盾）
     const chain = findChainHint(N, state.regions, state.cats, state.marks);
     if (chain) {
-      const u = chain.unit;
-      const unitCells = u.kind === "row" ? Array.from({ length: N }, (_, c) => u.index * N + c)
+      const unitCellsOf = u => u.kind === "row" ? Array.from({ length: N }, (_, c) => u.index * N + c)
         : u.kind === "col" ? Array.from({ length: N }, (_, r) => r * N + u.index)
         : regionCells(state.regions, u.index);
-      const unitName = describeHintUnit(u, labels);
+      const cellList = list => list.length > 3
+        ? "另外 <strong>" + list.length + "</strong> 格"
+        : list.map(i => "<strong>「" + cellName(N, i) + "」</strong>").join("、");
+      if (chain.forced) {
+        const f = chain.forced;
+        const unitName = describeHintUnit(f.unit, labels);
+        const first = f.items[0];
+        const removed = f.items.map(item => item.cell);
+        const where = "<strong>" + cellName(N, f.cat) + "</strong>";
+        const others = removed.length > 1
+          ? (removed.length > 4 ? "" : "其他 ") + cellList(removed.slice(1)) + " 也一樣，試放之後都會推出矛盾。"
+          : "";
+        return {
+          tech: "chain",
+          nudge: "這步要用連鎖推理：框起來的 <strong>" + unitName + "</strong> 裡還有 " + (removed.length + 1) +
+            " 格能放。一格一格假設放貓，順著推下去，看哪幾格會出問題。",
+          explain: "<strong>" + unitName + "</strong> 還有 " + (removed.length + 1) + " 格能放。假設貓放在 <strong>" +
+            cellName(N, first.cell) + "</strong>，順著推 " + Math.max(1, first.steps) + " 步，<strong>" +
+            describeHintUnit(first.unit, labels) + "</strong> 就會一個位置都不剩——矛盾！" + others +
+            "所以貓咪一定在 " + where + "。",
+          cause: unitCellsOf(f.unit).filter(i => !state.cats.has(i)),
+          effect: [f.cat],
+          keep: removed,
+          catIndex: f.cat,
+          applyLabel: "幫我放這隻貓",
+          apply: () => {
+            state.cats.add(f.cat);
+            state.marks.delete(f.cat);
+          }
+        };
+      }
+      const unitName = describeHintUnit(chain.unit, labels);
       const where = "<strong>" + cellName(N, chain.cell) + "</strong>";
+      const rest = chain.cells.filter(i => i !== chain.cell);
+      const others = rest.length
+        ? "用同樣的方法試，" + cellList(rest) +
+          " 也都會推出矛盾，一起標上 ✕。"
+        : "標上 ✕。";
       return {
         tech: "chain",
         nudge: "這步要用連鎖推理：假設 " + where + " 有貓，順著推下去，看看框起來的 <strong>" + unitName + "</strong> 會發生什麼事。",
         explain: "假設貓咪放在 " + where + "，順著推 " + Math.max(1, chain.steps) + " 步，<strong>" + unitName +
-          "</strong> 就會一個位置都不剩——矛盾！所以 " + where + " 不可能有貓，標上 ✕。",
-        cause: unitCells,
-        effect: [chain.cell],
+          "</strong> 就會一個位置都不剩——矛盾！所以 " + where + " 不可能有貓。" + others,
+        cause: unitCellsOf(chain.unit),
+        effect: chain.cells.slice(),
         keep: [chain.cell],
         catIndex: -1,
-        applyLabel: "幫我標上這個 ✕",
-        apply: () => state.marks.add(chain.cell)
+        applyLabel: chain.cells.length > 1 ? "幫我標上 " + chain.cells.length + " 個 ✕" : "幫我標上這個 ✕",
+        apply: () => chain.cells.forEach(i => { if (!state.cats.has(i)) state.marks.add(i); })
       };
     }
 
