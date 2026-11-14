@@ -2467,7 +2467,7 @@
   };
   const CHALLENGE_VARIANTS = 3;
   // 排行榜後端在 Silas 自己的 Vercel；放在 GitHub Pages 時跨網域呼叫，放在 Vercel 本身時走同網域
-  const SCORE_SERVER = ""; // Vercel 後端網址（例如 https://silas-neko-sudoku.vercel.app），架好後填入
+  const SCORE_SERVER = "https://silas-neko-sudoku.vercel.app"; // Silas 自己的 Vercel 排行榜後端（backend/，資料存在 Turso）
   const API_BASE = /\.github\.io$/.test(location.hostname) ? SCORE_SERVER : "";
   const SCORE_API = "/api/scores";
   const SCORE_POLL_MS = 5000;
