@@ -1,5 +1,5 @@
 // 貓咪數獨離線快取：先用快取秒開，背景再抓新版，下次開啟就是新版
-const CACHE = "neko-app-v1";
+const CACHE = "neko-app-v2";
 const FILES = ["./", "./index.html", "./levels.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
 
