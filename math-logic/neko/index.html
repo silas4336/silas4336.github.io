@@ -2014,6 +2014,10 @@
   .pref-row input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
   .pref-row small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
   .how-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.75; }
+  /* 手機觸控：按鈕至少 40px 高（silas 版加的） */
+  @media (pointer: coarse), (max-width: 520px) {
+    .size-btn, .act-btn, .toolbar .size-btn, .toolbar .act-btn { min-height: 40px; }
+  }
 </style>
 </head>
 <body>
@@ -3246,6 +3250,10 @@
     });
     let data = null;
     try { data = await response.json(); } catch (err) {}
+    if (response.status === 404 || response.status === 405) {
+      // 這份複本放在靜態網站（GitHub Pages），沒有排行榜伺服器
+      throw new Error("這個網址沒有排行榜，計時成績不會儲存");
+    }
     if (!response.ok) {
       throw new Error(data && data.error ? data.error : "連線失敗（" + response.status + "）");
     }

@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22white%22 font-weight=%22bold%22%3E%E2%88%91%3C/text%3E%3C/svg%3E">
 <title>零錢最輕挑戰｜八大智能數學邏輯組</title>
 <style>
   :root {
-    --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #7a6f66; --line: #e6dccf;
+    --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #6b6159; --line: #e6dccf;
     --accent: #0f766e; --accent-soft: #d8efe9; --warn: #c2410c; --good: #15803d;
   }
   * { box-sizing: border-box; }
@@ -86,6 +87,15 @@
   body.present .stat b { font-size: 30px; }
   body.present table { font-size: 20px; }
   body.present .btn { font-size: 22px; }
+  body.present .card { padding: 22px 36px; }
+  body.present .price { font-size: 60px; margin: 0; }
+  body.present .money { zoom: 1.35; }
+  body.present .zone { min-height: 0; padding: 8px; }
+  body.present .zone-title { font-size: 18px; margin: 10px 0 6px; }
+  body.present .stats { margin-top: 10px; }
+  body.present .stat small { font-size: 16px; }
+  body.present .zone.pay:empty::before { font-size: 18px; }
+  body.present .actions { position: sticky; bottom: 0; z-index: 2; background: var(--card); margin: 10px -36px -22px; padding: 12px 36px; border-radius: 0 0 20px 20px; box-shadow: 0 -6px 12px rgba(60, 40, 20, 0.06); }
   .keyhint { display: none; color: var(--muted); font-size: 14px; text-align: center; margin-top: 12px; }
   body.present .keyhint { display: block; }
   @media (max-width: 520px) {
@@ -100,12 +110,13 @@
 <header>
   <span class="mark">∑</span>
   <h1>八大智能數學邏輯組</h1>
+  <a class="ghost" href="./" style="text-decoration:none">← 總覽</a>
   <button class="ghost" id="presentBtn" type="button">投影模式</button>
 </header>
 <main>
   <section class="view active" id="view-intro">
     <div class="card">
-      <p class="eyebrow">開場挑戰</p>
+      <p class="eyebrow">動手挑戰</p>
       <h2>零錢最輕挑戰</h2>
       <p>結帳時，你會怎麼掏錢？很多人其實每天都在不知不覺中解一道數學題：<b>怎麼付，找回來的零錢最少、口袋最輕？</b></p>
       <p>例如身上有 102 元，要付 72 元：</p>
@@ -212,13 +223,13 @@
   const QUESTIONS = [
     { cur: "TW", level: 1, title: "第 1 題・台幣", price: 87,
       wallet: { 100: 1, 50: 1, 10: 1, 5: 1, 1: 2 },
-      lesson: "50 元雖然最重，這次卻用不上；硬塞出去，只會換回更多零錢。" },
+      lesson: "關鍵是把尾數 7 元（5 元＋1 元×2）付掉，找回整整 20 元。50 元付不付都一樣：付出去，店員也只會原封不動找回來。" },
     { cur: "US", level: 2, title: "第 2 題・美金", price: 368,
       wallet: { 100: 5, 25: 1, 10: 1, 5: 2, 1: 4 },
       lesson: "硬幣最少 ≠ 最輕！10¢ 比 1¢ 還輕，換回 10¢ 反而划算。", trap: [10] },
     { cur: "JP", level: 3, title: "第 3 題・日幣", price: 1386,
       wallet: { 1000: 2, 500: 1, 100: 2, 50: 1, 10: 3, 5: 1, 1: 4 },
-      lesson: "要同時想兩件事：把零頭湊到找回的錢剛好是整數，還要把 50 円一起給出去，免得又找回一枚 50 円。", trap: [50] }
+      lesson: "要同時想兩件事：把零頭湊到找回的錢剛好是整百，還要把 50 円一起給出去，免得又找回一枚 50 円。", trap: [50] }
   ];
 
   const $ = id => document.getElementById(id);
@@ -291,6 +302,14 @@
     return parts.length ? parts.join("、") : "不用找";
   }
 
+  // 重畫後把鍵盤焦點放回同面額（沒了就放同一區第一個，再沒有就放另一區的同面額）
+  function refocus(zone, d) {
+    const other = zone === "wallet" ? "pay" : "wallet";
+    const sel = '[data-d="' + d + '"]';
+    const el = $(zone).querySelector(sel) || $(zone).querySelector(".money") || $(other).querySelector(sel) || $("submitBtn");
+    el.focus({ preventScroll: true });
+  }
+
   function render() {
     const q = QUESTIONS[qi];
     const cur = CUR[q.cur];
@@ -307,12 +326,14 @@
       const inWallet = q.wallet[d] - (state.paid[d] || 0);
       for (let i = 0; i < inWallet; i++) {
         const el = moneyEl(q.cur, d);
-        el.addEventListener("click", () => { if (state.done) return; state.paid[d] = (state.paid[d] || 0) + 1; render(); });
+        el.dataset.zone = "wallet"; el.dataset.d = d;
+        el.addEventListener("click", () => { if (state.done) return; state.paid[d] = (state.paid[d] || 0) + 1; render(); refocus("wallet", d); });
         wallet.appendChild(el);
       }
       for (let i = 0; i < (state.paid[d] || 0); i++) {
         const el = moneyEl(q.cur, d);
-        el.addEventListener("click", () => { if (state.done) return; state.paid[d]--; if (!state.paid[d]) delete state.paid[d]; render(); });
+        el.dataset.zone = "pay"; el.dataset.d = d;
+        el.addEventListener("click", () => { if (state.done) return; state.paid[d]--; if (!state.paid[d]) delete state.paid[d]; render(); refocus("pay", d); });
         pay.appendChild(el);
       }
     }
@@ -381,6 +402,7 @@
     if (!perfect) $("retryBtn").addEventListener("click", () => { state = { paid: {}, done: false }; res.className = "result"; render(); });
     $("nextBtn").addEventListener("click", next);
     render();
+    res.scrollIntoView({ behavior: "smooth", block: "start" }); // 結果在畫面下方，不捲過去會像沒反應
   }
 
   function show(id) {
@@ -416,8 +438,9 @@
     if (!document.body.classList.contains("present")) return;
     if (e.key === "Escape") $("presentBtn").click();
     const onQ = $("view-q").classList.contains("active");
-    if (e.key === "ArrowRight") { if (!onQ) goQuestion(0); else if (qi < QUESTIONS.length - 1) goQuestion(qi + 1); else next(); }
-    if (e.key === "ArrowLeft" && onQ) { if (qi > 0) goQuestion(qi - 1); else show("view-intro"); }
+    if (["PageDown", "PageUp"].includes(e.key)) e.preventDefault(); // 簡報筆
+    if (e.key === "ArrowRight" || e.key === "PageDown") { if (!onQ) goQuestion(0); else if (qi < QUESTIONS.length - 1) goQuestion(qi + 1); else next(); }
+    if ((e.key === "ArrowLeft" || e.key === "PageUp") && onQ) { if (qi > 0) goQuestion(qi - 1); else show("view-intro"); }
   });
 
   window.__coinQuiz = { QUESTIONS, evaluate, allOptions };
