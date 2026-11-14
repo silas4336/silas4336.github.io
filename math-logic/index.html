@@ -16,7 +16,7 @@
   .eyebrow { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; margin: 0; }
   h1 { font-size: clamp(30px, 5vw, 46px); margin: 6px 0 8px; }
   .lead { color: var(--muted); font-size: 17px; margin: 0 0 26px; line-height: 1.6; }
-  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(60, 40, 20, 0.06); }
   .card .icon { font-size: 40px; line-height: 1; }
   .card h2 { margin: 0; font-size: 23px; }
@@ -41,9 +41,24 @@
 <main>
   <p class="eyebrow">八大智能 · 數學邏輯智能</p>
   <h1>用邏輯玩遊戲</h1>
-  <p class="lead">三個小遊戲，一起練習推理、找規律和算最佳解。</p>
+  <p class="lead">一份問卷加三個小遊戲，一起練習推理、找規律和算最佳解。</p>
 
   <div class="grid">
+    <section class="card">
+      <span class="icon">📝</span>
+      <span class="tag">手機掃碼・大家一起填</span>
+      <h2>數學邏輯問卷</h2>
+      <p>你的生活想法被數學邏輯影響嗎？大家用手機填寫，回答會即時出現在主持人畫面上。</p>
+      <div class="qr">
+        <img src="survey-qr.svg" alt="數學邏輯問卷 QR code">
+        <small>手機相機對準掃描<br>就能開始填問卷</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="https://math-logic-survey.vercel.app/" target="_blank" rel="noopener">開啟問卷</a>
+        <button class="btn secondary" type="button" data-qr="survey">放大 QR 給大家掃</button>
+      </div>
+    </section>
+
     <section class="card">
       <span class="icon">🔮</span>
       <span class="tag">開場・主持人投影</span>
@@ -71,7 +86,7 @@
       </div>
       <div class="actions">
         <a class="btn" href="neko/">開始玩</a>
-        <button class="btn secondary" id="showQr" type="button">放大 QR 給大家掃</button>
+        <button class="btn secondary" type="button" data-qr="neko">放大 QR 給大家掃</button>
       </div>
     </section>
   </div>
@@ -79,15 +94,25 @@
   <footer>八大智能・數學邏輯組</footer>
 </main>
 
-<div id="qrBig" role="dialog" aria-label="貓咪數獨 QR code">
-  <h2>🐱 掃我玩貓咪數獨</h2>
-  <img src="neko-qr.svg" alt="貓咪數獨 QR code">
-  <p>silas4336.github.io/math-logic/neko/</p>
+<div id="qrBig" role="dialog" aria-label="QR code">
+  <h2 id="qrTitle"></h2>
+  <img id="qrImg" alt="">
+  <p id="qrUrl"></p>
 </div>
 
 <script>
+  const QR = {
+    neko:   { title: '🐱 掃我玩貓咪數獨',   img: 'neko-qr.svg',   url: 'silas4336.github.io/math-logic/neko/' },
+    survey: { title: '📝 掃我填數學邏輯問卷', img: 'survey-qr.svg', url: 'math-logic-survey.vercel.app' },
+  };
   const big = document.getElementById('qrBig');
-  document.getElementById('showQr').addEventListener('click', () => big.classList.add('on'));
+  document.querySelectorAll('[data-qr]').forEach(b => b.addEventListener('click', () => {
+    const q = QR[b.dataset.qr];
+    document.getElementById('qrTitle').textContent = q.title;
+    const img = document.getElementById('qrImg'); img.src = q.img; img.alt = q.title + ' QR code';
+    document.getElementById('qrUrl').textContent = q.url;
+    big.classList.add('on');
+  }));
   big.addEventListener('click', () => big.classList.remove('on'));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') big.classList.remove('on'); });
 </script>
