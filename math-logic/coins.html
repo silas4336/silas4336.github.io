@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>零錢最輕挑戰｜八大智能數學邏輯組</title>
+<style>
+  :root {
+    --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #7a6f66; --line: #e6dccf;
+    --accent: #0f766e; --accent-soft: #d8efe9; --warn: #c2410c; --good: #15803d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; }
+  header .mark { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 800; }
+  header h1 { font-size: 17px; margin: 0; flex: 1; }
+  .ghost { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  main { max-width: 760px; margin: 0 auto; padding: 0 16px 40px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px; margin-top: 14px; box-shadow: 0 6px 20px rgba(60, 40, 20, 0.06); }
+  .view { display: none; }
+  .view.active { display: block; animation: fade 0.25s ease-out; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+  h2 { margin: 0 0 8px; font-size: 26px; }
+  p { line-height: 1.7; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; margin: 0; }
+  .btn { border: 0; background: var(--accent); color: #fff; border-radius: 14px; padding: 13px 22px; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.secondary { background: var(--accent-soft); color: var(--accent); }
+  .example { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .example div { border-radius: 14px; padding: 12px 14px; background: #f3ece2; }
+  .example div.win { background: var(--accent-soft); }
+  .example b { display: block; font-size: 15px; }
+  .rules { padding-left: 20px; line-height: 1.9; margin: 8px 0 18px; }
+
+  .qhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .qhead .stars { color: #d97706; letter-spacing: 2px; }
+  .price { font-size: 44px; font-weight: 800; margin: 4px 0 2px; }
+  .price small { font-size: 16px; color: var(--muted); font-weight: 600; margin-right: 8px; }
+  .weights { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+  .weights span { font-size: 13px; background: #f3ece2; border-radius: 999px; padding: 4px 10px; }
+  .weights span.trap { background: #fde7d6; color: var(--warn); font-weight: 700; }
+  .zone-title { font-size: 14px; color: var(--muted); font-weight: 700; margin: 16px 0 8px; display: flex; justify-content: space-between; }
+  .zone { min-height: 72px; border-radius: 16px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .zone.wallet { background: #efe6da; }
+  .zone.pay { background: var(--accent-soft); border: 2px dashed #9fd3c7; }
+  .zone.pay:empty::before { content: "點錢包裡的鈔票或硬幣，放到這裡付給店員"; color: #5f9e93; font-size: 14px; padding: 0 6px; }
+  .money { border: 0; padding: 0; cursor: pointer; font: inherit; transition: transform 0.12s; position: relative; }
+  .money:hover { transform: translateY(-3px); }
+  .coin { border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #3b2f22;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15); }
+  .coin.hole::after { content: ""; position: absolute; width: 22%; height: 22%; border-radius: 50%; background: rgba(60,40,20,0.35); top: 39%; left: 39%; }
+  .coin.hole span { transform: translateY(-11px); font-size: 11px; }
+  .bill { width: 86px; height: 46px; border-radius: 6px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff;
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,0.35), 0 2px 4px rgba(0,0,0,0.15); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .stat { background: #f3ece2; border-radius: 14px; padding: 10px 12px; }
+  .stat small { display: block; color: var(--muted); font-size: 12px; font-weight: 700; }
+  .stat b { font-size: 20px; }
+  .stat.hl { background: #fff4d6; }
+  .change-list { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 40px; margin-top: 8px; }
+  .change-list .money { cursor: default; transform: scale(0.8); margin: -4px; }
+  .change-list .money:hover { transform: scale(0.8); }
+  .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .msg { margin-top: 10px; font-weight: 700; min-height: 1.5em; }
+  .msg.bad { color: var(--warn); }
+
+  .result { display: none; margin-top: 16px; border-radius: 18px; padding: 16px; background: #fff4d6; }
+  .result.show { display: block; animation: fade 0.25s ease-out; }
+  .result.perfect { background: #dcf3e2; }
+  .result h3 { margin: 0 0 6px; font-size: 22px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid rgba(0,0,0,0.08); vertical-align: top; }
+  tr.best td { font-weight: 800; color: var(--good); }
+  .lesson { margin: 10px 0 0; font-size: 15px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 17px; }
+
+  /* 投影模式 */
+  body.present main { max-width: 1180px; }
+  body.present .card { padding: 32px 40px; }
+  body.present h2 { font-size: 40px; }
+  body.present p, body.present .rules, body.present .lesson { font-size: 24px; }
+  body.present .price { font-size: 72px; }
+  body.present .weights span { font-size: 20px; padding: 6px 14px; }
+  body.present .money { zoom: 1.5; }
+  body.present .stat b { font-size: 30px; }
+  body.present table { font-size: 20px; }
+  body.present .btn { font-size: 22px; }
+  .keyhint { display: none; color: var(--muted); font-size: 14px; text-align: center; margin-top: 12px; }
+  body.present .keyhint { display: block; }
+  @media (max-width: 520px) {
+    .price { font-size: 36px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stats .stat:last-child { grid-column: span 2; }
+    .example { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <span class="mark">∑</span>
+  <h1>八大智能數學邏輯組</h1>
+  <button class="ghost" id="presentBtn" type="button">投影模式</button>
+</header>
+<main>
+  <section class="view active" id="view-intro">
+    <div class="card">
+      <p class="eyebrow">開場挑戰</p>
+      <h2>零錢最輕挑戰</h2>
+      <p>結帳時，你會怎麼掏錢？很多人其實每天都在不知不覺中解一道數學題：<b>怎麼付，找回來的零錢最少、口袋最輕？</b></p>
+      <p>例如身上有 102 元，要付 72 元：</p>
+      <div class="example">
+        <div><b>只給 100 元</b>找回 28 元：10 元 2 枚、5 元 1 枚、1 元 3 枚，口袋多了 6 枚硬幣。</div>
+        <div class="win"><b>給 102 元</b>找回 30 元：只有 10 元 3 枚，零錢少又輕。</div>
+      </div>
+      <p><b>規則</b></p>
+      <ol class="rules">
+        <li>鈔票不算重量，只算付完之後<b>身上所有硬幣的總重</b>（硬幣重量取約略值）。</li>
+        <li>店員找錢一定用最少的張數和枚數，鈔票能找就找鈔票。</li>
+        <li>三題：台幣 → 美金 → 日幣，一題比一題難。</li>
+      </ol>
+      <button class="btn" id="startBtn" type="button">開始挑戰</button>
+    </div>
+  </section>
+
+  <section class="view" id="view-q">
+    <div class="card">
+      <div class="qhead">
+        <p class="eyebrow" id="qLabel"></p>
+        <span class="stars" id="qStars"></span>
+      </div>
+      <div class="price"><small>要付</small><span id="qPrice"></span></div>
+      <div class="weights" id="qWeights"></div>
+
+      <div class="zone-title"><span>你的錢包（點一下拿出來）</span><span id="walletTotal"></span></div>
+      <div class="zone wallet" id="wallet"></div>
+      <div class="zone-title"><span>付給店員（點一下收回）</span><span id="payTotal"></span></div>
+      <div class="zone pay" id="pay"></div>
+
+      <div class="stats">
+        <div class="stat"><small>店員找你</small><b id="sChange">—</b></div>
+        <div class="stat"><small>付完後硬幣</small><b id="sCount">—</b></div>
+        <div class="stat hl"><small>付完後硬幣總重</small><b id="sWeight">—</b></div>
+      </div>
+      <div class="change-list" id="changeList"></div>
+      <div class="msg" id="msg"></div>
+
+      <div class="actions">
+        <button class="btn" id="submitBtn" type="button">就這樣付！</button>
+        <button class="btn secondary" id="resetBtn" type="button">全部收回</button>
+      </div>
+
+      <div class="result" id="result"></div>
+    </div>
+    <p class="keyhint">← → 切換題目　·　Esc 離開投影模式</p>
+  </section>
+
+  <section class="view" id="view-end">
+    <div class="card">
+      <p class="eyebrow">挑戰完成</p>
+      <h2>你的成績</h2>
+      <div id="summary"></div>
+      <p class="lesson">這就是<b>數學邏輯智能</b>：先把目標說清楚（零錢最輕），列出所有可能，再一一比較。硬幣越多種、重量越不照面額排，越需要有系統地思考。</p>
+      <div class="actions">
+        <button class="btn" id="againBtn" type="button">再玩一次</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const CUR = {
+    TW: {
+      name: "台幣", bills: [1000, 500, 100],
+      fmt: v => v.toLocaleString() + " 元",
+      coins: {
+        50: { w: 10, d: 28, c: "#e2c36b", label: "50" },
+        10: { w: 7.5, d: 26, c: "#d9dcde", label: "10" },
+        5: { w: 4, d: 22, c: "#d9dcde", label: "5" },
+        1: { w: 4, d: 20, c: "#d8a85a", label: "1" }
+      },
+      billColor: { 100: "#c2410c", 500: "#9a6b2f", 1000: "#2563eb" }
+    },
+    US: {
+      name: "美金", bills: [500, 100],
+      fmt: v => "$" + (v / 100).toFixed(2),
+      coinFmt: v => v + "¢",
+      coins: {
+        25: { w: 6, d: 24.26, c: "#d9dcde", label: "25¢" },
+        10: { w: 2, d: 17.91, c: "#d9dcde", label: "10¢" },
+        5: { w: 5.0, d: 21.21, c: "#d9dcde", label: "5¢" },
+        1: { w: 3, d: 19.05, c: "#c07a45", label: "1¢" }
+      },
+      billColor: { 100: "#4d7c57", 500: "#6b7f5a" }, billLabel: v => "$" + v / 100
+    },
+    JP: {
+      name: "日幣", bills: [10000, 5000, 1000],
+      fmt: v => v.toLocaleString() + " 円",
+      coins: {
+        500: { w: 7, d: 26.5, c: "#d8bd72", label: "500" },
+        100: { w: 5, d: 22.6, c: "#d9dcde", label: "100" },
+        50: { w: 4.0, d: 21, c: "#d9dcde", label: "50", hole: true },
+        10: { w: 5, d: 23.5, c: "#c07a45", label: "10" },
+        5: { w: 4, d: 22, c: "#dcb85a", label: "5", hole: true },
+        1: { w: 1.0, d: 20, c: "#eceff1", label: "1" }
+      },
+      billColor: { 1000: "#3b6ea8", 5000: "#8b5a9e", 10000: "#a1784a" }
+    }
+  };
+
+  const QUESTIONS = [
+    { cur: "TW", level: 1, title: "第 1 題・台幣", price: 87,
+      wallet: { 100: 1, 50: 1, 10: 1, 5: 1, 1: 2 },
+      lesson: "50 元雖然最重，這次卻用不上；硬塞出去，只會換回更多零錢。" },
+    { cur: "US", level: 2, title: "第 2 題・美金", price: 368,
+      wallet: { 100: 5, 25: 1, 10: 1, 5: 2, 1: 4 },
+      lesson: "硬幣最少 ≠ 最輕！10¢ 比 1¢ 還輕，換回 10¢ 反而划算。", trap: [10] },
+    { cur: "JP", level: 3, title: "第 3 題・日幣", price: 1386,
+      wallet: { 1000: 2, 500: 1, 100: 2, 50: 1, 10: 3, 5: 1, 1: 4 },
+      lesson: "要同時想兩件事：把零頭湊到找回的錢剛好是整數，還要把 50 円一起給出去，免得又找回一枚 50 円。", trap: [50] }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let qi = 0, state = null;
+  const results = [];
+
+  const isBill = (cur, d) => CUR[cur].bills.includes(+d);
+  const coinText = (cur, d) => CUR[cur].coinFmt ? CUR[cur].coinFmt(d) : d + (cur === "JP" ? " 円" : " 元");
+
+  function makeChange(cur, amount) {
+    const out = {};
+    const denoms = [...CUR[cur].bills, ...Object.keys(CUR[cur].coins).map(Number)].sort((a, b) => b - a);
+    for (const d of denoms) { const n = Math.floor(amount / d); if (n) { out[d] = n; amount -= n * d; } }
+    return out;
+  }
+
+  function evaluate(q, paid) {
+    const c = CUR[q.cur].coins;
+    let pay = 0;
+    for (const d in paid) pay += d * paid[d];
+    if (pay < q.price) return { pay, short: true };
+    const change = makeChange(q.cur, pay - q.price);
+    const left = {};
+    for (const d in q.wallet) if (c[d]) left[d] = q.wallet[d] - (paid[d] || 0);
+    for (const d in change) if (c[d]) left[d] = (left[d] || 0) + change[d];
+    let weight = 0, count = 0;
+    for (const d in left) { weight += c[d].w * left[d]; count += left[d]; }
+    return { pay, change, changeAmt: pay - q.price, weight: Math.round(weight * 1000) / 1000, count };
+  }
+
+  function allOptions(q) {
+    const ds = Object.keys(q.wallet).map(Number);
+    const out = [];
+    const rec = (i, paid) => {
+      if (i === ds.length) { const r = evaluate(q, paid); if (!r.short) out.push({ paid: { ...paid }, ...r }); return; }
+      for (let k = 0; k <= q.wallet[ds[i]]; k++) { if (k) paid[ds[i]] = k; else delete paid[ds[i]]; rec(i + 1, paid); }
+      delete paid[ds[i]];
+    };
+    rec(0, {});
+    out.sort((a, b) => a.weight - b.weight || a.pay - b.pay);
+    return out;
+  }
+
+  function moneyEl(cur, d) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "money";
+    if (isBill(cur, d)) {
+      b.classList.add("bill");
+      b.style.background = CUR[cur].billColor[d];
+      b.textContent = CUR[cur].billLabel ? CUR[cur].billLabel(d) : d.toLocaleString();
+      b.setAttribute("aria-label", CUR[cur].fmt(d) + " 鈔票");
+    } else {
+      const info = CUR[cur].coins[d];
+      const size = Math.round(info.d * 2.1);
+      b.classList.add("coin");
+      if (info.hole) b.classList.add("hole");
+      b.style.width = b.style.height = size + "px";
+      b.style.background = `radial-gradient(circle at 35% 30%, #ffffffaa, ${info.c} 55%)`;
+      b.innerHTML = `<span>${info.label}</span>`;
+      b.setAttribute("aria-label", coinText(cur, d) + " 硬幣 " + info.w + " 公克");
+    }
+    return b;
+  }
+
+  function sumOf(q, obj) { let s = 0; for (const d in obj) s += d * obj[d]; return s; }
+  function listText(q, obj) {
+    const parts = Object.keys(obj).map(Number).sort((a, b) => b - a).filter(d => obj[d])
+      .map(d => (isBill(q.cur, d) ? CUR[q.cur].fmt(d) + " 鈔" : coinText(q.cur, d)) + " ×" + obj[d]);
+    return parts.length ? parts.join("、") : "不用找";
+  }
+
+  function render() {
+    const q = QUESTIONS[qi];
+    const cur = CUR[q.cur];
+    $("qLabel").textContent = q.title;
+    $("qStars").textContent = "★".repeat(q.level) + "☆".repeat(3 - q.level);
+    $("qPrice").textContent = cur.fmt(q.price);
+    $("qWeights").innerHTML = Object.keys(cur.coins).map(Number).sort((a, b) => a - b)
+      .map(d => `<span class="${q.trap && q.trap.includes(d) ? "trap" : ""}">${coinText(q.cur, d)} ${cur.coins[d].w} g</span>`).join("");
+
+    const wallet = $("wallet"), pay = $("pay");
+    wallet.innerHTML = ""; pay.innerHTML = "";
+    const ds = Object.keys(q.wallet).map(Number).sort((a, b) => b - a);
+    for (const d of ds) {
+      const inWallet = q.wallet[d] - (state.paid[d] || 0);
+      for (let i = 0; i < inWallet; i++) {
+        const el = moneyEl(q.cur, d);
+        el.addEventListener("click", () => { if (state.done) return; state.paid[d] = (state.paid[d] || 0) + 1; render(); });
+        wallet.appendChild(el);
+      }
+      for (let i = 0; i < (state.paid[d] || 0); i++) {
+        const el = moneyEl(q.cur, d);
+        el.addEventListener("click", () => { if (state.done) return; state.paid[d]--; if (!state.paid[d]) delete state.paid[d]; render(); });
+        pay.appendChild(el);
+      }
+    }
+    $("walletTotal").textContent = "共 " + cur.fmt(sumOf(q, q.wallet) - sumOf(q, state.paid));
+    $("payTotal").textContent = "已付 " + cur.fmt(sumOf(q, state.paid));
+
+    const r = evaluate(q, state.paid);
+    const changeList = $("changeList");
+    changeList.innerHTML = "";
+    if (!Object.keys(state.paid).length) {
+      $("sChange").textContent = "—"; $("sCount").textContent = "—"; $("sWeight").textContent = "—";
+      $("msg").textContent = ""; $("submitBtn").disabled = true;
+    } else if (r.short) {
+      $("sChange").textContent = "—"; $("sCount").textContent = "—"; $("sWeight").textContent = "—";
+      $("msg").textContent = "還差 " + cur.fmt(q.price - r.pay);
+      $("msg").className = "msg bad"; $("submitBtn").disabled = true;
+    } else {
+      $("sChange").textContent = cur.fmt(r.changeAmt);
+      $("sCount").textContent = r.count + " 枚";
+      $("sWeight").textContent = r.weight.toFixed(1).replace(/\.0$/, "") + " g";
+      $("msg").textContent = ""; $("msg").className = "msg";
+      $("submitBtn").disabled = state.done;
+      for (const d of Object.keys(r.change).map(Number).sort((a, b) => b - a)) {
+        for (let i = 0; i < r.change[d]; i++) changeList.appendChild(moneyEl(q.cur, d));
+      }
+      if (!r.changeAmt) changeList.textContent = "剛剛好，不用找錢！";
+    }
+    $("resetBtn").disabled = state.done;
+  }
+
+  function g(w) { return (Math.round(w * 10) / 10) + " g"; }
+
+  function submit() {
+    const q = QUESTIONS[qi];
+    const cur = CUR[q.cur];
+    const mine = evaluate(q, state.paid);
+    const opts = allOptions(q);
+    const best = opts[0];
+    const billsOnly = opts.filter(o => Object.keys(o.paid).every(d => isBill(q.cur, d)))
+      .sort((a, b) => a.pay - b.pay)[0];
+    const perfect = mine.weight <= best.weight + 1e-9;
+    state.done = true;
+    results[qi] = { perfect, mine: mine.weight, best: best.weight };
+
+    const rows = [];
+    if (billsOnly && billsOnly.pay !== mine.pay) rows.push(["只給鈔票", billsOnly]);
+    rows.push(["你的付法", { paid: state.paid, ...mine }]);
+    if (!perfect) rows.push(["最輕的付法", best]);
+    const res = $("result");
+    res.className = "result show" + (perfect ? " perfect" : "");
+    res.innerHTML = `
+      <h3>${perfect ? "🎉 完美！這就是最輕的付法" : "差一點！最輕可以只剩 " + g(best.weight)}</h3>
+      ${perfect ? "" : `<p style="margin:0">你的付法比最輕多了 ${g(mine.weight - best.weight)}。</p>`}
+      <table>
+        <tr><th></th><th>付出</th><th>找回</th><th>付完後硬幣</th></tr>
+        ${rows.map(([name, o]) => `<tr class="${o.weight <= best.weight + 1e-9 ? "best" : ""}">
+          <td>${name}</td><td>${cur.fmt(o.pay)}<br><small>${listText(q, o.paid)}</small></td>
+          <td>${cur.fmt(o.changeAmt)}<br><small>${listText(q, o.change)}</small></td>
+          <td>${o.count} 枚<br>${g(o.weight)}</td></tr>`).join("")}
+      </table>
+      <p class="lesson">💡 ${q.lesson}</p>
+      <div class="actions">
+        ${perfect ? "" : `<button class="btn secondary" type="button" id="retryBtn">再試一次</button>`}
+        <button class="btn" type="button" id="nextBtn">${qi < QUESTIONS.length - 1 ? "下一題" : "看成績"}</button>
+      </div>`;
+    if (!perfect) $("retryBtn").addEventListener("click", () => { state = { paid: {}, done: false }; res.className = "result"; render(); });
+    $("nextBtn").addEventListener("click", next);
+    render();
+  }
+
+  function show(id) {
+    for (const v of document.querySelectorAll(".view")) v.classList.toggle("active", v.id === id);
+    window.scrollTo(0, 0);
+  }
+  function goQuestion(i) {
+    qi = i; state = { paid: {}, done: false };
+    $("result").className = "result";
+    show("view-q"); render();
+  }
+  function next() {
+    if (qi < QUESTIONS.length - 1) goQuestion(qi + 1);
+    else {
+      $("summary").innerHTML = QUESTIONS.map((q, i) => {
+        const r = results[i];
+        const cur = CUR[q.cur];
+        return `<div class="summary-row"><span>${q.title}</span><b>${r ? (r.perfect ? "🎉 最輕 " + g(r.best) : "你 " + g(r.mine) + "／最輕 " + g(r.best)) : "未作答"}</b></div>`;
+      }).join("");
+      show("view-end");
+    }
+  }
+
+  $("startBtn").addEventListener("click", () => goQuestion(0));
+  $("submitBtn").addEventListener("click", submit);
+  $("resetBtn").addEventListener("click", () => { state.paid = {}; render(); });
+  $("againBtn").addEventListener("click", () => { results.length = 0; show("view-intro"); });
+  $("presentBtn").addEventListener("click", () => {
+    document.body.classList.toggle("present");
+    $("presentBtn").textContent = document.body.classList.contains("present") ? "離開投影" : "投影模式";
+  });
+  document.addEventListener("keydown", e => {
+    if (!document.body.classList.contains("present")) return;
+    if (e.key === "Escape") $("presentBtn").click();
+    const onQ = $("view-q").classList.contains("active");
+    if (e.key === "ArrowRight") { if (!onQ) goQuestion(0); else if (qi < QUESTIONS.length - 1) goQuestion(qi + 1); else next(); }
+    if (e.key === "ArrowLeft" && onQ) { if (qi > 0) goQuestion(qi - 1); else show("view-intro"); }
+  });
+
+  window.__coinQuiz = { QUESTIONS, evaluate, allOptions };
+})();
+</script>
+</body>
+</html>

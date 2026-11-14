@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>數字讀心術｜八大智能數學邏輯組</title>
+<style>
+  :root { --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #7a6f66; --line: #e6dccf; --accent: #0f766e; --accent-soft: #d8efe9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  .deck { position: relative; height: 100vh; height: 100dvh; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 4vh 6vw 10vh; text-align: center; opacity: 0; pointer-events: none; transform: translateX(30px); transition: opacity 0.35s, transform 0.35s; }
+  .slide.active { opacity: 1; pointer-events: auto; transform: none; }
+  .slide.prev { transform: translateX(-30px); }
+  .eyebrow { color: var(--accent); font-weight: 800; letter-spacing: 0.12em; font-size: clamp(14px, 1.8vw, 22px); margin: 0 0 1vh; }
+  h1 { font-size: clamp(40px, 7vw, 96px); margin: 0 0 2vh; line-height: 1.15; }
+  h2 { font-size: clamp(28px, 4.2vw, 58px); margin: 0 0 2.5vh; line-height: 1.25; }
+  p, li { font-size: clamp(18px, 2.4vw, 32px); line-height: 1.6; margin: 0.6vh 0; }
+  .muted { color: var(--muted); }
+  .big-emoji { font-size: clamp(60px, 10vw, 140px); margin-bottom: 1vh; }
+  .steps { text-align: left; display: inline-block; margin: 0; padding-left: 1.4em; }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 0.2em 0.8em; font-weight: 800; }
+
+  /* 數字卡 */
+  .card-label { display: flex; align-items: center; gap: 0.6em; font-size: clamp(22px, 3vw, 40px); font-weight: 800; margin-bottom: 2vh; }
+  .card-label .dot { width: 0.9em; height: 0.9em; border-radius: 50%; }
+  .numcard { background: var(--card); border-radius: 24px; padding: clamp(12px, 2.4vh, 28px) clamp(14px, 2.4vw, 36px);
+    box-shadow: 0 10px 30px rgba(60, 40, 20, 0.1); border-top: 10px solid var(--c); }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(4px, 0.8vh, 10px) clamp(6px, 1.2vw, 18px); }
+  .grid span { font-size: clamp(20px, min(3.4vw, 5.2vh), 54px); font-weight: 800; font-variant-numeric: tabular-nums; min-width: 2.1em; padding: 0.05em 0; border-radius: 10px; }
+  .answer { display: flex; gap: 16px; margin-top: 3vh; }
+  .ans { border: 0; font: inherit; font-weight: 800; font-size: clamp(18px, 2.2vw, 28px); padding: 0.55em 1.6em; border-radius: 16px; cursor: pointer; }
+  .ans.yes { background: var(--accent); color: #fff; }
+  .ans.no { background: #e9e0d4; color: var(--ink); }
+  .ans.picked { outline: 4px solid #f59e0b; outline-offset: 3px; }
+  .question { font-size: clamp(20px, 2.6vw, 34px); font-weight: 800; margin-top: 2vh; }
+
+  /* 揭曉 */
+  .reveal-num { font-size: clamp(110px, 22vw, 280px); font-weight: 900; color: var(--accent); line-height: 1; margin: 2vh 0; transition: transform 0.5s; }
+  .reveal-num.hidden-num { color: transparent; text-shadow: 0 0 40px rgba(15, 118, 110, 0.6); }
+  .btn { border: 0; background: var(--accent); color: #fff; border-radius: 16px; padding: 0.6em 1.6em; font: inherit; font-weight: 800; font-size: clamp(18px, 2.2vw, 28px); cursor: pointer; }
+  .btn.soft { background: var(--accent-soft); color: var(--accent); }
+
+  /* 解謎 */
+  .chips { display: flex; gap: clamp(8px, 1.4vw, 20px); justify-content: center; flex-wrap: wrap; margin: 2vh 0; }
+  .chip { min-width: 3.2em; padding: 0.4em 0.6em; border-radius: 18px; background: var(--card); box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08);
+    font-size: clamp(24px, 3.6vw, 48px); font-weight: 900; border-top: 8px solid var(--c); }
+  .chip small { display: block; font-size: 0.38em; color: var(--muted); font-weight: 700; }
+  .chip.off { opacity: 0.25; }
+  .eq { font-size: clamp(26px, 4vw, 56px); font-weight: 900; margin: 2vh 0; }
+  .bits { display: flex; gap: clamp(8px, 1.4vw, 20px); justify-content: center; margin: 2vh 0; }
+  .bit { width: clamp(64px, 9vw, 120px); padding: 1vh 0; border-radius: 18px; background: #e9e0d4; transition: background 0.25s, color 0.25s; }
+  .bit .lamp { font-size: clamp(32px, 5vw, 64px); font-weight: 900; }
+  .bit small { display: block; font-size: clamp(13px, 1.5vw, 20px); font-weight: 700; color: var(--muted); }
+  .bit.on { background: #fde68a; }
+  .bit.on .lamp { color: #92400e; }
+  .try { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .try input { font: inherit; font-size: clamp(24px, 3.2vw, 44px); font-weight: 800; width: 3.6em; text-align: center; border: 3px solid var(--line); border-radius: 16px; padding: 0.15em; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; text-align: left; max-width: 1200px; }
+  .box { background: var(--card); border-radius: 22px; padding: 2.4vh 2.4vw; box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08); }
+  .box h3 { margin: 0 0 1vh; font-size: clamp(20px, 2.6vw, 34px); color: var(--accent); }
+
+  /* 導覽 */
+  nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 10px 16px; z-index: 5; }
+  nav button { border: 1px solid var(--line); background: var(--card); color: var(--ink); width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+  nav button.text { width: auto; border-radius: 999px; padding: 0 16px; font: inherit; font-size: 14px; }
+  .progress { flex: 1; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); transition: width 0.3s; }
+  .count { font-size: 14px; color: var(--muted); min-width: 4em; text-align: right; font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide">
+    <p class="eyebrow">八大智能數學邏輯組</p>
+    <div class="big-emoji">🔮</div>
+    <h1>數字讀心術</h1>
+    <p class="muted">只要回答 6 次「有」或「沒有」，我就知道你心裡想的數字</p>
+  </section>
+
+  <section class="slide">
+    <h2>遊戲規則</h2>
+    <ol class="steps">
+      <li>在心裡選一個 <span class="pill">1 ～ 60</span> 的數字，不要說出來</li>
+      <li>接下來會出現 <b>6 張數字卡</b></li>
+      <li>每張卡只要回答：你的數字<b>有沒有</b>在上面？</li>
+      <li>6 張看完，讀心師就會說出你的數字！</li>
+    </ol>
+  </section>
+
+  <!-- 6 張數字卡由程式產生，插在這裡 -->
+  <div id="cardSlot" hidden></div>
+
+  <section class="slide" id="revealSlide">
+    <p class="eyebrow">讀心時刻</p>
+    <h2>你心裡想的數字是……</h2>
+    <div class="reveal-num hidden-num" id="revealNum">?</div>
+    <p class="muted" id="revealNote">按下按鈕揭曉</p>
+    <div class="answer">
+      <button class="btn" type="button" id="revealBtn">揭曉！</button>
+      <button class="btn soft" type="button" id="restartBtn">再玩一次</button>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 1</p>
+    <h2>秘密藏在每張卡的「第一個數字」</h2>
+    <div class="chips" id="firstChips"></div>
+    <p>把你回答「<b>有</b>」的那幾張卡，第一個數字<b>加起來</b>，就是答案。</p>
+    <div class="eq" id="exampleEq"></div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 2</p>
+    <h2>1、2、4、8、16、32 是一排「開關」</h2>
+    <p>每一個數字，都能用這 6 個數字<b>剛好一種</b>方法加出來。<br>開＝1，關＝0，這就是電腦用的<b>二進位</b>。</p>
+    <div class="bits" id="bits"></div>
+    <div class="try">
+      <p>試試看：</p>
+      <input type="number" id="tryNum" min="1" max="63" value="45" aria-label="輸入 1 到 63 的數字">
+      <p class="eq" id="tryEq" style="margin:0"></p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">解謎 3</p>
+    <h2>每張卡，就是一個開關</h2>
+    <div class="two-col">
+      <div class="box">
+        <h3>卡片怎麼做出來？</h3>
+        <p>第 1 張卡：所有「1 號開關」打開的數字</p>
+        <p>第 2 張卡：所有「2 號開關」打開的數字</p>
+        <p>……以此類推到第 6 張（32）</p>
+        <p class="muted">所以你回答「有／沒有」，其實就是在告訴我每個開關是開還是關。</p>
+      </div>
+      <div class="box">
+        <h3>為什麼是 6 張、到 60？</h3>
+        <p>6 個開關最大能加到<br><b>1+2+4+8+16+32 = 63</b></p>
+        <p>所以 6 張卡最多能猜 1 ～ 63。</p>
+        <p class="muted">想猜到 100？再加一張「64」的卡，7 張就夠了！</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">數學邏輯智能</p>
+    <h2>每問一次，可能的答案就少一半</h2>
+    <div class="chips">
+      <div class="chip" style="--c:#0f766e">60<small>開始</small></div>
+      <div class="chip" style="--c:#0f766e">30<small>1 題後</small></div>
+      <div class="chip" style="--c:#0f766e">15<small>2 題後</small></div>
+      <div class="chip" style="--c:#0f766e">8<small>3 題後</small></div>
+      <div class="chip" style="--c:#0f766e">4<small>4 題後</small></div>
+      <div class="chip" style="--c:#0f766e">2<small>5 題後</small></div>
+      <div class="chip" style="--c:#0f766e">1<small>6 題後</small></div>
+    </div>
+    <p>「猜數字」「二十個問題」、電腦存檔、QR Code，<br>背後都是同一個想法：<b>用「是／否」一步步縮小範圍</b>。</p>
+    <p class="muted">讀心術不是魔法，是邏輯。</p>
+  </section>
+
+</div>
+
+<nav>
+  <button type="button" id="prevBtn" aria-label="上一頁">←</button>
+  <button type="button" id="nextBtn" aria-label="下一頁">→</button>
+  <div class="progress"><i id="bar"></i></div>
+  <span class="count" id="count"></span>
+  <button type="button" class="text" id="fsBtn">全螢幕</button>
+</nav>
+
+<script>
+(() => {
+  const MAX = 60;
+  const CARDS = [
+    { v: 1, name: "紅色卡", c: "#ef6f6c" },
+    { v: 2, name: "橘色卡", c: "#f2a541" },
+    { v: 4, name: "黃色卡", c: "#e3c23d" },
+    { v: 8, name: "綠色卡", c: "#5bb37a" },
+    { v: 16, name: "藍色卡", c: "#4f8fd6" },
+    { v: 32, name: "紫色卡", c: "#9a7bd5" }
+  ];
+  const answers = Array(CARDS.length).fill(null);
+  const $ = id => document.getElementById(id);
+
+  // 產生 6 張數字卡
+  const slot = $("cardSlot");
+  CARDS.forEach((card, i) => {
+    const s = document.createElement("section");
+    s.className = "slide card-slide";
+    const nums = [];
+    for (let n = 1; n <= MAX; n++) if (n & card.v) nums.push(n);
+    s.innerHTML = `
+      <div class="card-label"><span class="dot" style="background:${card.c}"></span>第 ${i + 1} 張・${card.name}</div>
+      <div class="numcard" style="--c:${card.c}"><div class="grid">${nums.map(n => `<span>${n}</span>`).join("")}</div></div>
+      <p class="question">你的數字有在這張卡上嗎？</p>
+      <div class="answer">
+        <button class="ans yes" type="button" data-card="${i}" data-val="1">有</button>
+        <button class="ans no" type="button" data-card="${i}" data-val="0">沒有</button>
+      </div>`;
+    slot.before(s);
+  });
+  slot.remove();
+
+  const slides = [...document.querySelectorAll(".slide")];
+  let idx = 0;
+  function go(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => { s.classList.toggle("active", i === idx); s.classList.toggle("prev", i < idx); });
+    $("bar").style.width = ((idx + 1) / slides.length * 100) + "%";
+    $("count").textContent = (idx + 1) + " / " + slides.length;
+  }
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".ans");
+    if (!b) return;
+    const i = +b.dataset.card;
+    answers[i] = +b.dataset.val;
+    b.parentElement.querySelectorAll(".ans").forEach(x => x.classList.toggle("picked", x === b));
+    setTimeout(() => go(idx + 1), 250);
+  });
+
+  function resetReveal() {
+    $("revealNum").textContent = "?";
+    $("revealNum").classList.add("hidden-num");
+    $("revealNote").textContent = "按下按鈕揭曉";
+  }
+  $("revealBtn").addEventListener("click", () => {
+    const missing = answers.findIndex(a => a === null);
+    const el = $("revealNum");
+    if (missing >= 0) { $("revealNote").textContent = `第 ${missing + 1} 張卡還沒回答喔`; return; }
+    const sum = CARDS.reduce((s, c, i) => s + (answers[i] ? c.v : 0), 0);
+    el.classList.remove("hidden-num");
+    if (sum === 0) { el.textContent = "?"; $("revealNote").textContent = "每張都說沒有？1～60 的數字一定會出現在某張卡上，再想一次吧！"; return; }
+    if (sum > MAX) { el.textContent = "?"; $("revealNote").textContent = "咦，好像有一張答錯了，再玩一次看看！"; return; }
+    let shown = 0;
+    const timer = setInterval(() => {
+      shown = Math.floor(Math.random() * MAX) + 1;
+      el.textContent = shown;
+    }, 60);
+    setTimeout(() => { clearInterval(timer); el.textContent = sum; $("revealNote").textContent = "猜對了嗎？"; }, 1200);
+  });
+  $("restartBtn").addEventListener("click", () => {
+    answers.fill(null);
+    document.querySelectorAll(".ans.picked").forEach(x => x.classList.remove("picked"));
+    resetReveal();
+    go(1);
+  });
+
+  // 解謎 1
+  $("firstChips").innerHTML = CARDS.map((c, i) => `<div class="chip" style="--c:${c.c}">${c.v}<small>第 ${i + 1} 張</small></div>`).join("");
+  $("exampleEq").innerHTML = "例：想 45 → 第 1、3、4、6 張有<br>1 + 4 + 8 + 32 = <span style='color:var(--accent)'>45</span>";
+
+  // 解謎 2：開關
+  const bitsEl = $("bits");
+  const order = [...CARDS].reverse();
+  bitsEl.innerHTML = order.map(c => `<div class="bit" data-v="${c.v}"><div class="lamp">0</div><small>${c.v}</small></div>`).join("");
+  function showBits() {
+    let n = Math.max(1, Math.min(63, parseInt($("tryNum").value, 10) || 1));
+    const parts = [];
+    bitsEl.querySelectorAll(".bit").forEach(b => {
+      const v = +b.dataset.v, on = (n & v) !== 0;
+      b.classList.toggle("on", on);
+      b.querySelector(".lamp").textContent = on ? "1" : "0";
+      if (on) parts.push(v);
+    });
+    $("tryEq").textContent = "= " + parts.join(" + ");
+  }
+  $("tryNum").addEventListener("input", showBits);
+  showBits();
+
+  // 導覽
+  $("prevBtn").addEventListener("click", () => go(idx - 1));
+  $("nextBtn").addEventListener("click", () => go(idx + 1));
+  $("fsBtn").addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT") return;
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(idx + 1); }
+    if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); go(idx - 1); }
+    if (e.key === "f" || e.key === "F") $("fsBtn").click();
+  });
+  let tx = null;
+  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(idx + (dx < 0 ? 1 : -1));
+    tx = null;
+  });
+  go(0);
+})();
+</script>
+</body>
+</html>
