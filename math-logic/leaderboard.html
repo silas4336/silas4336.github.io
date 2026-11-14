@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22white%22 font-weight=%22bold%22%3E%E2%88%91%3C/text%3E%3C/svg%3E">
+<title>貓咪數獨｜即時排行榜</title>
+<style>
+  :root {
+    --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #6b6159; --line: #e6dccf;
+    --accent: #0f766e; --accent-soft: #d8efe9; --gold: #b7791f; --silver: #7a8591; --bronze: #a0623b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh;
+  }
+  main { max-width: 1400px; margin: 0 auto; padding: 24px 24px 40px; display: flex; flex-direction: column; gap: 18px; }
+
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; }
+  .eyebrow { margin: 0; color: var(--accent); font-weight: 800; font-size: 15px; letter-spacing: 0.08em; }
+  h1 { margin: 4px 0 0; font-size: clamp(30px, 4.4vw, 52px); line-height: 1.1; }
+  .status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 16px; font-weight: 700; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: #9ca3af; flex: none; }
+  .dot.live { background: #16a34a; box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18); }
+  .dot.err { background: #dc2626; }
+  .tool-btn {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 12px; min-height: 44px; padding: 0 16px;
+    font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* 選題目 */
+  .picker { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .picker-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .picker-label { flex: none; width: 4.5em; font-size: 15px; font-weight: 800; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    position: relative;
+    border: 2px solid var(--line); background: #fff; color: var(--ink);
+    border-radius: 14px; min-height: 48px; min-width: 64px; padding: 4px 14px;
+    font: inherit; font-size: 18px; font-weight: 800; cursor: pointer;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15;
+  }
+  .chip small { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .chip.has { border-color: #9fd3c9; }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip.active small { color: #d8efe9; }
+  .chip:disabled { opacity: 0.45; cursor: default; }
+  .chip:focus-visible, .tool-btn:focus-visible, .card-group:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+  /* 單一題目大表 */
+  .board { background: var(--card); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: 0 6px 20px rgba(60, 40, 20, 0.06); }
+  .board-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 18px 24px; background: var(--accent-soft); }
+  .board-head h2 { margin: 0; font-size: clamp(26px, 3.4vw, 40px); }
+  .board-head .meta { font-size: clamp(16px, 1.8vw, 22px); font-weight: 700; color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 12px 18px; text-align: left; }
+  th { font-size: 15px; letter-spacing: 0.08em; color: var(--muted); border-bottom: 2px solid var(--line); }
+  td { font-size: clamp(20px, 2.3vw, 30px); border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pos { width: 3.2em; }
+  .pos span {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.7em; height: 1.7em; border-radius: 50%;
+    font-weight: 900; font-variant-numeric: tabular-nums; color: var(--muted); background: #f1ebe2;
+  }
+  tr.r1 .pos span { background: var(--gold); color: #fff; }
+  tr.r2 .pos span { background: var(--silver); color: #fff; }
+  tr.r3 .pos span { background: var(--bronze); color: #fff; }
+  tr.r1 td { background: #fff8e6; }
+  .name { font-weight: 800; overflow-wrap: anywhere; }
+  .time { font-weight: 900; color: var(--accent); }
+  td.soft { color: var(--muted); font-weight: 600; font-size: clamp(15px, 1.6vw, 21px); }
+
+  /* 全部題目總覽 */
+  .overview { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr)); }
+  .card-group {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+    text-align: left; font: inherit; color: inherit; padding: 0; cursor: pointer;
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch;
+    box-shadow: 0 4px 14px rgba(60, 40, 20, 0.05);
+  }
+  .card-group:hover { border-color: var(--accent); }
+  .card-group header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 12px 16px; background: var(--accent-soft); }
+  .card-group h3 { margin: 0; font-size: 22px; }
+  .card-group header span { font-size: 15px; font-weight: 700; color: var(--accent); }
+  .card-group ol { list-style: none; margin: 0; padding: 6px 0; }
+  .card-group li { display: grid; grid-template-columns: 2em minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 16px; font-size: 19px; }
+  .card-group li b { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .card-group li .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-group li .time { font-variant-numeric: tabular-nums; }
+  .card-group li:first-child b { color: var(--gold); }
+  .card-group .more { padding: 4px 16px 12px; font-size: 14px; color: var(--muted); font-weight: 700; }
+
+  .empty { white-space: pre-line; background: var(--card); border: 2px dashed var(--line); border-radius: 22px; padding: 48px 20px; text-align: center; font-size: clamp(18px, 2vw, 24px); color: var(--muted); line-height: 1.6; }
+  .hint { margin: 0; text-align: center; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 640px) {
+    main { padding: 16px 12px 32px; gap: 14px; }
+    .picker { padding: 12px; }
+    .picker-row { align-items: flex-start; flex-direction: column; gap: 6px; }
+    .chip { min-width: 54px; font-size: 16px; padding: 4px 10px; }
+    th, td { padding: 10px 10px; }
+    th { font-size: 13px; }
+    .col-try, .col-at { display: none; }
+    .board-head { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <p class="eyebrow">貓咪數獨 · 計時挑戰</p>
+      <h1 id="title">即時排行榜</h1>
+    </div>
+    <div class="status">
+      <span class="dot" id="dot"></span>
+      <span id="statusText">連線中…</span>
+      <button type="button" class="tool-btn" id="fullBtn">全螢幕</button>
+    </div>
+  </div>
+
+  <section class="picker" aria-label="選擇題目">
+    <div class="picker-row">
+      <span class="picker-label">盤面</span>
+      <div class="chips" id="sizeChips"></div>
+    </div>
+    <div class="picker-row">
+      <span class="picker-label">題目</span>
+      <div class="chips" id="variantChips"></div>
+    </div>
+  </section>
+
+  <div id="view" aria-live="polite"></div>
+  <p class="hint">每 5 秒自動更新。鍵盤 ←／→ 切換有成績的題目，按 A 回到全部題目。</p>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  // 只讀取排行榜；不寫入任何資料
+  const SCORE_SERVER = "https://silas-neko-sudoku.vercel.app";
+  const API_BASE = /\.github\.io$/.test(location.hostname) || location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+    ? SCORE_SERVER : "";
+  const POLL_MS = 5000;
+  const SIZES = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  const VARIANTS = 3;
+  const DIFFICULTY = {
+    4: "輕鬆", 5: "小試", 6: "普通", 7: "進階", 8: "困難", 9: "專家",
+    10: "大師", 11: "宗師", 12: "傳說", 13: "神話"
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const sizeChipsEl = $("sizeChips");
+  const variantChipsEl = $("variantChips");
+  const viewEl = $("view");
+  const dotEl = $("dot");
+  const statusEl = $("statusText");
+  const titleEl = $("title");
+
+  // 選擇狀態：size = null 代表「全部」；variant = null 代表該盤面的全部題目
+  let sel = parseHash();
+  let data = null;
+  let lastOk = 0;
+
+  function parseHash() {
+    const m = location.hash.match(/^#(\d{1,2})(?:-(\d))?$/);
+    if (!m || !SIZES.includes(Number(m[1]))) return { size: null, variant: null };
+    const v = m[2] ? Number(m[2]) : null;
+    return { size: Number(m[1]), variant: v >= 1 && v <= VARIANTS ? v : null };
+  }
+
+  function writeHash() {
+    const hash = sel.size == null ? "" : "#" + sel.size + (sel.variant ? "-" + sel.variant : "");
+    history.replaceState(null, "", location.pathname + location.search + hash);
+  }
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function fmtTime(ms) {
+    const tenths = Math.max(0, Math.floor(ms / 100));
+    const min = Math.floor(tenths / 600);
+    const sec = Math.floor((tenths % 600) / 10);
+    return String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0") + "." + (tenths % 10);
+  }
+
+  function fmtClock(value) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "—";
+    return [d.getHours(), d.getMinutes(), d.getSeconds()].map((n) => String(n).padStart(2, "0")).join(":");
+  }
+
+  function fmtDate(value) {
+    const m = String(value || "").match(/^\d{4}-(\d{2})-(\d{2})$/);
+    const d = new Date();
+    return m ? Number(m[1]) + "月" + Number(m[2]) + "日" : (d.getMonth() + 1) + "月" + d.getDate() + "日";
+  }
+
+  function groups() { return data && Array.isArray(data.groups) ? data.groups : []; }
+  function findGroup(size, variant) { return groups().find((g) => g.size === size && g.variant === variant) || null; }
+  function countFor(size, variant) {
+    return groups().filter((g) => g.size === size && (variant == null || g.variant === variant))
+      .reduce((sum, g) => sum + g.count, 0);
+  }
+
+  function select(size, variant) {
+    sel = { size, variant };
+    writeHash();
+    render();
+  }
+
+  function chip(label, sub, active, has, onClick) {
+    const btn = el("button", "chip" + (active ? " active" : "") + (has ? " has" : ""));
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+    btn.append(document.createTextNode(label));
+    if (sub) btn.append(el("small", null, sub));
+    btn.addEventListener("click", onClick);
+    return btn;
+  }
+
+  function renderChips() {
+    const total = groups().reduce((sum, g) => sum + g.count, 0);
+    sizeChipsEl.replaceChildren(
+      chip("全部", total + " 筆", sel.size == null, total > 0, () => select(null, null)),
+      ...SIZES.map((n) => {
+        const c = countFor(n, null);
+        return chip(n + "×" + n, c ? c + " 筆" : DIFFICULTY[n], sel.size === n, c > 0, () => select(n, sel.size === n ? sel.variant : null));
+      })
+    );
+    const variantBtns = [];
+    const sizeOn = sel.size != null;
+    const allBtn = chip("全部", sizeOn ? countFor(sel.size, null) + " 筆" : "", sizeOn && sel.variant == null, false, () => select(sel.size, null));
+    allBtn.disabled = !sizeOn;
+    variantBtns.push(allBtn);
+    for (let v = 1; v <= VARIANTS; v++) {
+      const c = sizeOn ? countFor(sel.size, v) : 0;
+      const b = chip("第 " + v + " 題", sizeOn ? (c ? c + " 筆" : "尚無") : "", sizeOn && sel.variant === v, c > 0, () => select(sel.size, v));
+      b.disabled = !sizeOn;
+      variantBtns.push(b);
+    }
+    variantChipsEl.replaceChildren(...variantBtns);
+  }
+
+  function renderTable(group) {
+    const wrap = el("section", "board");
+    const head = el("div", "board-head");
+    head.append(
+      el("h2", null, group.size + "×" + group.size + " · 第 " + group.variant + " 題"),
+      el("span", "meta", "共 " + group.count + " 人 · 最佳 " + fmtTime(group.best))
+    );
+    const table = el("table");
+    const thead = el("thead");
+    const hr = el("tr");
+    [["名次", "pos"], ["玩家", ""], ["成績", "num"], ["失誤", "num"], ["第幾次", "num col-try"], ["完成時間", "num col-at"]]
+      .forEach(([t, c]) => hr.append(el("th", c, t)));
+    thead.append(hr);
+    const tbody = el("tbody");
+    group.scores.forEach((s, i) => {
+      const tr = el("tr", i < 3 ? "r" + (i + 1) : "");
+      const pos = el("td", "pos");
+      pos.append(el("span", null, String(i + 1)));
+      tr.append(
+        pos,
+        el("td", "name", s.name || "未命名"),
+        el("td", "num time", fmtTime(s.time)),
+        el("td", "num", s.mistakes != null ? String(s.mistakes) : "—"),
+        el("td", "num soft col-try", s.attempt != null ? "第 " + s.attempt + " 次" : "—"),
+        el("td", "num soft col-at", fmtClock(Number(s.at)))
+      );
+      tbody.append(tr);
+    });
+    table.append(thead, tbody);
+    wrap.append(head, table);
+    return wrap;
+  }
+
+  function renderOverview(list) {
+    const grid = el("div", "overview");
+    for (const g of list) {
+      const card = el("button", "card-group");
+      card.type = "button";
+      card.setAttribute("aria-label", "查看 " + g.size + "×" + g.size + " 第 " + g.variant + " 題完整排名");
+      const header = el("header");
+      header.append(el("h3", null, g.size + "×" + g.size + " · 第 " + g.variant + " 題"), el("span", null, g.count + " 人"));
+      const ol = el("ol");
+      g.scores.slice(0, 5).forEach((s, i) => {
+        const li = el("li");
+        li.append(el("b", null, (i + 1) + "."), el("span", "name", s.name || "未命名"), el("span", "time", fmtTime(s.time)));
+        ol.append(li);
+      });
+      card.append(header, ol);
+      if (g.count > 5) card.append(el("div", "more", "還有 " + (g.count - 5) + " 人，點開看完整排名"));
+      card.addEventListener("click", () => select(g.size, g.variant));
+      grid.append(card);
+    }
+    return grid;
+  }
+
+  function render() {
+    renderChips();
+    const dateText = data ? fmtDate(data.date) : "";
+    if (!data) {
+      viewEl.replaceChildren(el("div", "empty", lastOk ? "暫時連不上排行榜，正在重試…" : "正在讀取排行榜…"));
+      return;
+    }
+    if (sel.size == null) {
+      titleEl.textContent = dateText + " 即時排行榜";
+      const list = groups();
+      viewEl.replaceChildren(list.length ? renderOverview(list) : el("div", "empty", "今天還沒有人完成計時挑戰。\n有人完成後會自動出現在這裡。"));
+      return;
+    }
+    if (sel.variant == null) {
+      titleEl.textContent = sel.size + "×" + sel.size + " 排行榜";
+      const list = groups().filter((g) => g.size === sel.size);
+      viewEl.replaceChildren(list.length ? renderOverview(list) : el("div", "empty", sel.size + "×" + sel.size + " 今天還沒有成績。"));
+      return;
+    }
+    titleEl.textContent = sel.size + "×" + sel.size + " 第 " + sel.variant + " 題";
+    const g = findGroup(sel.size, sel.variant);
+    viewEl.replaceChildren(g ? renderTable(g) : el("div", "empty", "這個題目今天還沒有成績。\n有人完成後會自動出現在這裡。"));
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(API_BASE + "/api/scores/today", { cache: "no-store" });
+      if (!res.ok) throw new Error("連線失敗（" + res.status + "）");
+      const json = await res.json();
+      if (!json || !Array.isArray(json.groups)) throw new Error("資料格式不正確");
+      data = json;
+      lastOk = Date.now();
+      dotEl.className = "dot live";
+      statusEl.textContent = "即時更新中 · " + fmtClock(lastOk);
+    } catch (err) {
+      // 連線失敗時保留上一次的資料，只更新狀態，下一輪自動重試
+      dotEl.className = "dot err";
+      const reason = err instanceof TypeError || !(err && err.message) ? "連不上排行榜" : err.message;
+      statusEl.textContent = reason + "，5 秒後重試" + (lastOk ? "（上次更新 " + fmtClock(lastOk) + "）" : "");
+    }
+    render();
+  }
+
+  // ←／→ 在「有成績的題目」之間切換，適合簡報筆
+  function step(dir) {
+    const list = groups();
+    if (!list.length) return;
+    let i = list.findIndex((g) => g.size === sel.size && g.variant === sel.variant);
+    if (i < 0) i = dir > 0 ? -1 : list.length;
+    const next = list[(i + dir + list.length) % list.length];
+    select(next.size, next.variant);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); step(1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); step(-1); }
+    else if (e.key === "a" || e.key === "A" || e.key === "Escape") { if (!document.fullscreenElement || e.key !== "Escape") select(null, null); }
+  });
+
+  window.addEventListener("hashchange", () => { sel = parseHash(); render(); });
+
+  $("fullBtn").addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  });
+
+  render();
+  load();
+  setInterval(() => { if (!document.hidden) load(); }, POLL_MS);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+})();
+</script>
+</body>
+</html>
