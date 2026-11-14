@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22white%22 font-weight=%22bold%22%3E%E2%88%91%3C/text%3E%3C/svg%3E">
+<title>主持流程｜八大智能數學邏輯組</title>
+<style>
+  :root { --bg: #f6f1ea; --card: #fffdf9; --ink: #2f2a26; --muted: #6b6159; --line: #e6dccf; --accent: #0f766e; --accent-soft: #d8efe9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  .deck { position: relative; height: 100vh; height: 100dvh; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 3vh 6vw 10vh; text-align: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s; }
+  .slide.active { opacity: 1; visibility: visible; pointer-events: auto; }
+  .slide:focus { outline: none; }
+  .eyebrow { color: var(--accent); font-weight: 800; letter-spacing: 0.12em; font-size: clamp(14px, 1.8vw, 22px); margin: 0 0 1vh; }
+  h1 { font-size: clamp(40px, 7vw, 96px); margin: 0 0 3vh; line-height: 1.15; }
+  h2 { font-size: clamp(30px, 5vw, 68px); margin: 0 0 2vh; line-height: 1.2; }
+  p { font-size: clamp(18px, 2.4vw, 32px); line-height: 1.6; margin: 0.6vh 0; }
+  .muted { color: var(--muted); }
+  .big-emoji { font-size: clamp(60px, 10vw, 140px); line-height: 1.1; margin-bottom: 1vh; }
+  .flow { display: flex; gap: clamp(8px, 1.4vw, 20px); flex-wrap: wrap; justify-content: center; margin: 2vh 0 3vh; padding: 0; list-style: none; }
+  .flow li { background: var(--card); border-radius: 20px; box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08); padding: 1.6vh 1.6vw; min-width: 9em;
+    font-size: clamp(18px, 2.2vw, 30px); font-weight: 800; border-top: 8px solid var(--accent); }
+  .flow li span { display: block; font-size: 1.6em; }
+  .flow li small { display: block; font-size: 0.6em; color: var(--muted); font-weight: 700; }
+  .qrwrap { display: flex; flex-direction: column; align-items: center; gap: 1.5vh; }
+  .qrwrap img { width: min(56vh, 80vw); height: auto; background: #fff; border-radius: 16px; padding: 1vh; box-shadow: 0 6px 18px rgba(60, 40, 20, 0.08); }
+  .url { font-size: clamp(16px, 2vw, 26px); color: var(--muted); word-break: break-all; margin: 0; }
+  .go { display: inline-block; margin-top: 3vh; border: 0; background: var(--accent); color: #fff; border-radius: 16px; padding: 0.6em 1.6em;
+    font: inherit; font-weight: 800; font-size: clamp(20px, 2.4vw, 32px); text-decoration: none; cursor: pointer; }
+  .hint { margin-top: 2vh; font-size: clamp(15px, 1.6vw, 22px); color: var(--muted); }
+  kbd { font: inherit; font-weight: 800; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 0 0.4em; }
+  nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 10px 16px; z-index: 5; }
+  nav button { border: 1px solid var(--line); background: var(--card); color: var(--ink); width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+  nav a.home { display: inline-grid; place-items: center; height: 46px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0 16px; font-size: 14px; text-decoration: none; }
+  .progress { flex: 1; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); transition: width 0.3s; }
+  .count { font-size: 14px; color: var(--muted); min-width: 4em; text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <section class="slide">
+    <p class="eyebrow">八大智能 · 數學邏輯智能</p>
+    <h1>用邏輯玩遊戲</h1>
+    <ol class="flow">
+      <li><span>📝</span>問卷<small>手機掃碼</small></li>
+      <li><span>🔮</span>數字讀心術<small>大家一起猜</small></li>
+      <li><span>🪙</span>零錢最輕挑戰<small>3 題</small></li>
+      <li><span>🐱</span>貓咪數獨<small>手機掃碼</small></li>
+    </ol>
+    <p class="hint">主持人用 <kbd>→</kbd> <kbd>←</kbd> 或簡報筆換頁，遊戲結束後會自動回到這裡的下一步</p>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">第 1 站 · 問卷</p>
+    <h2>📝 掃我填數學邏輯問卷</h2>
+    <div class="qrwrap">
+      <img src="survey-qr.svg" alt="數學邏輯問卷 QR code">
+      <p class="url">math-logic-survey.vercel.app</p>
+    </div>
+    <a class="go" href="https://math-logic-survey.vercel.app/" target="_blank" rel="noopener">開啟問卷</a>
+  </section>
+
+  <section class="slide" data-go="mind-reading.html?host=3">
+    <p class="eyebrow">第 2 站 · 開場</p>
+    <div class="big-emoji">🔮</div>
+    <h2>數字讀心術</h2>
+    <p class="muted">在心裡想一個 1～60 的數字</p>
+    <a class="go" href="mind-reading.html?host=3">開始讀心 →</a>
+  </section>
+
+  <section class="slide" data-go="coins.html?host=4">
+    <p class="eyebrow">第 3 站 · 動手挑戰</p>
+    <div class="big-emoji">🪙</div>
+    <h2>零錢最輕挑戰</h2>
+    <p class="muted">台幣、美金、日幣三題：怎麼付，口袋最輕？</p>
+    <a class="go" href="coins.html?host=4">開始挑戰 →</a>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">第 4 站 · 每人一台手機</p>
+    <h2>🐱 掃我玩貓咪數獨</h2>
+    <div class="qrwrap">
+      <img src="neko-qr.svg" alt="貓咪數獨 QR code">
+      <p class="url">silas4336.github.io/math-logic/neko/</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">數學邏輯智能</p>
+    <div class="big-emoji">🎉</div>
+    <h1>謝謝參加！</h1>
+    <p>把目標說清楚、列出所有可能、一步步縮小範圍</p>
+    <p class="muted">這就是每天都用得到的數學邏輯</p>
+  </section>
+
+</div>
+
+<nav>
+  <button type="button" id="prevBtn" aria-label="上一步">←</button>
+  <button type="button" id="nextBtn" aria-label="下一步">→</button>
+  <div class="progress"><i id="bar"></i></div>
+  <span class="count" id="count"></span>
+  <a class="home" href="./">總覽</a>
+</nav>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll(".slide")];
+  slides.forEach(s => s.setAttribute("tabindex", "-1"));
+  const $ = id => document.getElementById(id);
+  let idx = 0;
+  function go(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+    slides[idx].focus({ preventScroll: true });
+    $("bar").style.width = ((idx + 1) / slides.length * 100) + "%";
+    $("count").textContent = (idx + 1) + " / " + slides.length;
+    history.replaceState(null, "", "#" + idx);
+  }
+  // 遊戲頁的入口：在這一步按 → 直接進遊戲
+  function forward() { const to = slides[idx].dataset.go; if (to) location.href = to; else go(idx + 1); }
+  function backward() { go(idx - 1); }
+  function fromHash() { const n = parseInt(location.hash.slice(1), 10); go(Number.isInteger(n) ? n : 0); }
+
+  $("prevBtn").addEventListener("click", backward);
+  $("nextBtn").addEventListener("click", forward);
+  document.addEventListener("keydown", e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); forward(); }
+    if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); backward(); }
+  });
+  let tx = null;
+  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) { if (dx < 0) forward(); else backward(); }
+    tx = null;
+  });
+  window.addEventListener("hashchange", fromHash);
+  window.addEventListener("pageshow", fromHash); // 從遊戲頁按「上一頁」回來時也停在對的步驟
+  fromHash();
+})();
+</script>
+</body>
+</html>

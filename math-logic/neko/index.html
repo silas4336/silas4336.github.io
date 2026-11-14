@@ -1965,8 +1965,8 @@
   .brand { flex: 1 1 auto; }
   .settings-btn {
     margin-left: auto;
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     flex: none;
     display: inline-grid;
     place-items: center;
@@ -1977,6 +1977,8 @@
   .settings-btn svg { width: 21px; height: 21px; transition: transform 0.4s ease; }
   .settings-btn:hover { color: var(--ink); }
   .settings-btn:hover svg { transform: rotate(60deg); }
+  .hub-link { margin-left: 0; text-decoration: none; }
+  .hub-link:hover svg { transform: none; }
   body.hide-insight .puzzle-insight,
   body.hide-tray .region-tray { display: none; }
   .settings-dialog {
@@ -2035,6 +2037,9 @@
       <button type="button" class="settings-btn" id="settingsBtn" aria-label="設定" title="設定">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.6-2-3.4-2.4.9a7.6 7.6 0 0 0-2.6-1.5L14 2.4h-4l-.4 2.5A7.6 7.6 0 0 0 7 6.4l-2.4-.9-2 3.4 2 1.6a7.6 7.6 0 0 0 0 3l-2 1.6 2 3.4 2.4-.9a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.4.9 2-3.4-2-1.6Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
       </button>
+      <a class="settings-btn hub-link" href="../" aria-label="回數學邏輯總覽" title="回數學邏輯總覽">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </a>
     </div>
     <div class="header-side">
       <div class="hud" id="hud" aria-live="polite">
@@ -2481,6 +2486,7 @@
   const CHALLENGE_VARIANTS = 3;
   const SCORE_API = "/api/scores";
   const SCORE_POLL_MS = 5000;
+  let scoreApiMissing = false; // 靜態網站沒有排行榜伺服器：確認一次後就不再輪詢
   const NAME_KEY = "nekoSudokuPlayer";
   const CHALLENGE_ATTEMPT_KEY = "nekoSudokuChallengeAttemptV1";
   const TUTORIAL_MIN_COLOR_DISTANCE = 20;
@@ -3054,7 +3060,7 @@
     try {
       const name = localStorage.getItem(THEME_KEY);
       if (name && THEMES[name]) return name;
-    } catch (err) {}
+    } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
     return "nekoCafe";
   }
 
@@ -3141,7 +3147,7 @@
   function applyTheme(name) {
     if (!THEMES[name]) name = "default";
     document.body.dataset.theme = name;
-    try { localStorage.setItem(THEME_KEY, name); } catch (err) {}
+    try { localStorage.setItem(THEME_KEY, name); } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
     for (const btn of themeOptionsEl.querySelectorAll(".theme-btn")) {
       const active = btn.dataset.theme === name;
       btn.classList.toggle("active", active);
@@ -3227,7 +3233,7 @@
     try {
       const data = JSON.parse(localStorage.getItem(CHALLENGE_ATTEMPT_KEY) || "{}");
       if (data && data.date === todayStamp() && Number.isInteger(data.count)) return data.count;
-    } catch (err) {}
+    } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
     return 0;
   }
 
@@ -3235,7 +3241,7 @@
     const count = readChallengeAttempt() + 1;
     try {
       localStorage.setItem(CHALLENGE_ATTEMPT_KEY, JSON.stringify({ date: todayStamp(), count }));
-    } catch (err) {}
+    } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
     return count;
   }
 
@@ -3249,9 +3255,10 @@
       }
     });
     let data = null;
-    try { data = await response.json(); } catch (err) {}
+    try { data = await response.json(); } catch (err) { data = null; /* 回應不是 JSON（例如 404 頁面），下面依狀態碼處理 */ }
     if (response.status === 404 || response.status === 405) {
       // 這份複本放在靜態網站（GitHub Pages），沒有排行榜伺服器
+      scoreApiMissing = true;
       throw new Error("這個網址沒有排行榜，計時成績不會儲存");
     }
     if (!response.ok) {
@@ -3288,7 +3295,7 @@
   }
 
   function saveName(name) {
-    try { localStorage.setItem(NAME_KEY, name); } catch (err) {}
+    try { localStorage.setItem(NAME_KEY, name); } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
   }
 
   function renderRankList(listEl, scores, currentId) {
@@ -3446,7 +3453,7 @@
       allResultsListEl.innerHTML = "";
       const empty = document.createElement("div");
       empty.className = "all-results-empty";
-      empty.textContent = err.message + "，系統會自動重試。";
+      empty.textContent = err.message + (scoreApiMissing ? "。" : "，系統會自動重試。");
       allResultsListEl.appendChild(empty);
       resultsUpdatedEl.textContent = "";
     }
@@ -4658,14 +4665,14 @@
   }
 
   function saveSize(n) {
-    try { localStorage.setItem("nekoSudokuSize", String(n)); } catch (err) {}
+    try { localStorage.setItem("nekoSudokuSize", String(n)); } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
   }
 
   function loadSize() {
     try {
       const n = Number(localStorage.getItem("nekoSudokuSize"));
       if (SIZES.includes(n)) return n;
-    } catch (err) {}
+    } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
     return 6;
   }
 
@@ -4747,7 +4754,7 @@
     state.light = Math.max(0, state.light - 1);
     updateLights();
     if (navigator.vibrate) {
-      try { navigator.vibrate(state.light === 0 ? [60, 60, 60] : 45); } catch (err) {}
+      try { navigator.vibrate(state.light === 0 ? [60, 60, 60] : 45); } catch (err) { /* 不支援震動的裝置略過 */ }
     }
     boardEl.classList.remove("shake");
     void boardEl.offsetWidth;
@@ -5815,7 +5822,8 @@
       }, 4000);
     };
     const fallback = () => {
-      try { window.prompt("複製題目連結：", text); } catch (err) {}
+      try { window.prompt("複製題目連結：", text); }
+      catch (err) { shareNoteEl.textContent = "請手動複製這個連結：" + text; } // 瀏覽器擋住對話框時，直接把連結顯示出來
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(fallback);
@@ -5902,7 +5910,7 @@
   resultsBackBtn.addEventListener("click", showChallengeSetupView);
 
   function refreshVisibleScores() {
-    if (document.hidden) return;
+    if (document.hidden || scoreApiMissing) return;
     if (!challengeResultsPanelEl.classList.contains("hidden")) {
       renderAllChallengeResults({ silent: true });
     } else if (!challengeSetupEl.classList.contains("hidden")) {
@@ -5945,7 +5953,7 @@
     box.addEventListener("change", () => {
       const prefs = loadPrefs();
       prefs[box.dataset.pref] = box.checked;
-      try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (err) {}
+      try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (err) { /* 無痕模式或瀏覽器擋住儲存空間時，改用預設值，不影響遊戲 */ }
       applyPrefs(prefs);
     });
   }

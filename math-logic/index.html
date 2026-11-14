@@ -29,6 +29,9 @@
   .qr { display: flex; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px; }
   .qr img { width: 112px; height: 112px; display: block; }
   .qr small { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .host-link { display: inline-flex; align-items: center; min-height: 48px; margin: -8px 0 24px; padding: 10px 18px; border-radius: 14px; background: var(--accent); color: #fff; font-weight: 700; font-size: 17px; text-decoration: none; }
+  #qrBig .close { position: absolute; top: 16px; right: 16px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; min-height: 44px; padding: 0 18px; font: inherit; font-size: 16px; cursor: pointer; }
+  #qrBig .hint { font-size: 15px; }
   footer { margin-top: 34px; color: var(--muted); font-size: 14px; text-align: center; }
   /* 全螢幕 QR，給投影用 */
   #qrBig { position: fixed; inset: 0; background: #fffdf9; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; z-index: 10; cursor: pointer; }
@@ -43,6 +46,7 @@
   <p class="eyebrow">八大智能 · 數學邏輯智能</p>
   <h1>用邏輯玩遊戲</h1>
   <p class="lead">一份問卷加三個小遊戲，一起練習推理、找規律和算最佳解。</p>
+  <a class="host-link" href="host.html">▶ 主持流程（投影用）：問卷 → 讀心術 → 零錢 → 貓咪，全程只用簡報筆</a>
 
   <div class="grid">
     <section class="card">
@@ -95,10 +99,12 @@
   <footer>八大智能・數學邏輯組</footer>
 </main>
 
-<div id="qrBig" role="dialog" aria-label="QR code">
+<div id="qrBig" role="dialog" aria-modal="true" aria-labelledby="qrTitle" tabindex="-1">
+  <button class="close" type="button" id="qrClose">關閉 ✕</button>
   <h2 id="qrTitle"></h2>
   <img id="qrImg" alt="">
   <p id="qrUrl"></p>
+  <p class="hint">點一下畫面或按 Esc 關閉</p>
 </div>
 
 <script>
@@ -107,15 +113,27 @@
     survey: { title: '📝 掃我填數學邏輯問卷', img: 'survey-qr.svg', url: 'math-logic-survey.vercel.app' },
   };
   const big = document.getElementById('qrBig');
+  let opener = null;
+  function closeBig() {
+    if (!big.classList.contains('on')) return;
+    big.classList.remove('on');
+    if (opener) opener.focus(); // 焦點回到原本的「放大 QR」按鈕
+  }
   document.querySelectorAll('[data-qr]').forEach(b => b.addEventListener('click', () => {
     const q = QR[b.dataset.qr];
+    opener = b;
     document.getElementById('qrTitle').textContent = q.title;
     const img = document.getElementById('qrImg'); img.src = q.img; img.alt = q.title + ' QR code';
     document.getElementById('qrUrl').textContent = q.url;
     big.classList.add('on');
+    document.getElementById('qrClose').focus();
   }));
-  big.addEventListener('click', () => big.classList.remove('on'));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') big.classList.remove('on'); });
+  big.addEventListener('click', closeBig);
+  document.addEventListener('keydown', e => {
+    if (!big.classList.contains('on')) return;
+    if (e.key === 'Escape') closeBig();
+    if (e.key === 'Tab') { e.preventDefault(); document.getElementById('qrClose').focus(); } // 只有一個按鈕，焦點留在對話框裡
+  });
 </script>
 </body>
 </html>
