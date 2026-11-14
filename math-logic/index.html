@@ -20,6 +20,7 @@
   .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(60, 40, 20, 0.06); }
   .card .icon { font-size: 40px; line-height: 1; }
+  .card.gift { grid-column: 1 / -1; border: 2px solid var(--accent); background: linear-gradient(135deg, #fffdf9 0%, var(--accent-soft) 100%); }
   .card h2 { margin: 0; font-size: 23px; }
   .card p { margin: 0; color: var(--muted); line-height: 1.6; flex: 1; }
   .tag { align-self: flex-start; font-size: 13px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 11px; }
@@ -94,6 +95,20 @@
         <button class="btn secondary" type="button" data-qr="neko">放大 QR 給大家掃</button>
       </div>
     </section>
+    <section class="card gift">
+      <span class="icon">🎁</span>
+      <span class="tag">送給大家・帶回家玩</span>
+      <h2>貓咪數獨 200 關</h2>
+      <p>從 4×4 一路破到 13×13，共 200 關。不用註冊帳號，進度存在自己的手機裡；加到主畫面後，沒有網路也能玩。</p>
+      <div class="qr">
+        <img src="neko-app-qr.svg" alt="貓咪數獨 200 關 QR code">
+        <small>手機相機對準掃描<br>就能帶回家慢慢破關</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="../neko/" target="_blank" rel="noopener">開啟 200 關</a>
+        <button class="btn secondary" type="button" data-qr="app">放大 QR 給大家掃</button>
+      </div>
+    </section>
   </div>
 
   <footer>八大智能・數學邏輯組</footer>
@@ -111,6 +126,7 @@
   const QR = {
     neko:   { title: '🐱 掃我玩貓咪數獨',   img: 'neko-qr.svg',   url: 'silas4336.github.io/math-logic/neko/' },
     survey: { title: '📝 掃我填數學邏輯問卷', img: 'survey-qr.svg', url: 'math-logic-survey.vercel.app' },
+    app:    { title: '🎁 送你：貓咪數獨 200 關', img: 'neko-app-qr.svg', url: 'silas4336.github.io/neko/' },
   };
   const big = document.getElementById('qrBig');
   let opener = null;
