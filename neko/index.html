@@ -2019,6 +2019,10 @@
   .theme-note { margin: 9px 2px 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); min-height: 2.9em; }
   .pref-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 2px; cursor: pointer; font-size: 14px; font-weight: 600; }
   .pref-row input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+  .update-bar { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 999px; background: #2f2a26; color: #fffdf9; font-size: 14px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+  .update-bar.hidden { display: none; }
+  .update-bar .act-btn { min-height: 40px; }
+  .haptic-switch { position: fixed; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
   .pref-row small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
   .how-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.75; }
   /* 手機觸控：按鈕至少 40px 高（silas 版加的） */
@@ -2298,6 +2302,11 @@
     <div class="hint-text hidden" id="hintText" aria-live="polite"></div>
   </footer>
 
+  <div class="update-bar hidden" id="updateBar" role="status">
+    <span>有新版本了</span>
+    <button type="button" class="act-btn" id="updateNowBtn">立即更新</button>
+  </div>
+  <label class="haptic-switch" aria-hidden="true"><input type="checkbox" switch tabindex="-1" id="hapticSwitch"></label>
   <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
     <div class="settings-head">
       <h2 id="settingsTitle">設定</h2>
@@ -2312,6 +2321,11 @@
       <h3>顯示</h3>
       <label class="pref-row"><input type="checkbox" data-pref="insight"><span>本盤分析<small>練習時顯示這盤的難點</small></span></label>
       <label class="pref-row"><input type="checkbox" data-pref="tray"><span>貓咪進度列<small>盤面上方，每個顏色放好貓咪就亮起</small></span></label>
+    </section>
+    <section class="settings-group" aria-label="回饋與統計">
+      <h3>回饋與統計</h3>
+      <label class="pref-row"><input type="checkbox" data-pref="haptics"><span>震動回饋<small>標記、放貓咪、放錯、完成時震動（Android 最完整；iPhone 只有點擊時輕震）</small></span></label>
+      <label class="pref-row"><input type="checkbox" data-pref="share"><span>匿名分享闖關進度<small>只送出關卡編號和過關時間，不含名字，用來調整關卡難度</small></span></label>
     </section>
     <section class="settings-group" aria-label="操作方式">
       <h3>操作方式</h3>
@@ -2759,6 +2773,8 @@
     };
   });
   const PROGRESS_KEY = "nekoSudokuLevelsV1";
+  let hapticsOn = true;
+  let shareStatsOn = true;
   let progressSaveFailed = false;
 
   function loadProgress() {
@@ -4902,6 +4918,47 @@
     setStatus("紅燈警告：這一局暫停", "warn");
   }
 
+  // 震動回饋：Android 用 navigator.vibrate 分輕重；iPhone 不支援，改點一下隱藏的系統開關觸發單下輕震（只在手指點擊時有效）
+  const HAPTIC_PATTERNS = { tap: 8, tick: 5, place: 18, wrong: 45, fail: [60, 60, 60], line: [12, 40, 22], win: [30, 50, 30, 50, 80] };
+  const IOS_HAPTIC_KINDS = new Set(["tap", "place", "wrong", "fail"]);
+  const hapticSwitchEl = document.getElementById("hapticSwitch");
+  const canVibrate = typeof navigator.vibrate === "function";
+  function haptic(kind) {
+    if (!hapticsOn) return;
+    if (canVibrate) {
+      try { navigator.vibrate(HAPTIC_PATTERNS[kind]); } catch (err) { console.warn("震動失敗", err); }
+    } else if (hapticSwitchEl && IOS_HAPTIC_KINDS.has(kind)) {
+      hapticSwitchEl.click();
+    }
+  }
+
+  // 1000 關匿名統計：每台裝置一組隨機代碼，不送名字
+  const PLAYER_ID_KEY = "nekoAnonId";
+  function anonPlayerId() {
+    try {
+      let id = localStorage.getItem(PLAYER_ID_KEY);
+      if (!/^[0-9a-f]{32}$/.test(id || "")) {
+        id = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join("");
+        localStorage.setItem(PLAYER_ID_KEY, id);
+      }
+      return id;
+    } catch (err) {
+      return null; // 無痕模式存不了代碼就不送統計
+    }
+  }
+  function sendLevelEvent(event, levelIndex, extra) {
+    if (!shareStatsOn || location.protocol === "file:") return;
+    const player = anonPlayerId();
+    if (!player) return;
+    // 用 text/plain 送，跨網域不需要預檢；失敗不影響遊戲
+    fetch(API_BASE + "/api/levels/event", {
+      method: "POST",
+      keepalive: true,
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(Object.assign({ player, level: levelIndex + 1, event }, extra || {}))
+    }).catch(err => console.warn("闖關統計沒送出", err));
+  }
+
   function registerWrong(index) {
     if (!state.active || state.solved || state.failed || state.wrongFlash.has(index)) return;
     state.mistakes++;
@@ -4914,9 +4971,7 @@
 
     state.light = Math.max(0, state.light - 1);
     updateLights();
-    if (navigator.vibrate) {
-      try { navigator.vibrate(state.light === 0 ? [60, 60, 60] : 45); } catch (err) { /* 不支援震動的裝置略過 */ }
-    }
+    haptic(state.light === 0 ? "fail" : "wrong");
     boardEl.classList.remove("shake");
     void boardEl.offsetWidth;
     boardEl.classList.add("shake");
@@ -5173,6 +5228,7 @@
     }
     const fresh = [...next].filter(key => !doneLines.has(key));
     doneLines = next;
+    if (!quiet && fresh.length && state.cats.size !== N) haptic("line");
     if (quiet || !fresh.length || state.cats.size === N || reduceMotion()) return;
 
     const delays = new Map();
@@ -5227,6 +5283,7 @@
     }
 
     drag = { mode, last: index, seen: new Set([index]), moved: false };
+    haptic("tap");
     refresh();
   }
 
@@ -5247,7 +5304,7 @@
     if (drag.seen.has(index)) return;
     drag.seen.add(index);
     if (drag.mode === "mark") {
-      if (!state.cats.has(index)) state.marks.add(index);
+      if (!state.cats.has(index) && !state.marks.has(index)) { state.marks.add(index); haptic("tick"); }
     } else if (drag.mode === "erase") {
       state.marks.delete(index);
     }
@@ -5312,6 +5369,7 @@
     pushUndo();
     state.cats.add(index);
     state.marks.delete(index);
+    if (state.cats.size !== state.N) haptic("place");
     refresh();
   }
 
@@ -5434,6 +5492,7 @@
     updateTimerDisplay(state.elapsed);
     updateLights();
     setStatus("完成！所有貓咪都到位了", "good");
+    haptic("win");
 
     if (state.mode === "challenge" && state.challenge) {
       const challengeKey = state.challenge.key;
@@ -5506,6 +5565,7 @@
     progress.v = 1;
     progress.levels[index + 1] = { s: Math.max(stars, old ? old.s : 0), t: best };
     saveProgress(progress);
+    sendLevelEvent("win", index, { hints: state.hints, time: Math.round(state.elapsed) });
     winTitleEl.textContent = index === LEVELS.length - 1 ? "全部 " + LEVELS.length + " 關破關！" : "第 " + (index + 1) + " 關過關！";
     winHintsEl.innerHTML = '<span class="win-stars" aria-label="' + stars + ' 顆星">' + starText(stars) + "</span>" +
       (state.hints ? "使用 " + state.hints + " 次提示" : "沒用提示") +
@@ -5612,6 +5672,7 @@
 
   function startLevel(index) {
     if (!LEVELS[index]) return;
+    sendLevelEvent("start", index);
     newGame(LEVELS[index].size, { level: index });
   }
 
@@ -6311,7 +6372,7 @@
   });
 
   buildSizeButtons();
-  const PREF_DEFAULTS = { insight: true, tray: true };
+  const PREF_DEFAULTS = { insight: true, tray: true, haptics: true, share: true };
   function loadPrefs() {
     try { return Object.assign({}, PREF_DEFAULTS, JSON.parse(localStorage.getItem(PREFS_KEY) || "{}")); }
     catch (err) { return Object.assign({}, PREF_DEFAULTS); }
@@ -6319,6 +6380,8 @@
   function applyPrefs(prefs) {
     document.body.classList.toggle("hide-insight", !prefs.insight);
     document.body.classList.toggle("hide-tray", !prefs.tray);
+    hapticsOn = !!prefs.haptics;
+    shareStatsOn = !!prefs.share;
     for (const box of document.querySelectorAll("[data-pref]")) box.checked = !!prefs[box.dataset.pref];
   }
   const settingsDialog = document.getElementById("settingsDialog");
@@ -6356,7 +6419,25 @@
   }
 
   if ("serviceWorker" in navigator && location.protocol !== "file:") {
-    navigator.serviceWorker.register("sw.js").catch(err => console.warn("離線功能沒有啟用", err));
+    // 有新版時：不在遊戲中就直接重新載入；正在玩就跳提示，讓玩家自己按更新
+    const hadController = !!navigator.serviceWorker.controller;
+    const updateBar = document.getElementById("updateBar");
+    let reloading = false;
+    const reloadNow = () => { if (!reloading) { reloading = true; location.reload(); } };
+    document.getElementById("updateNowBtn").addEventListener("click", reloadNow);
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController) return;
+      if (state.active && !state.solved) updateBar.classList.remove("hidden");
+      else reloadNow();
+    });
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" })
+      .then(reg => {
+        // 手機常常一直開著不關，回到前景時再檢查一次有沒有新版
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") reg.update().catch(err => console.warn("檢查新版失敗", err));
+        });
+      })
+      .catch(err => console.warn("離線功能沒有啟用", err));
   }
 })();
 </script>

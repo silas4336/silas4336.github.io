@@ -1,10 +1,15 @@
-// 貓咪數獨離線快取：先用快取秒開，背景再抓新版，下次開啟就是新版
-const CACHE = "neko-app-v3";
+// 貓咪數獨離線快取：有網路時先抓新版（3 秒內沒回應就用快取），沒網路時用快取。
+// 改了 index.html／levels.js 後也要改 CACHE 版本，玩家開著的頁面才會收到「有新版本」。
+const CACHE = "neko-app-v4";
 const FILES = ["./", "./index.html", "./levels.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
+const NETWORK_TIMEOUT_MS = 3000;
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
+  // cache: "reload" 跳過瀏覽器 HTTP 快取，確保存進去的是剛部署的版本
+  event.waitUntil(caches.open(CACHE)
+    .then(cache => cache.addAll(FILES.map(url => new Request(url, { cache: "reload" }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", event => {
@@ -16,19 +21,20 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  const isIcon = new URL(req.url).pathname.includes("/icons/");
   event.respondWith(caches.open(CACHE).then(async cache => {
     const cached = await cache.match(req, { ignoreSearch: true });
-    const fresh = fetch(req).then(res => {
+    // 圖示幾乎不會變，直接用快取
+    if (isIcon && cached) return cached;
+
+    const fresh = fetch(req, { cache: "no-cache" }).then(res => {
       if (res.ok) cache.put(req, res.clone());
       return res;
-    }).catch(err => {
-      if (cached) return cached;
-      throw err;
     });
-    if (cached) {
-      event.waitUntil(fresh.catch(() => null));
-      return cached;
-    }
-    return fresh;
+    if (!cached) return fresh;
+
+    const timeout = new Promise(resolve => setTimeout(() => resolve(cached), NETWORK_TIMEOUT_MS));
+    event.waitUntil(fresh.catch(err => console.warn("背景更新失敗，先用快取", err)));
+    return Promise.race([fresh.catch(() => cached), timeout]);
   }));
 });
