@@ -73,6 +73,25 @@ a.row:hover .arrow{color:var(--accent)}
 .rd{grid-column:1/-1; color:var(--muted); font-size:.92rem; max-width:var(--measure)}
 .rm{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.76rem; color:var(--muted);
   white-space:nowrap; font-variant-numeric:tabular-nums}
+/* 首頁專案列縮圖：左欄縮圖，文字照原本排在右側 */
+.row.media{grid-template-columns:136px 1fr auto; grid-template-rows:auto auto 1fr; column-gap:20px}
+.row.media .thumb{grid-row:1/span 3; align-self:start; margin-top:5px; aspect-ratio:16/10; overflow:hidden;
+  background:var(--frame-bg); border:1px solid var(--rule); border-radius:4px; transition:border-color .18s ease}
+.row.media .thumb img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block;
+  transition:transform .3s ease, opacity .18s ease}
+[data-theme="dark"] .row.media .thumb img{opacity:.86}
+.row.media .rd{grid-column:2/-1}
+a.row.media:hover .thumb,a.row.media:focus-visible .thumb{border-color:var(--accent-dim)}
+a.row.media:hover .thumb img,a.row.media:focus-visible .thumb img{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  a.row.media:hover .thumb img,a.row.media:focus-visible .thumb img{transform:scale(1.04)}}
+/* 手機：縮圖右側疊標題與標籤，說明回到整列寬，避免擠成窄欄 */
+@media(max-width:620px){
+  .row.media{grid-template-columns:84px 1fr; grid-template-rows:none; column-gap:14px; row-gap:2px}
+  .row.media .thumb{grid-row:1/span 2; margin-top:0}
+  .row.media .rt{align-self:end}
+  .row.media .rm{grid-column:2; align-self:start}
+  .row.media .rd{grid-column:1/-1; margin-top:10px}}
 
 /* case page */
 .back{display:inline-block; margin-top:44px; font-size:.85rem; color:var(--muted); text-decoration:none}
