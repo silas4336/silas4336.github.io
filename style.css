@@ -100,7 +100,7 @@ b{font-weight:600}
 
 /* shots */
 .shots{display:grid; gap:14px; margin-top:26px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-.shots.wide{grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:20px}
+.shots.wide{grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr)); gap:20px}
 .shots.wide .frame{aspect-ratio:16/9}
 .shots.wide .frame img{object-fit:contain; object-position:center}
 figure{margin:0}
