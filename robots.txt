@@ -1,0 +1,7 @@
+# 公開的只有作品集首頁與作品頁（中、英），清單在 sitemap.xml。
+# math-logic/、neko/、preview-*/ 每頁都有 <meta name="robots" content="noindex, nofollow">。
+# 這裡刻意不用 Disallow 擋它們：擋了爬蟲就讀不到 noindex，外部有連結時網址反而可能被收錄。
+User-agent: *
+Allow: /
+
+Sitemap: https://silas4336.github.io/sitemap.xml
