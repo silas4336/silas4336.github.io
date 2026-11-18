@@ -26,9 +26,9 @@
 <meta name="twitter:image" content="https://silas4336.github.io/og-v2.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Noto+Sans+TC:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="../style.css">
-<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var t=localStorage.getItem("theme")}catch(e){}document.documentElement.dataset.theme=t||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark")</script>
 </head>
 <body>
 <nav aria-label="Main"><a href="index.html#work">Work</a><a href="index.html#side">Side projects</a><a href="index.html#experience">Experience</a><a href="../work-side.html" hreflang="zh-Hant" lang="zh-Hant">中</a><button id="themeToggle" type="button" aria-label="Toggle theme">☾</button></nav>
@@ -89,6 +89,11 @@
   var b=document.getElementById("themeToggle"); if(!b) return;
   function paint(){ b.textContent = document.documentElement.dataset.theme==="light" ? "\u2600" : "\u263e"; }
   paint();
+  var mq=matchMedia("(prefers-color-scheme: light)");
+  if(mq.addEventListener) mq.addEventListener("change",function(){
+    var s; try{ s=localStorage.getItem("theme"); }catch(e){}
+    if(!s){ document.documentElement.dataset.theme = mq.matches ? "light" : "dark"; paint(); }
+  });
   b.addEventListener("click",function(){
     var next = document.documentElement.dataset.theme==="light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
