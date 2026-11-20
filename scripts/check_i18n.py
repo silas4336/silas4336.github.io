@@ -10,7 +10,6 @@
 """
 import re, sys, glob, os
 
-sys.stdout.reconfigure(encoding="utf-8")
 from collections import Counter
 from html.parser import HTMLParser
 
@@ -48,21 +47,26 @@ class Page(HTMLParser):
 
 
 def parse(path):
-    """回傳 (阿拉伯數字, 英文數字詞換成的數字, 圖片, 作品頁連結)。年份與年月日期不算。"""
+    """回傳 (阿拉伯數字, 英文數字詞換成的數字, 圖片, 作品頁連結, 連到 ../ 的連結)。年份與年月日期不算。"""
     p = Page()
-    p.feed(open(path, encoding="utf-8").read())
+    with open(path, encoding="utf-8") as f:
+        p.feed(f.read())
     text = " ".join(p.text)
     text = re.sub(r"(?<![\d.])(?:19|20)\d\d(?:\.\d\d)?(?![\d.])", " ", text)
     digits = Counter(re.findall(r"\d+(?:[.,]\d+)*", text))
     words = Counter(str(WORDS.index(w.lower())) for w in re.findall(r"\b(" + "|".join(WORDS) + r")\b", text, flags=re.I))
-    parse.to_parent = p.to_parent
-    return digits, words, Counter(p.imgs), Counter(p.links)
+    return digits, words, Counter(p.imgs), Counter(p.links), p.to_parent
+
+
+def num_key(x):
+    """排序用：1.2.3 這類版本號不能直接轉 float，改成逐段比大小。"""
+    return tuple(int(p) for p in re.split(r"[.,]", x))
 
 
 def num_diff(zh, en, en_words):
     """英文寫成 eight 也算對上中文的 8；英文的 one、three 等若中文是「一」「三」，不算差異。"""
     out = []
-    for k in sorted(set(zh) | set(en), key=lambda x: float(x.replace(",", ""))):
+    for k in sorted(set(zh) | set(en), key=num_key):
         if zh[k] > en[k] + en_words[k] or en[k] > zh[k]:
             out.append(f"{k}（中 {zh[k]}／英 {en[k]}" + (f"＋文字 {en_words[k]}" if en_words[k] else "") + "）")
     return out
@@ -76,29 +80,34 @@ def diff(a, b):
     return out
 
 
-bad = 0
-names = ["index.html"] + sorted(os.path.basename(p) for p in glob.glob(os.path.join(ROOT, "work-*.html")))
-for name in names:
-    zh, en = os.path.join(ROOT, name), os.path.join(ROOT, "en", name)
-    if not os.path.exists(en):
-        print(f"✗ {name}: 沒有英文版")
-        bad += 1
-        continue
-    (zn, _, zi, zl), (en_n, ew, ei, el) = parse(zh), parse(en)
-    wrong_lang = parse.to_parent
-    allow = ALLOW.get(name, set())
-    for k in allow:
-        zn.pop(k, None); en_n.pop(k, None)
-    problems = [("數字", num_diff(zn, en_n, ew)), ("圖片", diff(zi, ei)), ("作品頁連結", diff(zl, el)),
-                ("英文頁連到中文頁", wrong_lang)]
-    problems = [(t, d) for t, d in problems if d]
-    if problems:
-        bad += 1
-        print(f"✗ {name}")
-        for t, d in problems:
-            print(f"    {t}：" + "、".join(d))
-    else:
-        print(f"✓ {name}（數字 {sum(zn.values())} 個、圖片 {sum(zi.values())} 張一致）")
+def main(root=ROOT):
+    bad = 0
+    names = ["index.html"] + sorted(os.path.basename(p) for p in glob.glob(os.path.join(root, "work-*.html")))
+    for name in names:
+        zh, en = os.path.join(root, name), os.path.join(root, "en", name)
+        if not os.path.exists(en):
+            print(f"✗ {name}: 沒有英文版")
+            bad += 1
+            continue
+        (zn, _, zi, zl, _), (en_n, ew, ei, el, wrong_lang) = parse(zh), parse(en)
+        allow = ALLOW.get(name, set())
+        for k in allow:
+            zn.pop(k, None); en_n.pop(k, None)
+        problems = [("數字", num_diff(zn, en_n, ew)), ("圖片", diff(zi, ei)), ("作品頁連結", diff(zl, el)),
+                    ("英文頁連到中文頁", wrong_lang)]
+        problems = [(t, d) for t, d in problems if d]
+        if problems:
+            bad += 1
+            print(f"✗ {name}")
+            for t, d in problems:
+                print(f"    {t}：" + "、".join(d))
+        else:
+            print(f"✓ {name}（數字 {sum(zn.values())} 個、圖片 {sum(zi.values())} 張一致）")
 
-print("全部一致。" if not bad else f"{bad} 頁不一致。")
-sys.exit(1 if bad else 0)
+    print("全部一致。" if not bad else f"{bad} 頁不一致。")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.exit(main())
