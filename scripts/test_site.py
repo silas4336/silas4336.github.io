@@ -10,6 +10,7 @@ import glob
 import io
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -69,6 +70,16 @@ class ParseTest(unittest.TestCase):
         p = write(self.root, "a.html", '<a href="../work-crm.html">中文</a><a href="../" hreflang="zh-Hant">中</a>')
         *_, to_parent = check_i18n.parse(p)
         self.assertEqual(to_parent, ["../work-crm.html"])
+
+    def test_root_absolute_links_to_chinese_pages(self):
+        """之前只抓 ../ 開頭，/work-crm.html 或完整網址連回中文頁會漏掉。"""
+        p = write(self.root, "a.html",
+                  '<a href="/work-crm.html">x</a><a href="/">x</a><a href="https://silas4336.github.io/work-side.html#a">x</a>'
+                  '<a href="/en/work-crm.html">ok</a><a href="https://silas4336.github.io/en/">ok</a>'
+                  '<a href="/assets/cv.pdf">ok</a><a href="//cdn.example.com/x.html">ok</a>'
+                  '<a href="/work-crm.html" hreflang="zh-Hant">中文</a>')
+        *_, to_parent = check_i18n.parse(p)
+        self.assertEqual(to_parent, ["/work-crm.html", "/", "https://silas4336.github.io/work-side.html#a"])
 
     def test_num_diff_rules(self):
         C = check_i18n.Counter
@@ -169,6 +180,18 @@ class SiteTest(unittest.TestCase):
         self.assertEqual(files, {os.path.normpath(p) for p in main_pages()}, "sitemap 和主站頁面不一致")
         for lastmod in re.findall(r"<lastmod>([^<]*)</lastmod>", xml):
             self.assertRegex(lastmod, r"^\d{4}-\d{2}-\d{2}$")
+
+    def test_no_cache_or_env_files_tracked(self):
+        """整個 repo 都會發佈到 GitHub Pages：快取與 .env 要被 .gitignore 擋掉，也不能已經在版控裡。"""
+        with open(os.path.join(ROOT, ".gitignore"), encoding="utf-8") as f:
+            rules = f.read().split()
+        for rule in ("__pycache__/", "*.pyc", ".env", ".env.*"):
+            self.assertIn(rule, rules)
+        r = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        bad = [f for f in r.stdout.splitlines()
+               if "__pycache__/" in f or f.endswith(".pyc") or re.search(r"(^|/)\.env(\.|$)", f)]
+        self.assertEqual(bad, [])
 
     def test_robots_points_to_sitemap(self):
         with open(os.path.join(ROOT, "robots.txt"), encoding="utf-8") as f:

@@ -1,0 +1,12 @@
+# 跑 scripts/ 測試產生的快取，不要進版控（這個 repo 整個會發佈到 GitHub Pages）
+__pycache__/
+*.pyc
+
+# 金鑰與環境變數
+.env
+.env.*
+
+# 系統檔
+Thumbs.db
+desktop.ini
+.DS_Store

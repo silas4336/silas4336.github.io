@@ -5,7 +5,8 @@
      不比，因為中英日期寫法不同）
   2. <img> 的圖片檔要一樣（順序可不同；檔名結尾 -zh／-en 視為同一張）
   3. 站內連到其他作品頁的連結要一樣
-  4. 英文頁不可連回中文頁（href 以 ../ 開頭），語言切換鈕（有 hreflang）除外
+  4. 英文頁不可連回中文頁：href 以 ../ 開頭，或是不在 /en/ 底下的站內絕對路徑
+     （/work-crm.html、/、https://silas4336.github.io/index.html），語言切換鈕（有 hreflang）除外
 有不一致就列出並以結束碼 1 結束。數字若是刻意不同（例如英文寫 six），在 ALLOW 加例外。
 """
 import re, sys, glob, os
@@ -14,15 +15,28 @@ from collections import Counter
 from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = "https://silas4336.github.io"
 ALLOW = {}  # 例：{"work-crm.html": {"6"}} → 忽略該頁數字 6 的差異
 WORDS = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".split()
+
+
+def to_zh_page(href):
+    """英文頁的這個連結是否會連到中文頁。只看頁面（.html 或資料夾），/assets/ 這類資源不算。"""
+    if href.startswith(SITE):
+        href = href[len(SITE):] or "/"
+    if href.startswith("../"):
+        return True
+    if not href.startswith("/") or href.startswith("//") or href == "/en" or href.startswith("/en/"):
+        return False
+    path = href.split("#")[0].split("?")[0]
+    return path.endswith((".html", "/")) or "." not in os.path.basename(path)
 
 
 class Page(HTMLParser):
     def __init__(self):
         super().__init__()
         self.text, self.imgs, self.links, self.skip = [], [], [], 0
-        self.to_parent = []  # 沒有 hreflang、卻連到 ../ 的連結
+        self.to_parent = []  # 沒有 hreflang、卻連到中文頁（../ 或 /en/ 以外的站內絕對路徑）的連結
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -32,7 +46,7 @@ class Page(HTMLParser):
             self.imgs.append(re.sub(r"-(zh|en)(\.\w+)$", r"\2", os.path.basename(a["src"])))
         if tag == "a" and a.get("href"):
             h = a["href"]
-            if h.startswith("../") and "hreflang" not in a:
+            if "hreflang" not in a and to_zh_page(h):
                 self.to_parent.append(h)
             if re.search(r"work-[a-z]+\.html", h):
                 self.links.append(re.search(r"work-[a-z]+\.html", h).group(0))
