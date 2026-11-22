@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 
+# 無頭瀏覽器驗證暫存檔（snapshot／紀錄）
+.playwright-cli/
+
 # 金鑰與環境變數
 .env
 .env.*

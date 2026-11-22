@@ -182,15 +182,17 @@ class SiteTest(unittest.TestCase):
             self.assertRegex(lastmod, r"^\d{4}-\d{2}-\d{2}$")
 
     def test_no_cache_or_env_files_tracked(self):
-        """整個 repo 都會發佈到 GitHub Pages：快取與 .env 要被 .gitignore 擋掉，也不能已經在版控裡。"""
+        """整個 repo 都會發佈到 GitHub Pages：快取、瀏覽器暫存與 .env 要被 .gitignore 擋掉，也不能已經在版控裡。"""
         with open(os.path.join(ROOT, ".gitignore"), encoding="utf-8") as f:
             rules = f.read().split()
-        for rule in ("__pycache__/", "*.pyc", ".env", ".env.*"):
+        for rule in ("__pycache__/", "*.pyc", ".playwright-cli/", ".env", ".env.*"):
             self.assertIn(rule, rules)
         r = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(r.returncode, 0, r.stderr)
         bad = [f for f in r.stdout.splitlines()
-               if "__pycache__/" in f or f.endswith(".pyc") or re.search(r"(^|/)\.env(\.|$)", f)]
+               if "__pycache__/" in f or f.endswith(".pyc")
+               or f == ".playwright-cli" or f.startswith(".playwright-cli/") or "/.playwright-cli/" in f
+               or re.search(r"(^|/)\.env(\.|$)", f)]
         self.assertEqual(bad, [])
 
     def test_robots_points_to_sitemap(self):

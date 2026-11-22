@@ -28,4 +28,18 @@ py -3 scripts/check_i18n.py                              # 中英版數字、圖
 py -3 -m unittest discover -s scripts -p "test_*.py"     # 上面規則的單元測試＋本機連結、sitemap、noindex、.gitignore
 ```
 
-改版面後要看手機 390px 與 1280×720 兩種寬度。
+改版面後要看手機 390px 與 1280×720 兩種寬度；優先用全域 `playwright-cli` 無頭驗證（預設無頭，**禁止 `--headed`**），日常以 `snapshot`＋`console` 為主、有視覺改動才截圖：
+
+```bash
+py -3 -m http.server 8765 --bind 127.0.0.1
+playwright-cli -s=portfolio open http://127.0.0.1:8765/
+playwright-cli -s=portfolio resize 1280 720
+playwright-cli -s=portfolio snapshot --depth=3
+playwright-cli -s=portfolio resize 390 844
+playwright-cli -s=portfolio eval "({w: innerWidth, scrollW: document.documentElement.scrollWidth})"
+playwright-cli -s=portfolio console
+playwright-cli -s=portfolio close
+```
+
+- 測完務必關閉 session、停掉本機 `http.server`，並清除 `.playwright-cli/`（已加進 `.gitignore`）。
+- 需要深度追網路資源或效能時，才按需使用 `chrome-devtools` CLI。
