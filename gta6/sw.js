@@ -1,11 +1,11 @@
 // GTA6 攻略離線快取。
 // 頁面與文字（index.html、data.js）：有網路時先抓新版（3 秒內沒回應就用快取），沒網路用快取。
-// 圖片在原站 CDN：看過的存起來（上限 IMG_MAX 張），下次沒網路也看得到。
+// 圖片在原站 CDN：看過的存起來（上限 IMG_MAX 張，全部約 213 張），下次沒網路也看得到。
 // 重跑 scripts/build_gta6.py 更新 data.js 或改了 index.html 後，把 CACHE 的版本號加 1，已安裝的 PWA 才會收到新內容。
-const CACHE = "gta6-guide-v1";
+const CACHE = "gta6-guide-v2";
 const IMG_CACHE = "gta6-images-v1";
 const IMG_HOST = "img1.entertainment14.net";
-const IMG_MAX = 120;
+const IMG_MAX = 250;
 const FILES = ["./", "./index.html", "./data.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
 const NETWORK_TIMEOUT_MS = 3000;
@@ -28,6 +28,16 @@ async function trimImages(cache) {
   for (const key of keys.slice(0, Math.max(0, keys.length - IMG_MAX))) await cache.delete(key);
 }
 
+// opaque 回應在瀏覽器的配額裡每張算很大（約 7MB），容量滿了 put 會失敗：丟掉最舊的幾張再試一次，還是不行就算了
+async function putImage(cache, req, first, second) {
+  try { await cache.put(req, first); }
+  catch (e) {
+    for (const key of (await cache.keys()).slice(0, 15)) await cache.delete(key);
+    try { await cache.put(req, second); } catch (e2) { return; }
+  }
+  await trimImages(cache);
+}
+
 async function cachedImage(event) {
   const req = event.request;
   const cache = await caches.open(IMG_CACHE);
@@ -35,9 +45,7 @@ async function cachedImage(event) {
   if (hit) return hit;
   const res = await fetch(req);
   // <img> 發出的是 no-cors 請求，原站沒有 CORS 標頭，拿到的是 opaque（status 0）；兩種都存
-  if (res.ok || res.type === "opaque") {
-    event.waitUntil(cache.put(req, res.clone()).then(() => trimImages(cache)).catch(() => { /* 容量滿了就算了 */ }));
-  }
+  if (res.ok || res.type === "opaque") event.waitUntil(putImage(cache, req, res.clone(), res.clone()));
   return res;
 }
 

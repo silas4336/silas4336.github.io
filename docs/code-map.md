@@ -71,7 +71,9 @@ promptowy 主線任務清單（5 章約 100 個，只有摘要）─┴▶ scrip
 | `sw.js` | 離線：頁面與文字「有網路先抓新版、3 秒沒回應用快取」；圖片在原站 CDN，看過的存起來（上限 120 張，no-cors 的 opaque 回應） |
 | `manifest.webmanifest`、`icons/` | 安裝到主畫面用 |
 
-- 瀏覽器儲存（`localStorage`，鍵都以 `gta6.` 開頭）：`done` 已完成任務 ID、`pos` 上次閱讀位置、`fs` 字級、`theme`、`imgs` 是否載入圖片、`open` 目錄展開的章節。
+- 瀏覽器儲存（`localStorage`，鍵都以 `gta6.` 開頭）：`done` 已完成任務 ID、`fav` 收藏、`steps`（任務 ID → 已標記的段落序號）、`pos` 上次閱讀位置、`fs` 字級、`theme`、`imgs` 是否載入圖片、`stepsOn`／`swipe`／`awake` 三個開關、`open` 目錄展開的章節。設定頁的「備份進度」把 `done`、`fav`、`steps`、`pos` 包成 `GTA6:` 開頭的一串文字，可貼回還原。
+- 其他功能：點段落標記步驟、★ 收藏（索引頁有篩選）、閱讀時螢幕常亮（Wake Lock）、左右滑切換任務（避開螢幕邊緣）、預先下載圖片（單一任務或全部）。
+- 圖片離線的限制：原站圖片沒有 CORS，只能存成 opaque 回應，瀏覽器配額裡每張算很大（約 7MB），所以不保證存得滿 213 張。`sw.js` 存不進去時會丟掉最舊的 15 張再試；下載完頁面會比對實際存了幾張並告知。要完全可靠就得把圖片複製進 repo（約 6MB），那是版權與 repo 大小的取捨，目前沒做。
 - 任務 ID 由英文名（`p-gone-fishing`）或中文名（`y-女鄰居雪麗`）產生，來源更新後不變，已勾選進度不會跑掉。**改 `YOUMIN_TO_EN` 對照時小心：改名等於換 ID。**
 - 圖片直接引用 `img1.entertainment14.net`（沒有防盜連結），不複製進 repo。
 

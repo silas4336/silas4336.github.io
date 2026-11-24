@@ -189,6 +189,15 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .nosteps{margin-top:18px;padding:18px 16px;border-radius:16px;border:1px dashed var(--line);background:var(--surface);font-size:.95em;line-height:1.7}
 .nosteps b{display:block;margin-bottom:4px}
 
+.art.steps p[data-b]{cursor:pointer;transition:opacity .15s}
+.art p.sd{opacity:.45;box-shadow:inset 3px 0 0 var(--ok);padding-left:11px;margin-left:-11px}
+.star{color:var(--accent2);font-size:.85em;flex:none}
+.pill{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:2px 11px;font-size:.8rem;min-height:30px}
+.pill[aria-pressed="true"]{color:var(--accent2);border-color:var(--accent2);font-weight:700}
+.btn:disabled{opacity:.7}
+.how{padding:12px 16px;font-size:.86rem;line-height:1.75;color:var(--muted);border-top:1px solid var(--line)}
+.how b{color:var(--text)}
+
 /* 彈層 */
 .sheet-back{position:fixed;inset:0;z-index:50;background:rgba(5,2,12,.55);animation:fade .15s}
 .sheet{position:fixed;z-index:51;inset:auto 0 0 0;max-height:82dvh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;border:1px solid var(--line);border-bottom:0;box-shadow:var(--shadow);
@@ -206,7 +215,7 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .seg button{border:0;background:none;padding:8px 13px;font-size:.88rem}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:700}
 .step{display:flex;align-items:center;gap:6px}
-.step button{width:42px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:800}
+.step button{width:44px;height:40px;padding:0;white-space:nowrap;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:800}
 .step output{min-width:3.2em;text-align:center;font-variant-numeric:tabular-nums;font-size:.9rem}
 .sw{width:52px;height:30px;border-radius:99px;border:0;background:var(--line);position:relative;transition:background .15s;flex:none}
 .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s}
@@ -214,7 +223,7 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .sw[aria-checked="true"]::after{transform:translateX(22px)}
 .danger{color:#ff6b6b;border-color:currentColor}
 
-.toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(var(--nh) + 14px);max-width:min(92vw,520px);display:flex;align-items:center;gap:14px;
+.toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(var(--nh) + 14px);width:max-content;max-width:min(92vw,520px);display:flex;align-items:center;gap:14px;
   padding:11px 16px;border-radius:14px;background:var(--text);color:var(--bg);font-size:.88rem;box-shadow:var(--shadow);animation:up .2s}
 .toast button{border:0;background:none;color:var(--accent);font-weight:800;white-space:nowrap;padding:4px}
 :root[data-theme="light"] .toast button{color:#c0185f}
@@ -307,9 +316,16 @@ const state = {
   theme: store.get("theme", "auto"),
   imgs: store.get("imgs", true),
   open: store.get("open", null),
+  steps: store.get("steps", {}),
+  fav: new Set(store.get("fav", []).filter(id => byId[id])),
+  stepsOn: store.get("stepsOn", true),
+  swipe: store.get("swipe", true),
+  awake: store.get("awake", false),
 };
 if (state.pos && !byId[state.pos.id]) state.pos = null;
 const saveDone = () => store.set("done", [...state.done]);
+const saveFav = () => store.set("fav", [...state.fav]);
+const saveSteps = () => store.set("steps", state.steps);
 
 function applyPrefs() {
   const root = document.documentElement;
@@ -370,7 +386,7 @@ function missionRow(m, o = {}) {
     h("a", { class: "rl", href: "#/m/" + enc(m.id), onclick: o.onGo },
       h("span", { class: "num", text: String(m.n).padStart(2, "0") }),
       h("span", { class: "rt" },
-        h("span", { class: "nm" }, m.name, m.full && ico("img")),
+        h("span", { class: "nm" }, m.name, state.fav.has(m.id) && h("span", { class: "star", text: "★" }), m.full && ico("img")),
         (sub || extra) && h("span", { class: "nt", text: [extra, sub].filter(Boolean).join(" ‧ ") })),
       badge(m)),
     h("button", { class: "chk", type: "button", "aria-pressed": String(done), "aria-label": (done ? "取消完成：" : "標記完成：") + m.name,
@@ -486,7 +502,7 @@ const filt = { type: "all", hideDone: false };
 function indexView() {
   setTop("索引", false); tabs("index");
   const count = f => missions.filter(f).length;
-  const chipDefs = [["all", "全部", () => true], ["full", "有圖文", m => m.full],
+  const chipDefs = [["all", "全部", () => true], ["fav", "★ 收藏", m => state.fav.has(m.id)], ["full", "有圖文", m => m.full],
     ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
   const chips = h("div", { class: "chips", role: "group", "aria-label": "任務篩選" });
   const list = h("div", { class: "card" });
@@ -574,38 +590,146 @@ function searchView(q) {
 }
 
 /* ───── 設定 ───── */
-function controls() {
+const sw = (label, on, set, sub) => {
+  const b = h("button", { class: "sw", type: "button", role: "switch", "aria-checked": String(on), "aria-label": label,
+    onclick: () => { on = !on; b.setAttribute("aria-checked", String(on)); set(on); } });
+  return h("div", { class: "opt" }, h("span", {}, label, sub && h("small", { text: sub })), b);
+};
+function controls(full) {
   const fsOut = h("output", { text: state.fs + "px" });
   const setFs = v => { state.fs = Math.min(26, Math.max(14, v)); store.set("fs", state.fs); fsOut.textContent = state.fs + "px"; applyPrefs(); };
   const seg = h("div", { class: "seg", role: "group", "aria-label": "主題" },
     [["auto", "自動"], ["dark", "深色"], ["light", "淺色"]].map(([k, l]) => h("button", { type: "button", "aria-pressed": String(state.theme === k), text: l,
       onclick: e => { state.theme = k; store.set("theme", k); applyPrefs(); $$("button", e.currentTarget.parentNode).forEach(b => b.setAttribute("aria-pressed", String(b === e.currentTarget))); } })));
-  const sw = h("button", { class: "sw", type: "button", role: "switch", "aria-checked": String(state.imgs), "aria-label": "顯示圖片",
-    onclick: e => { state.imgs = !state.imgs; store.set("imgs", state.imgs); e.currentTarget.setAttribute("aria-checked", String(state.imgs)); } });
-  return h("div", {},
+  const rows = [
     h("div", { class: "opt" }, h("span", { text: "字級" }),
       h("div", { class: "step" }, h("button", { type: "button", "aria-label": "縮小字級", text: "A−", onclick: () => setFs(state.fs - 1) }), fsOut,
-        h("button", { type: "button", "aria-label": "放大字級", text: "A＋", onclick: () => setFs(state.fs + 1) }))),
+        h("button", { type: "button", "aria-label": "放大字級", text: "A+", onclick: () => setFs(state.fs + 1) }))),
     h("div", { class: "opt" }, h("span", { text: "主題" }), seg),
-    h("div", { class: "opt" }, h("span", {}, "顯示圖片", h("small", { text: "關掉可省流量，下次開啟任務才會套用" })), sw));
+    sw("顯示圖片", state.imgs, v => { state.imgs = v; store.set("imgs", v); }, "關掉可省流量，下次開啟任務才會套用"),
+  ];
+  if ("wakeLock" in navigator) rows.push(sw("閱讀時螢幕常亮", state.awake, v => { state.awake = v; store.set("awake", v); wakeSync(); }, "邊玩邊看不會自動鎖屏，比較耗電"));
+  if (full) {
+    rows.push(sw("點段落標記已做完的步驟", state.stepsOn, v => { state.stepsOn = v; store.set("stepsOn", v); }, "閱讀時點一下段落會變淡，再點取消"),
+      sw("左右滑切換任務", state.swipe, v => { state.swipe = v; store.set("swipe", v); }, "在閱讀頁橫向快速滑動"));
+  }
+  return h("div", {}, rows);
 }
+
+/* 備份：把完成、收藏、步驟、閱讀位置包成一串文字 */
+const toB64 = str => { let bin = ""; new TextEncoder().encode(str).forEach(c => { bin += String.fromCharCode(c); }); return btoa(bin); };
+const fromB64 = t => new TextDecoder().decode(Uint8Array.from(atob(t), c => c.charCodeAt(0)));
+function backupCode() {
+  return "GTA6:" + toB64(JSON.stringify({ v: 1, done: [...state.done], fav: [...state.fav], steps: state.steps, pos: state.pos }));
+}
+function restoreCode(text) {
+  const t = String(text || "").trim();
+  if (!t.startsWith("GTA6:")) throw new Error("格式不對");
+  const o = JSON.parse(fromB64(t.slice(5)));
+  if (o.v !== 1) throw new Error("版本不符");
+  state.done = new Set((o.done || []).filter(id => byId[id]));
+  state.fav = new Set((o.fav || []).filter(id => byId[id]));
+  state.steps = {};
+  Object.entries(o.steps || {}).forEach(([id, arr]) => { if (byId[id] && Array.isArray(arr)) state.steps[id] = arr.filter(Number.isInteger); });
+  state.pos = o.pos && byId[o.pos.id] ? { id: o.pos.id, b: Math.max(0, o.pos.b | 0) } : null;
+  saveDone(); saveFav(); saveSteps(); store.set("pos", state.pos);
+}
+
+/* 預先下載圖片（要等 Service Worker 接管頁面才存得進去） */
+const IMG_CACHE = "gta6-images-v1";
+const imgPaths = list => [...new Set(list.flatMap(m => (m.blocks || []).filter(b => typeof b !== "string").map(b => b.i)))];
+async function cachedCount(paths) {
+  try { const c = await caches.open(IMG_CACHE); const have = new Set((await c.keys()).map(r => r.url)); return paths.filter(p => have.has(IMG + p)).length; }
+  catch (e) { return 0; }
+}
+async function prefetch(paths, onProgress) {
+  if (!navigator.serviceWorker || !navigator.serviceWorker.controller) { toast("離線功能還沒啟用，重新整理一次再試"); return null; }
+  if (!navigator.onLine) { toast("目前離線，無法下載"); return null; }
+  const c = await caches.open(IMG_CACHE);
+  const have = new Set((await c.keys()).map(r => r.url));
+  const todo = paths.filter(p => !have.has(IMG + p));
+  const queue = todo.slice(), total = todo.length;
+  let n = 0, fail = 0; onProgress(0, total);
+  const worker = async () => {
+    while (queue.length) {
+      const p = queue.shift();
+      try { await fetch(IMG + p, { mode: "no-cors", referrerPolicy: "no-referrer" }); } catch (e) { fail++; }
+      onProgress(++n, total);
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  return { total, fail };
+}
+function downloadBtn(paths, label, after) {
+  const b = h("button", { class: "btn", type: "button" });
+  const idle = async () => {
+    const have = await cachedCount(paths);
+    b.replaceChildren(ico(have >= paths.length ? "check" : "img"), have >= paths.length ? `圖片已存好（${paths.length} 張），離線可看` : `${label}（${have} / ${paths.length} 張已存）`);
+    after && after();
+  };
+  b.addEventListener("click", async () => {
+    b.disabled = true;
+    const r = await prefetch(paths, (d, t) => { b.textContent = t ? `下載中 ${d} / ${t}` : "已經都存好了"; });
+    // Service Worker 是在把回應交給頁面「之後」才寫入快取，要等最後幾張寫完再數
+    if (r) for (let i = 0; i < 20 && await cachedCount(paths) < paths.length - r.fail; i++) await new Promise(ok => setTimeout(ok, 250));
+    b.disabled = false;
+    const have = await cachedCount(paths);
+    if (r && r.fail) toast(`有 ${r.fail} 張下載失敗，可再按一次重試`);
+    else if (r && have < paths.length) toast(`瀏覽器的儲存空間只夠存 ${have} 張，其餘離線時看不到`);
+    idle();
+  });
+  idle();
+  return b;
+}
+
+let wl = null;
+async function wakeSync() {
+  const want = state.awake && view.dataset.v === "reader" && !document.hidden && "wakeLock" in navigator;
+  try {
+    if (want && !wl) { wl = await navigator.wakeLock.request("screen"); wl.addEventListener("release", () => { wl = null; }); }
+    else if (!want && wl) { const x = wl; wl = null; await x.release(); }
+  } catch (e) { wl = null; }
+}
+
 function settingsView() {
   setTop("設定", false); tabs("settings");
-  view.append(h("div", { class: "sect", text: "閱讀" }), h("div", { class: "card" }, controls()));
   const s = stats();
+  view.append(h("div", { class: "sect", text: "閱讀" }), h("div", { class: "card" }, controls(true)));
+
   view.append(h("div", { class: "sect", text: "進度" }),
     h("div", { class: "card" },
-      h("div", { class: "opt" }, h("span", {}, `已完成 ${s.done} / ${s.all}`, h("small", { text: `主線 ${s.mainDone} / ${s.main}，進度只存在這支手機的瀏覽器` }))),
+      h("div", { class: "opt" }, h("span", {}, `已完成 ${s.done} / ${s.all}`, h("small", { text: `主線 ${s.mainDone} / ${s.main}，收藏 ${state.fav.size} 個；進度只存在這支手機的瀏覽器` }))),
+      h("div", { class: "opt" }, h("span", {}, "備份進度", h("small", { text: "複製一串文字，換手機或清資料後貼回來" })),
+        h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "複製備份碼", onclick: async () => {
+          const code = backupCode();
+          try { await navigator.clipboard.writeText(code); toast("已複製備份碼"); } catch (e) { prompt("長按全選後複製這串備份碼：", code); }
+        } })),
+      h("div", { class: "opt" }, h("span", { text: "從備份還原" }),
+        h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "貼上還原", onclick: () => {
+          const t = prompt("貼上備份碼（會覆蓋目前的進度）：");
+          if (t === null) return;
+          try { restoreCode(t); toast("已還原進度"); route(true); } catch (e) { toast("備份碼無法使用：" + e.message); }
+        } })),
       h("div", { class: "opt" }, h("span", { text: "重設所有進度" }),
         h("button", { class: "btn danger", style: "flex:none;min-height:40px", type: "button", text: "重設",
-          onclick: () => { if (confirm("確定清除所有完成勾選與閱讀位置？")) { state.done.clear(); state.pos = null; saveDone(); store.set("pos", null); toast("已重設"); route(true); } } }))));
+          onclick: () => { if (confirm("確定清除所有完成、收藏、步驟標記與閱讀位置？")) { state.done.clear(); state.fav.clear(); state.steps = {}; state.pos = null; saveDone(); saveFav(); saveSteps(); store.set("pos", null); toast("已重設"); route(true); } } }))));
+
+  const all = imgPaths(missions);
   const upd = h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "檢查更新", onclick: checkUpdate });
   const clr = h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "清除",
-    onclick: async () => { try { await caches.delete("gta6-images-v1"); toast("已清除離線圖片"); } catch (e) { toast("清除失敗"); } } });
+    onclick: async () => { try { await caches.delete(IMG_CACHE); toast("已清除離線圖片"); route(true); } catch (e) { toast("清除失敗"); } } });
   view.append(h("div", { class: "sect", text: "離線與更新" }),
     h("div", { class: "card" },
+      h("div", { class: "pad" }, downloadBtn(all, "下載全部圖片供離線", null),
+        h("div", { class: "small muted", style: "margin-top:8px", text: "文字本來就能離線看。圖片是原站的，沒下載的話只有看過的會暫存；瀏覽器對這類圖片算很佔空間，可能存不滿全部 " + all.length + " 張（存滿會自動丟掉最舊的），存不滿時會告訴你存了幾張。" })),
       h("div", { class: "opt" }, h("span", {}, "檢查新版本", h("small", { text: "原作者補寫新章節、重新整理資料後用" })), upd),
-      h("div", { class: "opt" }, h("span", {}, "清除離線圖片", h("small", { text: "看過的圖片會暫存供離線看，最多約 120 張" })), clr)));
+      h("div", { class: "opt" }, h("span", {}, "清除離線圖片"), clr)));
+
+  view.append(h("div", { class: "sect", text: "安裝到主畫面" }),
+    h("div", { class: "card" }, h("div", { class: "how" },
+      h("div", {}, h("b", { text: "iPhone（Safari）：" }), "點下方分享鈕 → 加入主畫面。"),
+      h("div", {}, h("b", { text: "Android（Chrome）：" }), "右上選單 → 安裝應用程式（或加到主畫面）。"),
+      h("div", { text: "裝好後會像 App 一樣全螢幕開啟。" }))));
   view.append(sourcesFoot());
 }
 async function checkUpdate() {
@@ -648,15 +772,32 @@ function readerView(m, q) {
   readerMission = m;
   view.dataset.v = "reader";
   setTop(m.name, true); readerBar(m);
-  const art = h("article", { class: "art", id: "art" });
+  const art = h("article", { class: "art" + (state.stepsOn ? " steps" : ""), id: "art" });
+  const favBtn = h("button", { class: "pill", type: "button", "aria-pressed": String(state.fav.has(m.id)),
+    onclick: () => {
+      if (state.fav.has(m.id)) state.fav.delete(m.id); else state.fav.add(m.id);
+      saveFav(); const on = state.fav.has(m.id);
+      favBtn.setAttribute("aria-pressed", String(on)); favBtn.textContent = on ? "★ 已收藏" : "☆ 收藏";
+    } }, state.fav.has(m.id) ? "★ 已收藏" : "☆ 收藏");
   art.append(h("div", { class: "kick", text: `${m.chap.title}${m.chap.sub ? " · " + m.chap.sub : ""}　#${String(m.n).padStart(2, "0")}` }),
     h("h1", { text: m.name }),
     h("div", { class: "meta" }, badge(m) || h("span", { class: "badge b-main", text: "主線" }), whoChip(m.who), m.en && m.en !== m.name ? h("span", { text: m.en }) : null,
-      m.note ? h("span", { text: "· " + m.note }) : null));
+      m.note ? h("span", { text: "· " + m.note }) : null, favBtn));
   if (m.sum) art.append(h("div", { class: "sum" }, h("b", { text: "摘要　" }), m.sum));
 
+  const sd = new Set(state.steps[m.id] || []);
   if (m.full) {
-    m.blocks.forEach((b, i) => art.append(typeof b === "string" ? h("p", { "data-b": i, text: b }) : mkShot(b.i, i)));
+    m.blocks.forEach((b, i) => art.append(typeof b === "string" ? h("p", { "data-b": i, class: sd.has(i) ? "sd" : null, text: b }) : mkShot(b.i, i)));
+    art.addEventListener("click", e => {
+      const p = e.target.closest && e.target.closest("p[data-b]");
+      if (!p || !state.stepsOn || String(getSelection()).length) return;
+      const i = +p.dataset.b, set = new Set(state.steps[m.id] || []);
+      if (set.has(i)) set.delete(i); else set.add(i);
+      p.classList.toggle("sd", set.has(i));
+      if (set.size) state.steps[m.id] = [...set].sort((a, b) => a - b); else delete state.steps[m.id];
+      saveSteps();
+      if (!store.get("hintSteps", false)) { store.set("hintSteps", true); toast("已標記這一步，再點一下可取消"); }
+    });
   } else {
     art.append(h("div", { class: "nosteps" }, h("b", { text: "這個任務還沒有逐步圖文攻略" }),
       "遊民星空的作者還沒寫到這裡。上面是 promptowy 的一句話摘要，要看詳細流程、條件與獎勵可以到原站。原作者更新後，重新整理資料就會自動補上圖文。"));
@@ -664,8 +805,15 @@ function readerView(m, q) {
 
   doneBtn = h("button", { type: "button", onclick: () => { toggleDone(m.id); } });
   const next = missions[m.n];
-  const row = h("div", { class: "cta" }, doneBtn, next ? h("a", { class: "btn pri", href: "#/m/" + enc(next.id) }, "下一個", ico("next")) : null);
-  art.append(row);
+  art.append(h("div", { class: "cta" }, doneBtn, next ? h("a", { class: "btn pri", href: "#/m/" + enc(next.id) }, "下一個", ico("next")) : null));
+  const paths = imgPaths([m]);
+  if (paths.length) art.append(h("div", { class: "cta", style: "margin-top:0" }, downloadBtn(paths, "下載本任務圖片供離線")));
+  if (m.full) {
+    const clr = h("button", { class: "btn", type: "button", text: "清除本任務的步驟標記", onclick: () => {
+      delete state.steps[m.id]; saveSteps(); $$("#art p.sd").forEach(p => p.classList.remove("sd")); clr.parentNode.hidden = true;
+    } });
+    art.append(h("div", { class: "cta", style: "margin-top:0", hidden: (state.steps[m.id] || []).length ? null : true }, clr));
+  }
   if (m.url) art.append(h("div", { class: "cta", style: "margin-top:0" },
     h("a", { class: "btn", href: m.url, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "在 promptowy 看這個任務")));
   if (!next) art.append(h("p", { class: "muted small", text: "已經讀到目前整理的最後一個任務。" }));
@@ -697,7 +845,7 @@ function savePos() {
   state.pos = { id: readerMission.id, b }; store.set("pos", state.pos);
 }
 addEventListener("scroll", () => { updateProg(); clearTimeout(saveT); saveT = setTimeout(savePos, 300); }, { passive: true });
-document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); wakeSync(); });
 addEventListener("pagehide", savePos);
 
 /* 圖片放大：點一下開，再點圖片切換 2.3 倍，點旁邊或 ✕ 關閉 */
@@ -737,16 +885,30 @@ function route(keepScroll) {
     scrollTo(0, keepScroll ? scrollY : (scrolls[routeKey] || 0));
   }
   if (root === "m" && !(q.get("p") != null) && !(state.pos && state.pos.id === parts[1] && state.pos.b > 0)) scrollTo(0, 0);
-  updateProg();
+  updateProg(); wakeSync();
 }
 addEventListener("hashchange", () => { navCount++; route(); });
 backBtn.addEventListener("click", () => { if (navCount > 0) history.back(); else location.hash = "#/"; });
-$("#aa").addEventListener("click", () => sheet("閱讀設定", controls()));
+$("#aa").addEventListener("click", () => sheet("閱讀設定", controls(false)));
 addEventListener("keydown", e => {
   if (view.dataset.v !== "reader" || !readerMission || e.target.closest("input,textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
   const t = e.key === "ArrowLeft" ? missions[readerMission.n - 2] : e.key === "ArrowRight" ? missions[readerMission.n] : null;
   if (t) location.hash = "#/m/" + enc(t.id);
 });
+/* 左右滑切換任務：要夠長、夠快、夠水平，且避開螢幕邊緣（系統返回手勢） */
+let tstart = null;
+document.addEventListener("touchstart", e => {
+  tstart = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() } : null;
+}, { passive: true });
+document.addEventListener("touchend", e => {
+  const s = tstart; tstart = null;
+  if (!s || !state.swipe || view.dataset.v !== "reader" || !readerMission || closeSheet || $(".lb")) return;
+  if (s.x < 24 || s.x > innerWidth - 24) return;
+  const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
+  if (Math.abs(dx) < 110 || Math.abs(dx) < Math.abs(dy) * 3 || Date.now() - s.t > 600) return;
+  const target = dx < 0 ? missions[readerMission.n] : missions[readerMission.n - 2];
+  if (target) location.hash = "#/m/" + enc(target.id);
+}, { passive: true });
 const offline = $("#offline");
 const syncOnline = () => { offline.hidden = navigator.onLine; };
 addEventListener("online", syncOnline); addEventListener("offline", syncOnline); syncOnline();
