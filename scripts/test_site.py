@@ -245,7 +245,15 @@ class Gta6DataTest(unittest.TestCase):
                     if isinstance(b, dict):
                         self.assertRegex(b["i"], r"^[\w./-]+$", "圖片路徑只能是 img 網域下的相對路徑")
                         self.assertNotIn("..", b["i"])
-        self.assertEqual(d["imgBase"], "https://img1.entertainment14.net/")
+                        self.assertTrue(isinstance(b.get("w"), int) and isinstance(b.get("h"), int), "圖片要帶寬高才能預留版面：" + b["i"])
+        self.assertEqual(d["imgBase"], "https://img1.gamersky.com/")
+
+    def test_aliases_point_to_real_missions(self):
+        d = load_gta6_data()
+        ids = {m["id"] for c in d["chapters"] for m in c["missions"]}
+        for old, new in d["aliases"].items():
+            self.assertIn(new, ids)
+            self.assertNotIn(old, ids, "舊 ID 不該還在")
 
     def test_trophies_point_to_real_paragraphs(self):
         d = load_gta6_data()
@@ -269,14 +277,30 @@ class Gta6DataTest(unittest.TestCase):
             self.assertNotIn("gta6", f.read())
 
 
-YOUMIN = """<html><body><div class="entry-content">
-<p><strong>作者:Agent</strong></p><p>來源:遊民星空</p>
-<h3>第一章</h3><h4>序幕</h4><p>公告</p><hr><p>大家好，我是作者</p><p>※須知</p>
-<p>開始主線任務【序幕】</p><p><a><img data-lazy-src="https://img1.entertainment14.net/a/1.webp"></a><noscript><img src="https://img1.entertainment14.net/a/1.webp"></noscript></p>
-<p><img src="https://evil.example/x.png"></p>
-<h4>支線-女鄰居</h4><p>獎盃【甲】在這裡</p><h4>垂釣（和卡爾）</h4><p>主線任務【垂釣】</p>
-<h4>偷戰鬥機</h4><p>只是技巧</p>
-</div><script>var x = "<h4>不該被讀到</h4>";</script></body></html>"""
+def node(nid, label, title, tag, body):
+    tags = (f'<div class="reader-node-card__tags"><div class="reader-node-card__tag"><span class="reader-node-card__tag-text">'
+            f'<img src="https://img1b.gamersky.com/icon.png" class="reader-node-card__tag-icon">'
+            f'<span class="reader-node-card__tag-name">{tag}</span></span></div></div>') if tag else ""
+    return (f'<article id="reader-node-{nid}" class="reader-node-card is-expanded"><div class="reader-node-card__header">'
+            f'<span class="reader-node-card__node-id">{label}</span><h3 class="reader-node-card__title">{title}</h3></div>{tags}'
+            f'<div class="reader-node-card__content"><div class="reader-rich-content">{body}</div></div>'
+            f'<div class="reader-node-card__actions"><svg><path d="M0"/></svg></div></article>')
+
+
+def img(src, w=600, h=338):
+    return f'<p class="GsImageLabel"><a href="x"><img class="picact reader-content-image" src="{src}" width="{w}" height="{h}"></a></p>'
+
+
+YOUMIN = ('<html><head><meta name="description" content="我是游民星空攻略组的Agent，本次制作"></head><body>'
+          '<nav>2026-11-24 20:18:47 <span>導覽不該被當成任務</span></nav>'
+          + node("111", "A1", "序幕", "主線任務",
+                 "<p>公告</p><p>大家好，我是作者</p><p>※須知</p><p>開始主線任務【序幕】</p>" + img("https://img1.gamersky.com/a/1_S.jpg")
+                 + '<p><img class="reader-content-image" src="https://evil.example/x.png"></p>')
+          + node("222", "A2", "支线-女鄰居", "支線任務", "<p>獎盃【甲】在這裡</p>")
+          + node("333", "A3", "垂釣（和卡爾）", "主線任務", "<p>主線任務【垂釣】</p><p>第二<br>行</p>")
+          + node("444", "A4", "偷戰鬥機", "主線任務", "<p>只是技巧</p>")
+          + node("555", "D2", "正在推第2章", "", "<p>25號開更。</p>")
+          + '<script>var x = "<article id=\'reader-node-999\'>";</script></body></html>')
 
 
 def prompt_chapters(n_per=30):
@@ -289,13 +313,17 @@ def prompt_chapters(n_per=30):
 
 class BuildGta6Test(unittest.TestCase):
     def test_parse_youmin(self):
-        meta, intro, ms = build_gta6.parse_youmin(YOUMIN)
-        self.assertEqual(meta, {"author": "Agent", "source": "遊民星空"})
+        conv = lambda t: t.replace("线", "線")  # 測試用的簡轉繁
+        meta, intro, notices, ms = build_gta6.parse_youmin(YOUMIN, conv)
+        self.assertEqual(meta, {"author": "Agent", "updated": "2026-11-24 20:18:47"})
         self.assertEqual(intro, ["大家好，我是作者", "※須知"])
-        self.assertEqual([(m["type"], m["name"], m["note"]) for m in ms],
-                         [("主線", "序幕", ""), ("支線", "女鄰居", ""), ("主線", "垂釣", "和卡爾"), ("額外", "偷戰鬥機", "")])
-        self.assertEqual(ms[0]["blocks"], ["開始主線任務【序幕】", {"i": "a/1.webp"}])  # noscript 重複圖與外站圖都不收
-        self.assertNotIn("公告", ms[0]["blocks"])
+        self.assertEqual([(m["node"], m["type"], m["name"], m["note"]) for m in ms],
+                         [("111", "主線", "序幕", ""), ("222", "支線", "女鄰居", ""), ("333", "主線", "垂釣", "和卡爾"),
+                          ("444", "額外", "偷戰鬥機", "")])
+        # 公告被丟掉、外站圖與標籤圖示不收、圖片帶寬高、<br> 變空白
+        self.assertEqual(ms[0]["blocks"], ["開始主線任務【序幕】", {"i": "a/1_S.jpg", "w": 600, "h": 338}])
+        self.assertEqual(ms[2]["blocks"], ["主線任務【垂釣】", "第二 行"])
+        self.assertEqual(notices, [{"title": "正在推第2章", "text": "25號開更。"}])
 
     def test_parse_promptowy(self):
         cards = "".join(
@@ -313,20 +341,26 @@ class BuildGta6Test(unittest.TestCase):
             build_gta6.parse_promptowy("<h2>GTA 6 任務：第 1 章（A）</h2>")
 
     def test_merge_keeps_youmin_order_and_adds_missing(self):
-        _, _, ms = build_gta6.parse_youmin(YOUMIN)
-        old = dict(build_gta6.YOUMIN_TO_EN)
+        _, _, _, ms = build_gta6.parse_youmin(YOUMIN, lambda t: t.replace("线", "線"))
+        old_map, old_legacy = dict(build_gta6.YOUMIN_TO_EN), dict(build_gta6.LEGACY_Y_IDS)
         build_gta6.YOUMIN_TO_EN.clear()
         build_gta6.YOUMIN_TO_EN.update({"序幕": "Prologue", "垂釣": "Gone Fishing"})
+        build_gta6.LEGACY_Y_IDS.clear()
+        build_gta6.LEGACY_Y_IDS.update({"222": "y-女鄰居", "444": "y-偷戰鬥機"})
         try:
-            chapters = build_gta6.merge(ms, prompt_chapters())
+            chapters, aliases = build_gta6.merge(ms, prompt_chapters())
         finally:
             build_gta6.YOUMIN_TO_EN.clear()
-            build_gta6.YOUMIN_TO_EN.update(old)
+            build_gta6.YOUMIN_TO_EN.update(old_map)
+            build_gta6.LEGACY_Y_IDS.clear()
+            build_gta6.LEGACY_Y_IDS.update(old_legacy)
         self.assertEqual([c["no"] for c in chapters], [1, 2])
         ch1 = [(m["id"], m["name"]) for m in chapters[0]["missions"]]
         # 遊民順序為骨架；promptowy 的 Extra One 接在前一個（Gone Fishing）後面，遊民獨有的任務留在原位
-        self.assertEqual(ch1, [("p-prologue", "序幕"), ("y-女鄰居", "女鄰居"), ("p-gone-fishing", "垂釣"),
-                               ("p-extra-one", "Extra One"), ("y-偷戰鬥機", "偷戰鬥機")])
+        self.assertEqual(ch1, [("p-prologue", "序幕"), ("y-222", "女鄰居"), ("p-gone-fishing", "垂釣"),
+                               ("p-extra-one", "Extra One"), ("y-444", "偷戰鬥機")])
+        # 遊民獨有任務改用節點編號當 ID，舊的中文名 ID 要能對到新 ID，使用者已勾的進度才不會跑掉
+        self.assertEqual(aliases, {"y-女鄰居": "y-222", "y-偷戰鬥機": "y-444"})
         first = chapters[0]["missions"][0]
         self.assertEqual((first["en"], first["who"], first["url"]), ("Prologue", "Lucia", "https://promptowy.com/a/"))
         self.assertNotIn("blocks", chapters[0]["missions"][3])  # 只有摘要的任務沒有 blocks

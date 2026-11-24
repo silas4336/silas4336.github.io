@@ -1,10 +1,14 @@
 """用法：py -3 scripts/build_gta6.py [遊民星空來源] [promptowy 來源] [輸出檔，預設 gta6/data.js]
 來源可以是本機 HTML 檔或網址，省略就抓下面兩個預設網址。
 
-把兩份 GTA 6 攻略合併成 gta6/data.js，給 gta6/ 的攻略 PWA 用。只用標準函式庫。
+需要簡轉繁套件（只有重新產生資料時才要，網站本身不需要）：
+    py -3 -m pip install opencc-python-reimplemented
 
-  1. 遊民星空《GTA6 全任務流程圖文攻略》（娛樂計程車轉載頁）：逐步圖文，含支線、搶劫、陌生人，
-     但原作者還在更新，目前只寫到第 2 章開頭。
+把兩份 GTA 6 攻略合併成 gta6/data.js，給 gta6/ 的攻略 PWA 用。
+
+  1. 遊民星空原站《GTA6 全任務流程圖文攻略》（gamersky.com 路書）：逐步圖文，含支線、搶劫、陌生人，
+     簡體中文，這裡用 OpenCC s2twp（台灣用字與慣用詞）轉成繁體。作者還在更新（目前寫到第 2 章第 1 個任務，
+     最後一則是作者預告），所以會被當成「作者預告」另外存，不算任務。
   2. promptowy.com《GTA 6 主線任務攻略》：第 1～5 章全部約 100 個主線任務的清單（官方英文名、角色、
      一句話摘要、單一任務頁連結），沒有逐步內容。
 
@@ -12,13 +16,16 @@
   - 骨架是遊民星空的遊玩順序（支線等穿插在原位）。兩邊對得上的任務（YOUMIN_TO_EN）合成一筆：
     中文名與圖文來自遊民，英文名、角色、摘要、連結來自 promptowy。
   - promptowy 有、遊民還沒寫到的任務，依 promptowy 的順序接在前一個任務後面，只有摘要和外連結。
-  - 原作者之後補寫了某個任務，就在 YOUMIN_TO_EN 加一行對應，重跑即可（新任務名對不上會印出警告）。
-  - 任務 ID 用英文名（promptowy 有的）或中文名（只有遊民有的）產生，來源更新後 ID 不變，已勾選的進度不會跑掉。
+  - 原作者之後補寫了某個任務，就在 YOUMIN_TO_EN 加一行對應，重跑即可（對不上會印出警告）。
+  - 任務 ID：promptowy 有的用英文名（p-gone-fishing），只有遊民有的用遊民的節點編號（y-1468083467）。
+    來源改標題或補寫內容時 ID 都不變，已勾選的進度不會跑掉。舊版曾用中文名當 ID，LEGACY_Y_IDS 記著對照，
+    輸出的 aliases 讓頁面把舊進度轉成新 ID。
 
 重跑後把 gta6/sw.js 的 CACHE 版本號加 1，已安裝的 PWA 才會收到新內容。
 
-安全：只保留章節標題、任務標題、純文字、來自 img1.entertainment14.net 的圖片網址，以及
+安全：只保留章節標題、任務標題、純文字、來自 img1.gamersky.com 的圖片網址與寬高，以及
 https://promptowy.com/ 的任務頁連結；其他標籤（廣告、樣式、腳本）全部丟掉。
+注意：img1.gamersky.com 有防盜連結——請求帶 Referer 會 403，所以頁面的圖片一律要 no-referrer。
 """
 import html as htmllib
 import json
@@ -28,18 +35,16 @@ import urllib.request
 from datetime import date
 from html.parser import HTMLParser
 
-YOUMIN_URL = ("https://www.entertainment14.net/blog/post/111014483-"
-              "%E4%BF%A0%E7%9B%9C%E7%8D%B5%E8%BB%8A%E6%89%8B-6-gta-6-"
-              "%E5%85%A8%E4%BB%BB%E5%8B%99%E6%B5%81%E7%A8%8B%E5%9C%96%E6%96%87%E6%94%BB%E7%95%A5")
+YOUMIN_URL = "https://www.gamersky.com/tools/guide-map/roadbooks/55"
 PROMPTOWY_URL = "https://promptowy.com/zh-tw/gta-6/%E4%BB%BB%E5%8B%99%E6%94%BB%E7%95%A5/"
-IMG_BASE = "https://img1.entertainment14.net/"
+IMG_BASE = "https://img1.gamersky.com/"
 PROMPTOWY_BASE = "https://promptowy.com/"
 
 TYPE_PREFIX = {"支線": "支線", "搶劫": "搶劫", "可選": "可選", "陌生人": "陌生人"}
 # 沒有前綴的標題預設是主線；但內文完全沒出現「任務【…】」的（例如「偷犀牛坦克、戰鬥機」）只是順手的技巧，歸為「額外」
 MISSION_MARK = re.compile(r"任務\s*【")
 
-# 遊民星空的中文任務名 → promptowy 的英文任務名。其餘遊民任務（支線、搶劫、陌生人、可選、額外）沒有對應。
+# 遊民星空的（繁體）任務名 → promptowy 的英文任務名。其餘遊民任務（支線、搶劫、陌生人、可選、額外）沒有對應。
 YOUMIN_TO_EN = {
     "序幕": "Prologue",
     "垂釣": "Gone Fishing",
@@ -66,74 +71,125 @@ YOUMIN_TO_EN = {
     "包中何物": "What's in the Bag?",
 }
 
+# 遊民的主線任務裡，promptowy 沒有對應的（只是家裡操作教學之類）：不用警告
+YOUMIN_ONLY_MAIN = {"傑森的家"}
+
+# 舊版（轉載頁）用「y-中文名」當遊民獨有任務的 ID；現在改用遊民節點編號。節點編號 → 舊 ID，產生 aliases 用。
+LEGACY_Y_IDS = {
+    "1468083467": "y-傑森的家", "793266265": "y-女鄰居雪麗", "1317901914": "y-奇珍動物門面",
+    "850023057": "y-翠鳥幫漁棚", "1038409068": "y-搜查潛水點", "1564511324": "y-釣一條更大的魚1",
+    "1884475042": "y-偷走代步車", "995188833": "y-釣一條更大的魚2", "1612145627": "y-搜查潛水點2",
+    "1889613080": "y-找到丟失貨物", "535367646": "y-臭猿學入門", "850564572": "y-搜尋樹雕",
+    "1461250244": "y-進階臭猿經濟學", "1271184100": "y-偷犀牛坦克、戰鬥機", "667627542": "y-唐尼的丟失貨物",
+}
+
 
 def load(src):
     if re.match(r"^https?://", src):
-        req = urllib.request.Request(src, headers={"User-Agent": "Mozilla/5.0"})
+        req = urllib.request.Request(src, headers={"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"})
         with urllib.request.urlopen(req, timeout=60) as r:
             return r.read().decode("utf-8", "replace")
     with open(src, encoding="utf-8", errors="replace") as f:
         return f.read()
 
 
-# ───────────────────────── 遊民星空 ─────────────────────────
+def make_converter():
+    try:
+        from opencc import OpenCC
+    except ImportError:
+        raise SystemExit("需要簡轉繁套件：py -3 -m pip install opencc-python-reimplemented")
+    return OpenCC("s2twp").convert
 
-class Article(HTMLParser):
-    """從 div.entry-content 取出 [("h3"|"h4"|"p"|"hr"|"img", 內容)]，依文章順序。"""
+
+# ───────────────────────── 遊民星空（gamersky 路書） ─────────────────────────
+
+class Roadbook(HTMLParser):
+    """每個任務是一個 <article id="reader-node-編號" class="reader-node-card">：
+    span.reader-node-card__node-id（A1…）、h3.reader-node-card__title、span.reader-node-card__tag-name（主線任務…）、
+    div.reader-rich-content 裡的 <p> 段落與 img.reader-content-image 圖片（_S.jpg 是 600 寬縮圖，並帶寬高）。"""
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.items = []
-        self.in_article = False
-        self.div_depth = 0
-        self.skip = 0          # script / style / noscript 內的東西不要
-        self.cur = None        # 目前收集中的 (tag, [文字])
+        self.nodes = []
+        self.cur = None
+        self.cap = None     # (kind, 結束標籤, [文字])
+        self.rich = 0       # 在 reader-rich-content 內的 div 深度
+        self.skip = 0       # script / style / svg 內的東西不要
+
+    @staticmethod
+    def classes(attrs):
+        return (dict(attrs).get("class") or "").split()
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
-        if not self.in_article:
-            if tag == "div" and "entry-content" in (a.get("class") or "").split():
-                self.in_article, self.div_depth = True, 1
+        cls = self.classes(attrs)
+        if tag == "article" and (a.get("id") or "").startswith("reader-node-"):
+            self.cur = {"node": a["id"][len("reader-node-"):], "label": "", "title": "", "tags": [], "blocks": []}
+            return
+        c = self.cur
+        if c is None:
+            return
+        if tag in ("script", "style", "svg"):
+            self.skip += 1
+            return
+        if self.skip:
             return
         if tag == "div":
-            self.div_depth += 1
-        elif tag in ("script", "style", "noscript"):
-            self.skip += 1
-        elif self.skip:
-            return
-        elif tag in ("h3", "h4", "p"):
-            self.cur = (tag, [])
-        elif tag == "hr":
-            self.items.append(("hr", ""))
-        elif tag == "br" and self.cur:
-            self.cur[1].append(" ")
-        elif tag == "img":
-            src = a.get("data-lazy-src") or a.get("src") or ""
+            if "reader-rich-content" in cls:
+                self.rich = 1
+            elif self.rich:
+                self.rich += 1
+        elif tag == "span" and "reader-node-card__node-id" in cls:
+            self.cap = ("label", "span", [])
+        elif tag == "h3" and "reader-node-card__title" in cls:
+            self.cap = ("title", "h3", [])
+        elif tag == "span" and "reader-node-card__tag-name" in cls:
+            self.cap = ("tag", "span", [])
+        elif tag == "p" and self.rich:
+            self.cap = ("para", "p", [])
+        elif tag == "br" and self.cap:
+            self.cap[2].append(" ")
+        elif tag == "img" and self.rich and "reader-content-image" in cls:
+            src = a.get("src") or ""
             if src.startswith(IMG_BASE):
-                self.items.append(("img", src[len(IMG_BASE):]))
+                blk = {"i": src[len(IMG_BASE):]}
+                if (a.get("width") or "").isdigit() and (a.get("height") or "").isdigit():
+                    blk["w"], blk["h"] = int(a["width"]), int(a["height"])
+                c["blocks"].append(blk)
 
     def handle_endtag(self, tag):
-        if not self.in_article:
+        c = self.cur
+        if c is None:
             return
-        if tag == "div":
-            self.div_depth -= 1
-            if self.div_depth == 0:
-                self.in_article = False
-        elif tag in ("script", "style", "noscript"):
+        if tag in ("script", "style", "svg"):
             self.skip = max(0, self.skip - 1)
-        elif self.cur and tag == self.cur[0]:
-            text = re.sub(r"\s+", " ", "".join(self.cur[1])).strip()
-            if text:
-                self.items.append((tag, text))
-            self.cur = None
+            return
+        if tag == "article":
+            self.nodes.append(c)
+            self.cur, self.cap, self.rich = None, None, 0
+            return
+        if tag == "div" and self.rich:
+            self.rich -= 1
+        if self.cap and self.cap[1] == tag:
+            kind, _, buf = self.cap
+            text = re.sub(r"\s+", " ", "".join(buf)).strip()
+            self.cap = None
+            if not text:
+                return
+            if kind == "para":
+                c["blocks"].append(text)
+            elif kind == "tag":
+                c["tags"].append(text)
+            else:
+                c[kind] = text
 
     def handle_data(self, data):
-        if self.in_article and self.cur and not self.skip:
-            self.cur[1].append(data)
+        if self.cur is not None and self.cap and not self.skip:
+            self.cap[2].append(data)
 
 
 def split_title(raw):
-    """「支線-女鄰居雪麗」→ (支線, 女鄰居雪麗, "")；「垂釣（和卡爾開船）」→ (主線, 垂釣, 和卡爾開船)"""
+    """「支線-女鄰居雪莉」→ (支線, 女鄰居雪莉, "")；「垂釣（和卡爾開船）」→ (主線, 垂釣, 和卡爾開船)"""
     kind = "主線"
     m = re.match(r"^(支線|搶劫|可選|陌生人)\s*[-－—]\s*(.+)$", raw)
     if m:
@@ -145,49 +201,47 @@ def split_title(raw):
     return kind, raw, note
 
 
-def parse_youmin(html):
-    """回傳 (meta, 前言段落, 依文章順序的任務 list)。章節標題（h3）不用，章節以 promptowy 的官方章節為準。"""
-    p = Article()
+def parse_youmin(html, convert=lambda s: s):
+    """回傳 (meta, 前言段落, 作者預告, 依文章順序的任務 list)。convert 是簡轉繁函式（測試時用恆等）。"""
+    p = Roadbook()
     p.feed(html)
-    items = p.items
-    if not any(t == "h4" for t, _ in items):
-        raise SystemExit("遊民星空：找不到任何任務標題（h4），來源頁面的結構可能變了")
+    nodes = [n for n in p.nodes if n["title"]]
+    missions_raw = [n for n in nodes if n["tags"]]
+    if not missions_raw:
+        raise SystemExit("遊民星空：找不到任何任務（reader-node-card），來源頁面的結構可能變了")
 
-    meta = {"author": "", "source": ""}
-    for t, v in items:
-        if t == "h3":
-            break
-        if t == "p":
-            m = re.match(r"^(作者|來源)\s*[:：]\s*(.+)$", v)
-            if m:
-                meta["author" if m.group(1) == "作者" else "source"] = m.group(2)
+    def conv_blocks(blocks):
+        return [convert(b) if isinstance(b, str) else b for b in blocks]
 
-    missions, cur, intro, seen_hr = [], None, [], False
-    for t, v in items:
-        if t == "h4":
-            kind, name, note = split_title(v)
-            cur = {"type": kind, "name": name, "note": note, "blocks": []}
-            missions.append(cur)
-            seen_hr = False
-        elif cur is None or t == "h3":
-            continue
-        elif t == "hr":
-            # 第一個任務裡，分隔線前是網站改版公告（丟掉），後面開頭幾段是作者的前言（獨立成「閱讀須知」）
-            if not seen_hr and not intro and not any(isinstance(b, dict) for b in cur["blocks"]):
-                cur["blocks"], seen_hr = [], True
-        elif t == "p":
-            if seen_hr and not any(isinstance(b, dict) for b in cur["blocks"]) \
-                    and (v.startswith("大家好") or v.startswith("※")) and len(intro) < 8:
-                intro.append(v)
-            else:
-                cur["blocks"].append(v)
-        elif t == "img":
-            cur["blocks"].append({"i": v})
+    missions = []
+    for n in missions_raw:
+        kind, name, note = split_title(convert(n["title"]))
+        missions.append({"node": n["node"], "type": kind, "name": name, "note": note, "blocks": conv_blocks(n["blocks"])})
+
+    # 沒有任務標籤的節點（例如「正在推第2章：25號開更」）是作者預告
+    notices = [{"title": convert(n["title"]), "text": " ".join(b for b in conv_blocks(n["blocks"]) if isinstance(b, str))}
+               for n in nodes if not n["tags"]]
+
+    # 第一個任務開頭：網站改版公告（丟掉）→「大家好，我是…」作者前言與「※」須知（獨立成「閱讀須知」）→ 正文
+    intro, first = [], missions[0]["blocks"]
+    start = next((i for i, b in enumerate(first) if isinstance(b, str) and b.startswith("大家好，我是")), None)
+    if start is not None:
+        end = start
+        while end < len(first) and isinstance(first[end], str) and (first[end].startswith("大家好") or first[end].startswith("※")) \
+                and end - start < 8:
+            end += 1
+        intro = first[start:end]
+        missions[0]["blocks"] = first[end:]
 
     for m in missions:
         if m["type"] == "主線" and not any(isinstance(b, str) and MISSION_MARK.search(b) for b in m["blocks"]):
             m["type"] = "額外"
-    return meta, intro, missions
+
+    text = re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)[\s\S]*?</\1>", "", html))
+    stamp = re.search(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", text)
+    author = re.search(r"攻略组的(\w+)", html)
+    meta = {"author": author.group(1) if author else "", "updated": stamp.group(0) if stamp else ""}
+    return meta, intro, notices, missions
 
 
 # ───────────────────────── promptowy ─────────────────────────
@@ -249,6 +303,7 @@ def slug(text):
 
 
 def merge(youmin_missions, prompt_chapters):
+    """回傳 (chapters, aliases)。"""
     en_info = {}
     for no, ch in prompt_chapters.items():
         for m in ch["missions"]:
@@ -265,8 +320,10 @@ def merge(youmin_missions, prompt_chapters):
             else:
                 entry.update(en=en, who=info["who"], sum=info["sum"], url=info["url"])
                 cur_ch = info["ch"]
+        elif ym["type"] == "主線" and ym["name"] not in YOUMIN_ONLY_MAIN:
+            print(f"⚠ 遊民的主線任務「{ym['name']}」沒有在 YOUMIN_TO_EN 登記，當成遊民獨有任務", file=sys.stderr)
         entry["ch"] = cur_ch
-        entry["id"] = ("p-" + slug(en)) if entry.get("en") else "y-" + ym["name"]
+        entry["id"] = ("p-" + slug(entry["en"])) if entry.get("en") else "y-" + ym["node"]
         merged.append(entry)
 
     by_en = {e["en"]: e for e in merged if e.get("en")}
@@ -299,7 +356,10 @@ def merge(youmin_missions, prompt_chapters):
             missions.append(m)
         sub = prompt_chapters.get(no, {}).get("sub", "")
         chapters.append({"id": f"c{no}", "no": no, "title": f"第 {no} 章", "sub": sub, "missions": missions})
-    return chapters
+
+    aliases = {LEGACY_Y_IDS[e["node"]]: e["id"] for e in merged
+               if e.get("node") in LEGACY_Y_IDS and LEGACY_Y_IDS[e["node"]] != e["id"]}
+    return chapters, aliases
 
 
 def collect_index(chapters):
@@ -316,13 +376,14 @@ def collect_index(chapters):
     return trophies, optionals
 
 
-def build(youmin_html, prompt_html):
-    meta, intro, ymissions = parse_youmin(youmin_html)
-    chapters = merge(ymissions, parse_promptowy(prompt_html))
+def build(youmin_html, prompt_html, convert=lambda s: s):
+    meta, intro, notices, ymissions = parse_youmin(youmin_html, convert)
+    chapters, aliases = merge(ymissions, parse_promptowy(prompt_html))
     trophies, optionals = collect_index(chapters)
     return {
         "title": "GTA 6 全任務攻略",
         "builtOn": date.today().isoformat(),
+        "sourceUpdated": meta["updated"],
         "imgBase": IMG_BASE,
         "sources": [
             {"name": f"遊民星空（作者 {meta['author']}）逐步圖文攻略" if meta["author"] else "遊民星空逐步圖文攻略",
@@ -330,7 +391,9 @@ def build(youmin_html, prompt_html):
             {"name": "promptowy.com 主線任務清單", "url": PROMPTOWY_URL},
         ],
         "intro": intro,
+        "notices": notices,
         "chapters": chapters,
+        "aliases": aliases,
         "trophies": trophies,
         "optionals": optionals,
     }
@@ -340,7 +403,7 @@ def main(argv):
     youmin = argv[1] if len(argv) > 1 else YOUMIN_URL
     prompt = argv[2] if len(argv) > 2 else PROMPTOWY_URL
     out = argv[3] if len(argv) > 3 else "gta6/data.js"
-    data = build(load(youmin), load(prompt))
+    data = build(load(youmin), load(prompt), make_converter())
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write("// 由 scripts/build_gta6.py 產生，不要手改。\n")
         f.write("window.GUIDE = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n")
@@ -348,7 +411,10 @@ def main(argv):
     full = sum(1 for m in ms if m.get("blocks"))
     imgs = sum(1 for m in ms for b in m.get("blocks", []) if isinstance(b, dict))
     print(f"{len(data['chapters'])} 章、{len(ms)} 個任務（{full} 個有圖文、{len(ms) - full} 個只有摘要）、"
-          f"{imgs} 張圖、{len(data['trophies'])} 個獎盃 → {out}")
+          f"{imgs} 張圖、{len(data['trophies'])} 個獎盃、{len(data['aliases'])} 個舊 ID 對照 → {out}")
+    for n in data["notices"]:
+        print(f"作者預告：{n['title']}　{n['text']}")
+    print(f"遊民原文更新時間：{data['sourceUpdated']}")
     return 0
 
 

@@ -175,8 +175,8 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .art p.flash,.art figure.flash{animation:flash 2.2s ease-out}
 @keyframes flash{0%,35%{background:color-mix(in srgb,var(--accent2) 38%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent2) 38%,transparent);border-radius:6px}100%{background:transparent;box-shadow:0 0 0 6px transparent}}
 .art [data-b]{scroll-margin-top:calc(var(--hh) + 14px)}
-.shot{margin:1em -4px;border-radius:12px;overflow:hidden;background:var(--surface2);aspect-ratio:16/9;display:grid;place-items:center;position:relative}
-.shot.ok{aspect-ratio:auto;display:block}
+.shot{margin:1em -4px;border-radius:12px;overflow:hidden;background:var(--surface2);aspect-ratio:var(--ar,16/9);display:grid;place-items:center;position:relative}
+.shot.ok{aspect-ratio:var(--ar,auto);display:block}
 .shot img{display:block;width:100%;height:auto;cursor:zoom-in}
 .shot.loading::after{content:"";width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp .8s linear infinite;position:absolute}
 @keyframes sp{to{transform:rotate(1turn)}}
@@ -191,6 +191,8 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 
 .art.steps p[data-b]{cursor:pointer;transition:opacity .15s}
 .art p.sd{opacity:.45;box-shadow:inset 3px 0 0 var(--ok);padding-left:11px;margin-left:-11px}
+.notice{margin-top:14px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:.9rem;line-height:1.6;display:flex;gap:10px}
+.notice b{color:var(--accent2);white-space:nowrap}
 .star{color:var(--accent2);font-size:.85em;flex:none}
 .pill{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:2px 11px;font-size:.8rem;min-height:30px}
 .pill[aria-pressed="true"]{color:var(--accent2);border-color:var(--accent2);font-weight:700}
@@ -309,23 +311,33 @@ G.chapters.forEach(ch => ch.missions.forEach(m => {
 }));
 const IMG = G.imgBase;
 
+const alias = id => (G.aliases && G.aliases[id]) || id;   // 舊版 ID → 新 ID（來源換了之後保住已存的進度）
 const state = {
-  done: new Set(store.get("done", []).filter(id => byId[id])),
+  done: new Set(store.get("done", []).map(alias).filter(id => byId[id])),
   pos: store.get("pos", null),
   fs: store.get("fs", 17),
   theme: store.get("theme", "auto"),
   imgs: store.get("imgs", true),
   open: store.get("open", null),
-  steps: store.get("steps", {}),
-  fav: new Set(store.get("fav", []).filter(id => byId[id])),
+  steps: {},
+  fav: new Set(store.get("fav", []).map(alias).filter(id => byId[id])),
   stepsOn: store.get("stepsOn", true),
   swipe: store.get("swipe", true),
   awake: store.get("awake", false),
 };
+/* 步驟標記用「段落內容的雜湊」當鍵，原作者改了前面的段落、插了圖，標記也不會錯位；舊版存的是段落序號，直接丟掉 */
+const hkey = t => { let x = 5381; for (let i = 0; i < t.length; i++) x = ((x << 5) + x + t.charCodeAt(i)) >>> 0; return x.toString(36); };
+Object.entries(store.get("steps", {}) || {}).forEach(([id, arr]) => {
+  id = alias(id);
+  const keys = Array.isArray(arr) ? arr.filter(x => typeof x === "string") : [];
+  if (byId[id] && keys.length) state.steps[id] = [...new Set([...(state.steps[id] || []), ...keys])];
+});
+if (state.pos) state.pos.id = alias(state.pos.id);
 if (state.pos && !byId[state.pos.id]) state.pos = null;
 const saveDone = () => store.set("done", [...state.done]);
 const saveFav = () => store.set("fav", [...state.fav]);
 const saveSteps = () => store.set("steps", state.steps);
+saveDone(); saveFav(); saveSteps(); store.set("pos", state.pos && byId[state.pos.id] ? state.pos : null);
 
 function applyPrefs() {
   const root = document.documentElement;
@@ -452,6 +464,8 @@ function tocView() {
     h("div", { class: "stats" }, h("span", { text: `已完成 ${s.done} / ${s.all}` }), h("span", { text: `主線 ${s.mainDone} / ${s.main}` }),
       h("span", { text: `${s.full} 個有逐步圖文` }))));
 
+  (G.notices || []).forEach(n => view.append(h("div", { class: "notice" }, h("b", { text: "作者預告" }), h("span", { text: `${n.title}：${n.text}` }))));
+
   let curChap = null;
   if (state.pos && byId[state.pos.id]) {
     const m = byId[state.pos.id]; curChap = m.chap.id;
@@ -494,7 +508,7 @@ function sourcesFoot() {
   return h("div", { class: "foot" },
     h("div", {}, "資料來源："),
     G.sources.map(s => h("div", {}, h("a", { href: s.url, target: "_blank", rel: "noopener noreferrer", text: s.name }))),
-    h("div", { text: `整理於 ${G.builtOn}。內容版權屬原作者，這份只供個人閱讀。有圖文的任務（${stats().full} 個）文字存在手機裡可離線看；其他任務是摘要，點進去可連到原站。` }));
+    h("div", { text: `整理於 ${G.builtOn}${G.sourceUpdated ? `（遊民原文更新於 ${G.sourceUpdated}）` : ""}。遊民原文是簡體，這裡自動轉成繁體，用詞偶爾會不太自然。內容版權屬原作者，這份只供個人閱讀。有圖文的任務（${stats().full} 個）文字存在手機裡可離線看；其他任務是摘要，點進去可連到原站。` }));
 }
 
 /* ───── 索引 ───── */
@@ -627,16 +641,21 @@ function restoreCode(text) {
   if (!t.startsWith("GTA6:")) throw new Error("格式不對");
   const o = JSON.parse(fromB64(t.slice(5)));
   if (o.v !== 1) throw new Error("版本不符");
-  state.done = new Set((o.done || []).filter(id => byId[id]));
-  state.fav = new Set((o.fav || []).filter(id => byId[id]));
+  state.done = new Set((o.done || []).map(alias).filter(id => byId[id]));
+  state.fav = new Set((o.fav || []).map(alias).filter(id => byId[id]));
   state.steps = {};
-  Object.entries(o.steps || {}).forEach(([id, arr]) => { if (byId[id] && Array.isArray(arr)) state.steps[id] = arr.filter(Number.isInteger); });
-  state.pos = o.pos && byId[o.pos.id] ? { id: o.pos.id, b: Math.max(0, o.pos.b | 0) } : null;
+  Object.entries(o.steps || {}).forEach(([id, arr]) => {
+    id = alias(id);
+    const keys = Array.isArray(arr) ? arr.filter(x => typeof x === "string") : [];
+    if (byId[id] && keys.length) state.steps[id] = keys;
+  });
+  const pid = o.pos && alias(o.pos.id);
+  state.pos = pid && byId[pid] ? { id: pid, b: Math.max(0, o.pos.b | 0), k: typeof o.pos.k === "string" ? o.pos.k : null } : null;
   saveDone(); saveFav(); saveSteps(); store.set("pos", state.pos);
 }
 
 /* 預先下載圖片（要等 Service Worker 接管頁面才存得進去） */
-const IMG_CACHE = "gta6-images-v1";
+const IMG_CACHE = "gta6-images-v2";
 const imgPaths = list => [...new Set(list.flatMap(m => (m.blocks || []).filter(b => typeof b !== "string").map(b => b.i)))];
 async function cachedCount(paths) {
   try { const c = await caches.open(IMG_CACHE); const have = new Set((await c.keys()).map(r => r.url)); return paths.filter(p => have.has(IMG + p)).length; }
@@ -751,8 +770,9 @@ function updateDoneBtn() {
   doneBtn.replaceChildren(ico("check"), d ? "已完成（點一下取消）" : "標記完成");
   doneBtn.setAttribute("aria-pressed", String(d));
 }
-function mkShot(path, i) {
-  const fig = h("figure", { class: "shot", "data-b": i });
+function mkShot(blk, i) {
+  const path = blk.i;
+  const fig = h("figure", { class: "shot", "data-b": i, style: blk.w && blk.h ? `--ar:${blk.w}/${blk.h}` : null });
   const load = retry => {
     fig.replaceChildren(); fig.classList.remove("ok"); fig.classList.add("loading");
     const img = new Image();
@@ -785,16 +805,20 @@ function readerView(m, q) {
       m.note ? h("span", { text: "· " + m.note }) : null, favBtn));
   if (m.sum) art.append(h("div", { class: "sum" }, h("b", { text: "摘要　" }), m.sum));
 
-  const sd = new Set(state.steps[m.id] || []);
+  const sd = new Set(state.steps[m.id] || []);   // 已標記段落的雜湊鍵
   if (m.full) {
-    m.blocks.forEach((b, i) => art.append(typeof b === "string" ? h("p", { "data-b": i, class: sd.has(i) ? "sd" : null, text: b }) : mkShot(b.i, i)));
+    m.blocks.forEach((b, i) => {
+      if (typeof b !== "string") { art.append(mkShot(b, i)); return; }
+      const k = hkey(b);
+      art.append(h("p", { "data-b": i, "data-k": k, class: sd.has(k) ? "sd" : null, text: b }));
+    });
     art.addEventListener("click", e => {
       const p = e.target.closest && e.target.closest("p[data-b]");
       if (!p || !state.stepsOn || String(getSelection()).length) return;
-      const i = +p.dataset.b, set = new Set(state.steps[m.id] || []);
-      if (set.has(i)) set.delete(i); else set.add(i);
-      p.classList.toggle("sd", set.has(i));
-      if (set.size) state.steps[m.id] = [...set].sort((a, b) => a - b); else delete state.steps[m.id];
+      const k = p.dataset.k, set = new Set(state.steps[m.id] || []);
+      if (set.has(k)) set.delete(k); else set.add(k);
+      p.classList.toggle("sd", set.has(k));
+      if (set.size) state.steps[m.id] = [...set]; else delete state.steps[m.id];
       saveSteps();
       if (!store.get("hintSteps", false)) { store.set("hintSteps", true); toast("已標記這一步，再點一下可取消"); }
     });
@@ -823,7 +847,8 @@ function readerView(m, q) {
   let target = p != null ? +p : (m.full && state.pos && state.pos.id === m.id ? state.pos.b : 0);
   if (m.full && target > 0) {
     requestAnimationFrame(() => {
-      const el = $(`#art [data-b="${target}"]`);
+      const byKey = p == null && state.pos && state.pos.k ? $(`#art [data-k="${state.pos.k}"]`) : null;
+      const el = byKey || $(`#art [data-b="${target}"]`);
       if (!el) return;
       el.scrollIntoView({ block: "start" });
       if (p != null) { el.classList.add("flash"); }
@@ -841,8 +866,9 @@ function savePos() {
   if (view.dataset.v !== "reader" || !readerMission || !readerMission.full) return;
   const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hh")) || 60;
   let b = 0;
-  for (const el of $$("#art [data-b]")) { b = +el.dataset.b; if (el.getBoundingClientRect().bottom > top + 6) break; }
-  state.pos = { id: readerMission.id, b }; store.set("pos", state.pos);
+  let k = null;
+  for (const el of $$("#art [data-b]")) { b = +el.dataset.b; k = el.dataset.k || null; if (el.getBoundingClientRect().bottom > top + 6) break; }
+  state.pos = { id: readerMission.id, b, k }; store.set("pos", state.pos);
 }
 addEventListener("scroll", () => { updateProg(); clearTimeout(saveT); saveT = setTimeout(savePos, 300); }, { passive: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); wakeSync(); });
@@ -853,6 +879,8 @@ document.addEventListener("click", e => {
   const img = e.target.closest && e.target.closest(".shot img");
   if (!img) return;
   const big = h("img", { src: img.src, alt: "", referrerpolicy: "no-referrer" });
+  const full = img.src.replace(/_S\.(jpe?g|png|webp)$/i, ".$1");   // _S 是 600 寬縮圖，沒有 _S 的是原圖
+  if (full !== img.src) { const pre = new Image(); pre.referrerPolicy = "no-referrer"; pre.onload = () => { big.src = full; }; pre.src = full; }
   const lb = h("div", { class: "lb", role: "dialog", "aria-modal": "true", "aria-label": "放大檢視" }, big,
     h("button", { class: "x", type: "button", "aria-label": "關閉", text: "✕" }));
   const close = () => { lb.remove(); document.documentElement.classList.remove("lock"); document.removeEventListener("keydown", onKey); };
