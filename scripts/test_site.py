@@ -3,11 +3,13 @@
 1. scripts/check_i18n.py 各條規則的單元測試（用暫存資料夾的假頁面）
 2. 主站 12 頁（中英 index.html、work-*.html）的本機連結與圖片都找得到檔案
 3. sitemap.xml 列的網址都對得到檔案，主站每一頁也都在 sitemap 裡
-4. math-logic/、neko/、preview-*/ 每頁都有 noindex
+4. math-logic/、neko/、gta6/、preview-*/ 每頁都有 noindex
+5. gta6/ 攻略 PWA：data.js 結構、離線檔案清單、不在 sitemap；scripts/build_gta6.py 的解析與合併規則
 """
 import contextlib
 import glob
 import io
+import json
 import os
 import re
 import subprocess
@@ -20,6 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
+import build_gta6  # noqa: E402
 import check_i18n  # noqa: E402
 
 PAGE = """<!doctype html><html><head><title>2024 標題 99</title><style>.a{{width:42px}}</style></head>
@@ -200,8 +203,8 @@ class SiteTest(unittest.TestCase):
             self.assertIn("Sitemap: https://silas4336.github.io/sitemap.xml", f.read())
 
     def test_hidden_sections_are_noindex(self):
-        """robots.txt 刻意不擋 math-logic/、neko/、preview-*/，所以每個 html 都要自己帶 noindex。"""
-        pages = [p for pat in ("math-logic/**/*.html", "neko/**/*.html", "preview-*/**/*.html")
+        """robots.txt 刻意不擋 math-logic/、neko/、gta6/、preview-*/，所以每個 html 都要自己帶 noindex。"""
+        pages = [p for pat in ("math-logic/**/*.html", "neko/**/*.html", "gta6/**/*.html", "preview-*/**/*.html")
                  for p in glob.glob(os.path.join(ROOT, pat), recursive=True)]
         self.assertTrue(pages)
         bad = []
@@ -210,6 +213,129 @@ class SiteTest(unittest.TestCase):
                 if not re.search(r'<meta name="robots" content="noindex', f.read()):
                     bad.append(os.path.relpath(p, ROOT))
         self.assertEqual(bad, [], "缺少 noindex 的頁面")
+
+
+def load_gta6_data():
+    with open(os.path.join(ROOT, "gta6", "data.js"), encoding="utf-8") as f:
+        text = f.read()
+    return json.loads(text[text.index("{"):text.rindex("}") + 1])
+
+
+class Gta6DataTest(unittest.TestCase):
+    """gta6/data.js 是 scripts/build_gta6.py 產生的，頁面直接用它，結構壞了整頁就空白。"""
+
+    def test_structure_and_unique_ids(self):
+        d = load_gta6_data()
+        self.assertGreaterEqual(len(d["chapters"]), 2)
+        ids = [m["id"] for c in d["chapters"] for m in c["missions"]]
+        self.assertEqual(len(ids), len(set(ids)), "任務 ID 重複")
+        types = {"主線", "支線", "搶劫", "陌生人", "可選", "額外"}
+        for c in d["chapters"]:
+            for m in c["missions"]:
+                self.assertIn(m["type"], types, m["id"])
+                self.assertTrue(m["name"], m["id"])
+
+    def test_only_safe_urls_and_images(self):
+        d = load_gta6_data()
+        for c in d["chapters"]:
+            for m in c["missions"]:
+                if "url" in m:
+                    self.assertTrue(m["url"].startswith("https://promptowy.com/"), m["url"])
+                for b in m.get("blocks", []):
+                    if isinstance(b, dict):
+                        self.assertRegex(b["i"], r"^[\w./-]+$", "圖片路徑只能是 img 網域下的相對路徑")
+                        self.assertNotIn("..", b["i"])
+        self.assertEqual(d["imgBase"], "https://img1.entertainment14.net/")
+
+    def test_trophies_point_to_real_paragraphs(self):
+        d = load_gta6_data()
+        by_id = {m["id"]: m for c in d["chapters"] for m in c["missions"]}
+        for x in d["trophies"] + d["optionals"]:
+            self.assertIn(x["m"], by_id)
+            self.assertIsInstance(by_id[x["m"]]["blocks"][x["p"]], str)
+
+    def test_pwa_files_exist_and_not_in_sitemap(self):
+        base = os.path.join(ROOT, "gta6")
+        with open(os.path.join(base, "sw.js"), encoding="utf-8") as f:
+            sw = f.read()
+        files = re.search(r"const FILES = \[(.*?)\];", sw, re.S).group(1)
+        for rel in re.findall(r'"\./([^"]*)"', files):
+            self.assertTrue(os.path.exists(os.path.join(base, rel or "index.html")), rel)
+        with open(os.path.join(base, "manifest.webmanifest"), encoding="utf-8") as f:
+            manifest = json.load(f)
+        for icon in manifest["icons"]:
+            self.assertTrue(os.path.exists(os.path.join(base, icon["src"])), icon["src"])
+        with open(os.path.join(ROOT, "sitemap.xml"), encoding="utf-8") as f:
+            self.assertNotIn("gta6", f.read())
+
+
+YOUMIN = """<html><body><div class="entry-content">
+<p><strong>作者:Agent</strong></p><p>來源:遊民星空</p>
+<h3>第一章</h3><h4>序幕</h4><p>公告</p><hr><p>大家好，我是作者</p><p>※須知</p>
+<p>開始主線任務【序幕】</p><p><a><img data-lazy-src="https://img1.entertainment14.net/a/1.webp"></a><noscript><img src="https://img1.entertainment14.net/a/1.webp"></noscript></p>
+<p><img src="https://evil.example/x.png"></p>
+<h4>支線-女鄰居</h4><p>獎盃【甲】在這裡</p><h4>垂釣（和卡爾）</h4><p>主線任務【垂釣】</p>
+<h4>偷戰鬥機</h4><p>只是技巧</p>
+</div><script>var x = "<h4>不該被讀到</h4>";</script></body></html>"""
+
+
+def prompt_chapters(n_per=30):
+    return {1: {"sub": "Paradise", "missions": [
+                {"who": "Lucia", "en": "Prologue", "sum": "序", "url": "https://promptowy.com/a/"},
+                {"who": "Jason", "en": "Gone Fishing", "sum": "釣魚", "url": "https://promptowy.com/b/"},
+                {"who": "Jason", "en": "Extra One", "sum": "只有摘要", "url": "https://promptowy.com/c/"}]},
+            2: {"sub": "", "missions": [{"who": "", "en": "What's Next?", "sum": "下一章", "url": "https://promptowy.com/d/"}]}}
+
+
+class BuildGta6Test(unittest.TestCase):
+    def test_parse_youmin(self):
+        meta, intro, ms = build_gta6.parse_youmin(YOUMIN)
+        self.assertEqual(meta, {"author": "Agent", "source": "遊民星空"})
+        self.assertEqual(intro, ["大家好，我是作者", "※須知"])
+        self.assertEqual([(m["type"], m["name"], m["note"]) for m in ms],
+                         [("主線", "序幕", ""), ("支線", "女鄰居", ""), ("主線", "垂釣", "和卡爾"), ("額外", "偷戰鬥機", "")])
+        self.assertEqual(ms[0]["blocks"], ["開始主線任務【序幕】", {"i": "a/1.webp"}])  # noscript 重複圖與外站圖都不收
+        self.assertNotIn("公告", ms[0]["blocks"])
+
+    def test_parse_promptowy(self):
+        cards = "".join(
+            f'<li><div><small>任務 {i} · Jason</small><br><a href="https://promptowy.com/m{i}/">Name {i}</a><br><small>摘要 {i}</small></div>'
+            f'<img src="x.webp"></li>' for i in range(1, 60))
+        page = (f'<h2>GTA 6 的章節</h2><li>不是任務</li><h2>GTA 6 任務：第 1 章（Just Like Paradise）</h2><ol>{cards}'
+                '<li><div><small>x</small><br><a href="https://evil.example/">壞連結</a></div></li></ol>'
+                '<h2>接下來</h2><li><small>x</small><br><a href="https://promptowy.com/z/">不該收</a></li>')
+        ch = build_gta6.parse_promptowy(page)
+        self.assertEqual(list(ch), [1])
+        self.assertEqual(ch[1]["sub"], "Just Like Paradise")
+        self.assertEqual(len(ch[1]["missions"]), 59)
+        self.assertEqual(ch[1]["missions"][0], {"who": "Jason", "en": "Name 1", "sum": "摘要 1", "url": "https://promptowy.com/m1/"})
+        with self.assertRaises(SystemExit):
+            build_gta6.parse_promptowy("<h2>GTA 6 任務：第 1 章（A）</h2>")
+
+    def test_merge_keeps_youmin_order_and_adds_missing(self):
+        _, _, ms = build_gta6.parse_youmin(YOUMIN)
+        old = dict(build_gta6.YOUMIN_TO_EN)
+        build_gta6.YOUMIN_TO_EN.clear()
+        build_gta6.YOUMIN_TO_EN.update({"序幕": "Prologue", "垂釣": "Gone Fishing"})
+        try:
+            chapters = build_gta6.merge(ms, prompt_chapters())
+        finally:
+            build_gta6.YOUMIN_TO_EN.clear()
+            build_gta6.YOUMIN_TO_EN.update(old)
+        self.assertEqual([c["no"] for c in chapters], [1, 2])
+        ch1 = [(m["id"], m["name"]) for m in chapters[0]["missions"]]
+        # 遊民順序為骨架；promptowy 的 Extra One 接在前一個（Gone Fishing）後面，遊民獨有的任務留在原位
+        self.assertEqual(ch1, [("p-prologue", "序幕"), ("y-女鄰居", "女鄰居"), ("p-gone-fishing", "垂釣"),
+                               ("p-extra-one", "Extra One"), ("y-偷戰鬥機", "偷戰鬥機")])
+        first = chapters[0]["missions"][0]
+        self.assertEqual((first["en"], first["who"], first["url"]), ("Prologue", "Lucia", "https://promptowy.com/a/"))
+        self.assertNotIn("blocks", chapters[0]["missions"][3])  # 只有摘要的任務沒有 blocks
+        self.assertEqual(chapters[1]["missions"][0]["id"], "p-what-s-next")
+
+    def test_collect_index(self):
+        chapters = [{"missions": [{"id": "a", "blocks": ["x 獎盃【甲】", {"i": "1.webp"}, "可選任務【乙】"]}]}]
+        self.assertEqual(build_gta6.collect_index(chapters),
+                         ([{"name": "甲", "m": "a", "p": 0}], [{"name": "乙", "m": "a", "p": 2}]))
 
 
 if __name__ == "__main__":

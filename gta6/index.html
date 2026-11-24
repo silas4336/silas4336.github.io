@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>GTA 6 全任務攻略</title>
+<meta name="description" content="GTA 6 全任務攻略：分章節閱讀、任務索引、獎盃、搜尋（個人使用）">
+<meta name="theme-color" content="#14101f">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GTA6 攻略">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+/* 畫面出現前先套用主題與字級，避免閃一下 */
+try {
+  var t = JSON.parse(localStorage.getItem("gta6.theme"));
+  if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+  var f = JSON.parse(localStorage.getItem("gta6.fs"));
+  if (f >= 14 && f <= 26) document.documentElement.style.setProperty("--fs", f + "px");
+} catch (e) {}
+</script>
+<style>
+:root{
+  --bg:#14101f; --surface:#1e1830; --surface2:#2a2142; --line:#392d57;
+  --text:#ece8f5; --muted:#a59cbd; --accent:#ff4f9a; --accent2:#ff9a3c; --ok:#3ddc97;
+  --on-accent:#fff; --shadow:0 8px 28px rgba(0,0,0,.45);
+  --fs:17px; --hh:calc(52px + env(safe-area-inset-top)); --nh:calc(58px + env(safe-area-inset-bottom));
+  --b-main:#ff4f9a; --b-side:#34d1c0; --b-heist:#ff7a45; --b-stranger:#a98bff; --b-opt:#f2c94c; --b-extra:#8e87a6;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme]){
+    --bg:#faf7f5; --surface:#fff; --surface2:#f3edf0; --line:#e5dce2;
+    --text:#231b2e; --muted:#6d6479; --accent:#d6246e; --accent2:#d96a0b; --ok:#0f8f5a;
+    --shadow:0 8px 28px rgba(60,30,60,.18);
+    --b-main:#d6246e; --b-side:#0f8f86; --b-heist:#c94f1c; --b-stranger:#6b4fd0; --b-opt:#a37a00; --b-extra:#6d6479;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#faf7f5; --surface:#fff; --surface2:#f3edf0; --line:#e5dce2;
+  --text:#231b2e; --muted:#6d6479; --accent:#d6246e; --accent2:#d96a0b; --ok:#0f8f5a;
+  --shadow:0 8px 28px rgba(60,30,60,.18);
+  --b-main:#d6246e; --b-side:#0f8f86; --b-heist:#c94f1c; --b-stranger:#6b4fd0; --b-opt:#a37a00; --b-extra:#6d6479;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  line-height:1.6;overflow-wrap:anywhere}
+html.lock,html.lock body{overflow:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* 頂欄 */
+.top{position:fixed;inset:0 0 auto 0;z-index:30;height:var(--hh);padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));
+  display:flex;align-items:center;gap:4px;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .tt{flex:1;min-width:0;text-align:center;font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:44px;height:44px;display:grid;place-items:center;border:0;background:none;border-radius:12px}
+.ib:active{background:var(--surface2)}
+.ib[hidden]{display:block;visibility:hidden}
+.ib.aa{font-weight:800;font-size:1.02rem;letter-spacing:-.02em}
+#prog{position:fixed;z-index:31;left:0;top:var(--hh);height:3px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .08s linear}
+#offline{position:fixed;z-index:29;left:0;right:0;top:var(--hh);padding:6px 14px;font-size:.82rem;text-align:center;background:var(--accent2);color:#1a1020;font-weight:600}
+#offline[hidden]{display:none}
+
+main{padding:calc(var(--hh) + 14px) max(16px,env(safe-area-inset-right)) calc(var(--nh) + 28px) max(16px,env(safe-area-inset-left));max-width:760px;margin:0 auto;min-height:100dvh}
+
+/* 底部導覽 */
+.nav{position:fixed;inset:auto 0 0 0;z-index:30;height:var(--nh);padding:0 max(6px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px,env(safe-area-inset-left));
+  display:flex;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav a,.nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;
+  text-decoration:none;font-size:.72rem;color:var(--muted);min-width:0;border-radius:12px}
+.nav a[aria-current="page"]{color:var(--accent)}
+.nav .dis{opacity:.35;pointer-events:none}
+.nav .mid{flex:1.4;color:var(--text);font-weight:700}
+.nav .mid span.s{font-weight:500;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 6px}
+
+/* 首頁 */
+.hero{position:relative;overflow:hidden;border-radius:20px;padding:22px 20px 18px;color:#fff;
+  background:linear-gradient(140deg,#2c0f55 0%,#b02a78 58%,#ff8a3d 100%);box-shadow:var(--shadow)}
+.hero .eyebrow{font-size:.74rem;letter-spacing:.18em;font-weight:700;opacity:.85}
+.hero h1{margin:4px 0 14px;font-size:1.55rem;line-height:1.25}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:#fff;width:0;transition:width .3s}
+.stats{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:.84rem;opacity:.95}
+.cont{display:block;margin:14px 0 0;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-decoration:none}
+.cont small{display:block;color:var(--muted);font-size:.76rem}
+.cont strong{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:1.05rem;margin-top:2px}
+.cont .go{color:var(--accent);font-size:.9rem;white-space:nowrap}
+.cont .mini{height:4px;border-radius:9px;background:var(--surface2);margin-top:10px;overflow:hidden}
+.cont .mini i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+details.chap{margin-top:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:clip}
+details.chap>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 14px 14px 16px;cursor:pointer;min-height:56px}
+details.chap>summary::-webkit-details-marker{display:none}
+details.chap .ct{flex:1;min-width:0}
+details.chap .ct b{display:block;font-size:1.04rem}
+details.chap .ct small{color:var(--muted);font-size:.8rem}
+details.chap .cn{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+details.chap .chev{transition:transform .2s;color:var(--muted)}
+details.chap[open] .chev{transform:rotate(90deg)}
+details.chap .cb{height:3px;background:var(--surface2)}
+details.chap .cb i{display:block;height:100%;background:var(--ok);width:0}
+
+.row{display:flex;align-items:stretch;border-top:1px solid var(--line)}
+.row .rl{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:11px 4px 11px 14px;text-decoration:none;min-height:56px}
+.row:active{background:var(--surface2)}
+.row .num{width:2.1em;flex:none;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8rem}
+.row .rt{flex:1;min-width:0;display:flex;flex-direction:column}
+.row .nm{font-weight:650;line-height:1.35;display:flex;align-items:center;gap:6px}
+.row .nm svg{width:14px;height:14px;color:var(--accent2);flex:none}
+.row .nt{font-size:.8rem;color:var(--muted);line-height:1.4;margin-top:1px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row.sumonly .nm{font-weight:550}
+.row.done .nm{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.row.cur{box-shadow:inset 3px 0 0 var(--accent)}
+.row .chk{flex:none;width:52px;border:0;background:none;display:grid;place-items:center;color:var(--line)}
+.row .chk span{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center}
+.row .chk svg{width:16px;height:16px;stroke-width:3;opacity:0}
+.row.done .chk span{background:var(--ok);border-color:var(--ok);color:#06251a}
+.row.done .chk svg{opacity:1}
+.badge{flex:none;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:99px;border:1px solid currentColor;line-height:1.4;white-space:nowrap}
+.b-main{color:var(--b-main)}.b-side{color:var(--b-side)}.b-heist{color:var(--b-heist)}
+.b-stranger{color:var(--b-stranger)}.b-opt{color:var(--b-opt)}.b-extra{color:var(--b-extra)}
+.who{font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--surface2);color:var(--muted)}
+.who.j{color:var(--b-side)}.who.l{color:var(--b-main)}
+
+.sect{margin:26px 2px 8px;font-size:.78rem;letter-spacing:.12em;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px}
+.sect::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:clip}
+.pad{padding:14px 16px}
+.pad p{margin:.5em 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.foot{margin:28px 4px 0;color:var(--muted);font-size:.78rem;line-height:1.7}
+.foot a{color:var(--accent)}
+
+/* 索引 */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin:0 -16px;padding-inline:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font-size:.86rem;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+.chip small{opacity:.7;margin-left:3px}
+.sub{padding:8px 14px;font-size:.78rem;color:var(--muted);background:var(--surface2);border-top:1px solid var(--line);font-weight:650}
+.sub:first-child{border-top:0}
+.empty{padding:26px 16px;text-align:center;color:var(--muted)}
+.hit{display:block;padding:12px 14px;border-top:1px solid var(--line);text-decoration:none}
+.hit:first-child{border-top:0}
+.hit b{display:block}
+.hit small{display:block;color:var(--muted);font-size:.74rem}
+.hit p{margin:3px 0 0;font-size:.88rem;line-height:1.5;color:var(--text);opacity:.9}
+mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.sbox{position:sticky;top:calc(var(--hh) + 6px);z-index:5;display:flex;gap:8px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.sbox input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:1rem;outline:none}
+.sbox svg{color:var(--muted)}
+
+/* 閱讀 */
+.art{font-size:var(--fs);line-height:1.85;letter-spacing:.015em}
+.art .kick{font-size:.78rem;color:var(--muted);letter-spacing:.06em;font-weight:650}
+.art h1{margin:4px 0 8px;font-size:1.55em;line-height:1.3}
+.art .meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:.8rem;color:var(--muted)}
+.art .sum{margin:14px 0 4px;padding:11px 14px;border-radius:12px;background:var(--surface);border-left:3px solid var(--accent);font-size:.9em;line-height:1.65}
+.art .sum b{color:var(--accent);font-size:.82em;letter-spacing:.08em}
+.art p{margin:1.05em 0}
+.art p.flash,.art figure.flash{animation:flash 2.2s ease-out}
+@keyframes flash{0%,35%{background:color-mix(in srgb,var(--accent2) 38%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent2) 38%,transparent);border-radius:6px}100%{background:transparent;box-shadow:0 0 0 6px transparent}}
+.art [data-b]{scroll-margin-top:calc(var(--hh) + 14px)}
+.shot{margin:1em -4px;border-radius:12px;overflow:hidden;background:var(--surface2);aspect-ratio:16/9;display:grid;place-items:center;position:relative}
+.shot.ok{aspect-ratio:auto;display:block}
+.shot img{display:block;width:100%;height:auto;cursor:zoom-in}
+.shot.loading::after{content:"";width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp .8s linear infinite;position:absolute}
+@keyframes sp{to{transform:rotate(1turn)}}
+.imgbtn{border:1px dashed var(--line);background:none;color:var(--muted);border-radius:10px;padding:10px 14px;font-size:.82rem}
+.cta{display:flex;gap:10px;margin:30px 0 8px}
+.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:50px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-decoration:none;font-weight:700;font-size:.95rem}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#06251a}
+.btn:active{filter:brightness(.92)}
+.nosteps{margin-top:18px;padding:18px 16px;border-radius:16px;border:1px dashed var(--line);background:var(--surface);font-size:.95em;line-height:1.7}
+.nosteps b{display:block;margin-bottom:4px}
+
+/* 彈層 */
+.sheet-back{position:fixed;inset:0;z-index:50;background:rgba(5,2,12,.55);animation:fade .15s}
+.sheet{position:fixed;z-index:51;inset:auto 0 0 0;max-height:82dvh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;border:1px solid var(--line);border-bottom:0;box-shadow:var(--shadow);
+  padding-bottom:env(safe-area-inset-bottom);animation:up .2s ease-out;max-width:760px;margin:0 auto}
+.sheet .sh-h{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 6px 18px;border-bottom:1px solid var(--line)}
+.sheet .sh-b{overflow:auto;overscroll-behavior:contain;padding:6px 0 10px}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes fade{from{opacity:0}}
+.sheet .row:first-child{border-top:0}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid var(--line);min-height:54px}
+.opt:first-child{border-top:0}
+.opt>span{font-weight:600}
+.opt small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:8px 13px;font-size:.88rem}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:700}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:42px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:800}
+.step output{min-width:3.2em;text-align:center;font-variant-numeric:tabular-nums;font-size:.9rem}
+.sw{width:52px;height:30px;border-radius:99px;border:0;background:var(--line);position:relative;transition:background .15s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw[aria-checked="true"]{background:var(--ok)}
+.sw[aria-checked="true"]::after{transform:translateX(22px)}
+.danger{color:#ff6b6b;border-color:currentColor}
+
+.toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(var(--nh) + 14px);max-width:min(92vw,520px);display:flex;align-items:center;gap:14px;
+  padding:11px 16px;border-radius:14px;background:var(--text);color:var(--bg);font-size:.88rem;box-shadow:var(--shadow);animation:up .2s}
+.toast button{border:0;background:none;color:var(--accent);font-weight:800;white-space:nowrap;padding:4px}
+:root[data-theme="light"] .toast button{color:#c0185f}
+
+.lb{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.94);overflow:auto;display:grid;place-items:center;overscroll-behavior:contain}
+.lb img{max-width:100%;max-height:100dvh;object-fit:contain;cursor:zoom-in}
+.lb img.zoom{max-width:none;max-height:none;width:230%;cursor:zoom-out}
+.lb .x{position:fixed;top:calc(env(safe-area-inset-top) + 8px);right:10px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.2rem}
+noscript{display:block;padding:40px 20px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (min-width:900px){.art{font-size:calc(var(--fs) + 1px)}}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="ib" id="back" aria-label="返回" hidden></button>
+  <div class="tt" id="topTitle">GTA 6 攻略</div>
+  <button class="ib aa" id="aa" aria-label="閱讀設定">Aa</button>
+</header>
+<div id="prog" aria-hidden="true"></div>
+<div id="offline" hidden>目前離線：文字都能看，沒看過的圖片不會顯示</div>
+<main id="view"></main>
+<nav class="nav" id="nav" aria-label="主選單"></nav>
+<noscript>需要開啟 JavaScript 才能閱讀攻略。</noscript>
+<script src="data.js"></script>
+<script>
+(() => {
+"use strict";
+const G = window.GUIDE;
+if (!G) { document.getElementById("view").textContent = "資料載入失敗，請重新整理。"; return; }
+
+/* ───── 工具 ───── */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("gta6." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("gta6." + k, JSON.stringify(v)); } catch (e) {} },
+};
+/* 所有來自資料的文字都用 textContent / createTextNode 放進頁面，不經過 innerHTML */
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k === "text") el.textContent = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(kid));
+  }
+  return el;
+}
+const ICONS = {
+  toc: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+  index: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M14 14.5h7M14 20.5h4"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  set: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  back: '<path d="m15 5-7 7 7 7"/>', next: '<path d="m9 5 7 7-7 7"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 9"/>',
+  ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 20h8"/>',
+};
+function ico(name, cls) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("class", "i" + (cls ? " " + cls : "")); s.setAttribute("aria-hidden", "true");
+  s.innerHTML = ICONS[name];
+  return s;
+}
+const enc = encodeURIComponent;
+const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
+const norm = s => String(s).normalize("NFKC").toLowerCase();
+
+/* ───── 資料 ───── */
+const TYPES = [["主線", "main"], ["支線", "side"], ["搶劫", "heist"], ["陌生人", "stranger"], ["可選", "opt"], ["額外", "extra"]];
+const tkey = t => (TYPES.find(x => x[0] === t) || [0, "main"])[1];
+const missions = [], byId = {};
+G.chapters.forEach(ch => ch.missions.forEach(m => {
+  m.chap = ch; m.n = missions.length + 1; m.full = !!(m.blocks && m.blocks.length);
+  missions.push(m); byId[m.id] = m;
+}));
+const IMG = G.imgBase;
+
+const state = {
+  done: new Set(store.get("done", []).filter(id => byId[id])),
+  pos: store.get("pos", null),
+  fs: store.get("fs", 17),
+  theme: store.get("theme", "auto"),
+  imgs: store.get("imgs", true),
+  open: store.get("open", null),
+};
+if (state.pos && !byId[state.pos.id]) state.pos = null;
+const saveDone = () => store.set("done", [...state.done]);
+
+function applyPrefs() {
+  const root = document.documentElement;
+  root.style.setProperty("--fs", state.fs + "px");
+  if (state.theme === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", state.theme);
+  const light = state.theme === "light" || (state.theme === "auto" && matchMedia("(prefers-color-scheme: light)").matches);
+  $('meta[name="theme-color"]').setAttribute("content", light ? "#faf7f5" : "#14101f");
+}
+applyPrefs();
+matchMedia("(prefers-color-scheme: light)").addEventListener("change", applyPrefs);
+
+/* ───── 共用元件 ───── */
+const view = $("#view"), topTitle = $("#topTitle"), nav = $("#nav"), backBtn = $("#back"), prog = $("#prog");
+backBtn.append(ico("back"));
+let navCount = 0;
+
+function toast(msg, label, fn) {
+  $$(".toast").forEach(t => t.remove());
+  const t = h("div", { class: "toast", role: "status" }, h("span", { text: msg }),
+    label && h("button", { type: "button", text: label, onclick: () => { t.remove(); fn && fn(); } }));
+  document.body.append(t);
+  setTimeout(() => t.remove(), 5200);
+}
+
+let closeSheet = null;
+function sheet(title, body, onClose) {
+  if (closeSheet) closeSheet();
+  const back = h("div", { class: "sheet-back" });
+  const panel = h("div", { class: "sheet", role: "dialog", "aria-modal": "true", "aria-label": title },
+    h("div", { class: "sh-h" }, h("strong", { text: title }),
+      h("button", { class: "ib", type: "button", "aria-label": "關閉", onclick: close, text: "✕" })),
+    h("div", { class: "sh-b" }, body));
+  const onKey = e => { if (e.key === "Escape") close(); };
+  function close() {
+    back.remove(); panel.remove(); document.documentElement.classList.remove("lock");
+    document.removeEventListener("keydown", onKey); closeSheet = null; onClose && onClose();
+  }
+  back.addEventListener("click", close);
+  document.addEventListener("keydown", onKey);
+  document.documentElement.classList.add("lock");
+  document.body.append(back, panel);
+  closeSheet = close;
+  return close;
+}
+
+function badge(m) { return m.type !== "主線" ? h("span", { class: "badge b-" + tkey(m.type), text: m.type }) : null; }
+function whoChip(who) {
+  if (!who) return null;
+  const c = /^Jason/.test(who) && !/Lucia/.test(who) ? " j" : /^Lucia/.test(who) && !/Jason/.test(who) ? " l" : "";
+  return h("span", { class: "who" + c, text: who });
+}
+
+function missionRow(m, o = {}) {
+  const done = state.done.has(m.id);
+  const sub = m.full ? [m.en, m.note || m.sum].filter(Boolean).join(" · ") : [m.who, m.sum].filter(Boolean).join(" · ");
+  const extra = o.showChap ? m.chap.title + (m.chap.sub ? " · " + m.chap.sub : "") : "";
+  return h("div", { class: "row" + (done ? " done" : "") + (m.full ? "" : " sumonly") + (o.cur ? " cur" : ""), "data-id": m.id },
+    h("a", { class: "rl", href: "#/m/" + enc(m.id), onclick: o.onGo },
+      h("span", { class: "num", text: String(m.n).padStart(2, "0") }),
+      h("span", { class: "rt" },
+        h("span", { class: "nm" }, m.name, m.full && ico("img")),
+        (sub || extra) && h("span", { class: "nt", text: [extra, sub].filter(Boolean).join(" ‧ ") })),
+      badge(m)),
+    h("button", { class: "chk", type: "button", "aria-pressed": String(done), "aria-label": (done ? "取消完成：" : "標記完成：") + m.name,
+      onclick: e => { e.preventDefault(); e.stopPropagation(); toggleDone(m.id); } },
+      h("span", {}, ico("check"))));
+}
+
+function toggleDone(id) {
+  if (state.done.has(id)) state.done.delete(id); else state.done.add(id);
+  saveDone();
+  if (view.dataset.v === "reader") { updateDoneBtn(); return; }
+  const y = scrollY; route(true); scrollTo(0, y);
+}
+
+function stats() {
+  const main = missions.filter(m => m.type === "主線");
+  return {
+    all: missions.length, done: missions.filter(m => state.done.has(m.id)).length,
+    main: main.length, mainDone: main.filter(m => state.done.has(m.id)).length,
+    full: missions.filter(m => m.full).length,
+  };
+}
+
+/* ───── 導覽列 ───── */
+function setTop(title, back) {
+  topTitle.textContent = title;
+  backBtn.hidden = !back;
+  document.title = title === "GTA 6 攻略" ? "GTA 6 全任務攻略" : title + " · GTA 6 攻略";
+}
+function tabs(active) {
+  const items = [["toc", "#/", "目錄"], ["index", "#/index", "索引"], ["search", "#/search", "搜尋"], ["settings", "#/settings", "設定"]];
+  nav.replaceChildren(...items.map(([k, href, label]) =>
+    h("a", { href, "aria-current": k === active ? "page" : null, onclick: () => { if (k === active) scrollTo(0, 0); } }, ico(k === "settings" ? "set" : k), label)));
+}
+function readerBar(m) {
+  const prev = missions[m.n - 2], next = missions[m.n];
+  nav.replaceChildren(
+    h("a", { href: prev ? "#/m/" + enc(prev.id) : null, class: prev ? "" : "dis", "aria-label": "上一個任務" }, ico("back"), "上一個"),
+    h("button", { type: "button", class: "mid", onclick: () => openDrawer(m) }, h("span", {}, "任務表"),
+      h("span", { class: "s", text: m.n + " / " + missions.length })),
+    h("a", { href: next ? "#/m/" + enc(next.id) : null, class: next ? "" : "dis", "aria-label": "下一個任務" }, ico("next"), "下一個"));
+}
+
+function openDrawer(cur) {
+  const body = h("div", {});
+  G.chapters.forEach(ch => {
+    body.append(h("div", { class: "sub", text: ch.title + (ch.sub ? " · " + ch.sub : "") }));
+    ch.missions.forEach(m => body.append(missionRow(m, { cur: cur && m.id === cur.id, onGo: () => closeSheet && closeSheet() })));
+  });
+  sheet("任務表", body);
+  const c = $(".sheet .row.cur");
+  if (c) c.scrollIntoView({ block: "center" });
+}
+
+/* ───── 目錄 ───── */
+function tocView() {
+  setTop("GTA 6 攻略", false); tabs("toc");
+  const s = stats();
+  view.append(h("section", { class: "hero" },
+    h("div", { class: "eyebrow", text: "GTA VI · 全任務攻略" }),
+    h("h1", { text: "GTA 6 全任務攻略" }),
+    h("div", { class: "bar" }, h("i", { style: "width:" + (s.done / s.all * 100).toFixed(1) + "%" })),
+    h("div", { class: "stats" }, h("span", { text: `已完成 ${s.done} / ${s.all}` }), h("span", { text: `主線 ${s.mainDone} / ${s.main}` }),
+      h("span", { text: `${s.full} 個有逐步圖文` }))));
+
+  let curChap = null;
+  if (state.pos && byId[state.pos.id]) {
+    const m = byId[state.pos.id]; curChap = m.chap.id;
+    const pct = m.full && m.blocks.length > 1 ? Math.round(state.pos.b / (m.blocks.length - 1) * 100) : 0;
+    view.append(h("a", { class: "cont", href: "#/m/" + enc(m.id) },
+      h("small", { text: "繼續閱讀" }),
+      h("strong", {}, h("span", { text: `${String(m.n).padStart(2, "0")}　${m.name}` }), h("span", { class: "go", text: pct ? `讀到 ${pct}% ›` : "開始 ›" })),
+      pct ? h("div", { class: "mini" }, h("i", { style: "width:" + pct + "%" })) : null));
+  } else {
+    const first = missions.find(m => !state.done.has(m.id));
+    if (first) curChap = first.chap.id;
+  }
+
+  const open = new Set(state.open || (curChap ? [curChap] : [G.chapters[0].id]));
+  G.chapters.forEach(ch => {
+    const n = ch.missions.filter(m => state.done.has(m.id)).length;
+    const d = h("details", { class: "chap", "data-id": ch.id },
+      h("summary", {},
+        h("div", { class: "ct" }, h("b", { text: ch.title }), ch.sub && h("small", { text: ch.sub })),
+        h("span", { class: "cn", text: `${n} / ${ch.missions.length}` }), ico("next", "chev")),
+      h("div", { class: "cb" }, h("i", { style: "width:" + (n / ch.missions.length * 100) + "%" })));
+    if (open.has(ch.id)) d.open = true;
+    ch.missions.forEach(m => d.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })));
+    d.addEventListener("toggle", () => {
+      const now = new Set($$("details.chap[open]").map(x => x.dataset.id));
+      state.open = [...now]; store.set("open", state.open);
+    });
+    view.append(d);
+  });
+
+  if (G.intro && G.intro.length) {
+    view.append(h("details", { class: "chap" },
+      h("summary", {}, h("div", { class: "ct" }, h("b", { text: "閱讀須知（作者前言）" })), ico("next", "chev")),
+      h("div", { class: "pad" }, G.intro.map(t => h("p", { class: "small", text: t })))));
+  }
+  view.append(sourcesFoot());
+}
+
+function sourcesFoot() {
+  return h("div", { class: "foot" },
+    h("div", {}, "資料來源："),
+    G.sources.map(s => h("div", {}, h("a", { href: s.url, target: "_blank", rel: "noopener noreferrer", text: s.name }))),
+    h("div", { text: `整理於 ${G.builtOn}。內容版權屬原作者，這份只供個人閱讀。有圖文的任務（${stats().full} 個）文字存在手機裡可離線看；其他任務是摘要，點進去可連到原站。` }));
+}
+
+/* ───── 索引 ───── */
+const filt = { type: "all", hideDone: false };
+function indexView() {
+  setTop("索引", false); tabs("index");
+  const count = f => missions.filter(f).length;
+  const chipDefs = [["all", "全部", () => true], ["full", "有圖文", m => m.full],
+    ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
+  const chips = h("div", { class: "chips", role: "group", "aria-label": "任務篩選" });
+  const list = h("div", { class: "card" });
+  const draw = () => {
+    const def = chipDefs.find(c => c[0] === filt.type) || chipDefs[0];
+    $$(".chip", chips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === filt.type)));
+    list.replaceChildren();
+    let last = null, n = 0;
+    missions.filter(m => def[2](m) && !(filt.hideDone && state.done.has(m.id))).forEach(m => {
+      if (m.chap !== last) { last = m.chap; list.append(h("div", { class: "sub", text: m.chap.title + (m.chap.sub ? " · " + m.chap.sub : "") })); }
+      list.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })); n++;
+    });
+    if (!n) list.append(h("div", { class: "empty", text: "這個條件下沒有任務了 🎉" }));
+  };
+  chipDefs.forEach(([k, label, f]) => chips.append(h("button", { class: "chip", type: "button", "data-k": k, "aria-pressed": "false",
+    onclick: () => { filt.type = k; draw(); } }, label, h("small", { text: String(count(f)) }))));
+  const hide = h("button", { class: "chip", type: "button", "aria-pressed": String(filt.hideDone), text: "隱藏已完成",
+    onclick: e => { filt.hideDone = !filt.hideDone; e.currentTarget.setAttribute("aria-pressed", String(filt.hideDone)); draw(); } });
+  chips.append(hide);
+  view.append(chips, list); draw();
+
+  const link = (x, label) => h("a", { class: "hit", href: `#/m/${enc(x.m)}?p=${x.p}` },
+    h("b", { text: x.name }), h("small", { text: label(x) }));
+  const where = x => { const m = byId[x.m]; return `${m.chap.title} · ${m.name}`; };
+  if (G.trophies.length) {
+    view.append(h("div", { class: "sect", text: "獎盃 · " + G.trophies.length }),
+      h("div", { class: "card" }, G.trophies.map(x => link(x, where))));
+  }
+  if (G.optionals.length) {
+    view.append(h("div", { class: "sect", text: "內文提到的可選任務 · " + G.optionals.length }),
+      h("div", { class: "card" }, G.optionals.map(x => link(x, where))));
+  }
+}
+
+/* ───── 搜尋 ───── */
+let haystack = null;
+function buildIndex() {
+  haystack = [];
+  missions.forEach(m => {
+    haystack.push({ m, b: null, t: [m.name, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), n: null });
+    (m.blocks || []).forEach((b, i) => { if (typeof b === "string") haystack.push({ m, b: i, t: b, n: null }); });
+  });
+  haystack.forEach(e => { e.n = norm(e.t); });
+}
+function snippet(text, terms) {
+  const n = norm(text);
+  let at = -1;
+  for (const t of terms) { const i = n.indexOf(t); if (i >= 0 && (at < 0 || i < at)) at = i; }
+  const from = Math.max(0, at - 18), to = Math.min(text.length, from + 90);
+  const part = text.slice(from, to), pn = norm(part);
+  const out = h("p", {}); if (from > 0) out.append("…");
+  const marks = [];
+  terms.forEach(t => { let i = pn.indexOf(t); while (i >= 0) { marks.push([i, i + t.length]); i = pn.indexOf(t, i + t.length); } });
+  marks.sort((a, b) => a[0] - b[0]);
+  let p = 0;
+  for (const [a, b] of marks) { if (a < p) continue; out.append(part.slice(p, a), h("mark", { text: part.slice(a, b) })); p = b; }
+  out.append(part.slice(p)); if (to < text.length) out.append("…");
+  return out;
+}
+function searchView(q) {
+  setTop("搜尋", false); tabs("search");
+  const input = h("input", { type: "search", placeholder: "搜尋任務、地點、人物、獎盃…", value: q.get("q") || "", enterkeyhint: "search",
+    autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "搜尋攻略" });
+  const out = h("div", { style: "margin-top:14px" });
+  view.append(h("div", { class: "sbox" }, ico("search"), input), out);
+  let timer = 0;
+  const run = () => {
+    const raw = input.value.trim();
+    history.replaceState(null, "", raw ? "#/search?q=" + enc(raw) : "#/search");
+    out.replaceChildren();
+    const terms = norm(raw).split(/\s+/).filter(Boolean);
+    if (!terms.length) { out.append(h("div", { class: "empty", text: "輸入關鍵字，多個詞用空白分開（要全部符合）。" })); return; }
+    if (!haystack) buildIndex();
+    const hits = haystack.filter(e => terms.every(t => e.n.includes(t)));
+    if (!hits.length) { out.append(h("div", { class: "empty", text: "找不到符合的內容" })); return; }
+    const MAX = 80;
+    out.append(h("div", { class: "small muted", style: "margin:0 4px 8px", text: `${hits.length} 筆符合` + (hits.length > MAX ? `，只顯示前 ${MAX} 筆` : "") }));
+    out.append(h("div", { class: "card" }, hits.slice(0, MAX).map(e => h("a", { class: "hit", href: "#/m/" + enc(e.m.id) + (e.b != null ? "?p=" + e.b : "") },
+      h("b", { text: e.m.name }), h("small", { text: e.m.chap.title + (e.m.en ? " · " + e.m.en : "") }), snippet(e.t, terms)))));
+  };
+  input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 180); });
+  input.addEventListener("keydown", e => { if (e.key === "Enter") input.blur(); });
+  run();
+  if (!input.value) input.focus({ preventScroll: true });
+}
+
+/* ───── 設定 ───── */
+function controls() {
+  const fsOut = h("output", { text: state.fs + "px" });
+  const setFs = v => { state.fs = Math.min(26, Math.max(14, v)); store.set("fs", state.fs); fsOut.textContent = state.fs + "px"; applyPrefs(); };
+  const seg = h("div", { class: "seg", role: "group", "aria-label": "主題" },
+    [["auto", "自動"], ["dark", "深色"], ["light", "淺色"]].map(([k, l]) => h("button", { type: "button", "aria-pressed": String(state.theme === k), text: l,
+      onclick: e => { state.theme = k; store.set("theme", k); applyPrefs(); $$("button", e.currentTarget.parentNode).forEach(b => b.setAttribute("aria-pressed", String(b === e.currentTarget))); } })));
+  const sw = h("button", { class: "sw", type: "button", role: "switch", "aria-checked": String(state.imgs), "aria-label": "顯示圖片",
+    onclick: e => { state.imgs = !state.imgs; store.set("imgs", state.imgs); e.currentTarget.setAttribute("aria-checked", String(state.imgs)); } });
+  return h("div", {},
+    h("div", { class: "opt" }, h("span", { text: "字級" }),
+      h("div", { class: "step" }, h("button", { type: "button", "aria-label": "縮小字級", text: "A−", onclick: () => setFs(state.fs - 1) }), fsOut,
+        h("button", { type: "button", "aria-label": "放大字級", text: "A＋", onclick: () => setFs(state.fs + 1) }))),
+    h("div", { class: "opt" }, h("span", { text: "主題" }), seg),
+    h("div", { class: "opt" }, h("span", {}, "顯示圖片", h("small", { text: "關掉可省流量，下次開啟任務才會套用" })), sw));
+}
+function settingsView() {
+  setTop("設定", false); tabs("settings");
+  view.append(h("div", { class: "sect", text: "閱讀" }), h("div", { class: "card" }, controls()));
+  const s = stats();
+  view.append(h("div", { class: "sect", text: "進度" }),
+    h("div", { class: "card" },
+      h("div", { class: "opt" }, h("span", {}, `已完成 ${s.done} / ${s.all}`, h("small", { text: `主線 ${s.mainDone} / ${s.main}，進度只存在這支手機的瀏覽器` }))),
+      h("div", { class: "opt" }, h("span", { text: "重設所有進度" }),
+        h("button", { class: "btn danger", style: "flex:none;min-height:40px", type: "button", text: "重設",
+          onclick: () => { if (confirm("確定清除所有完成勾選與閱讀位置？")) { state.done.clear(); state.pos = null; saveDone(); store.set("pos", null); toast("已重設"); route(true); } } }))));
+  const upd = h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "檢查更新", onclick: checkUpdate });
+  const clr = h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "清除",
+    onclick: async () => { try { await caches.delete("gta6-images-v1"); toast("已清除離線圖片"); } catch (e) { toast("清除失敗"); } } });
+  view.append(h("div", { class: "sect", text: "離線與更新" }),
+    h("div", { class: "card" },
+      h("div", { class: "opt" }, h("span", {}, "檢查新版本", h("small", { text: "原作者補寫新章節、重新整理資料後用" })), upd),
+      h("div", { class: "opt" }, h("span", {}, "清除離線圖片", h("small", { text: "看過的圖片會暫存供離線看，最多約 120 張" })), clr)));
+  view.append(sourcesFoot());
+}
+async function checkUpdate() {
+  if (!("serviceWorker" in navigator)) { toast("這個瀏覽器不支援離線更新"); return; }
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) { toast("尚未安裝離線版本"); return; }
+    await reg.update();
+    toast(reg.installing || reg.waiting ? "發現新版本，正在更新…" : "已經是最新版");
+  } catch (e) { toast("目前無法檢查，請確認網路"); }
+}
+
+/* ───── 閱讀 ───── */
+let saveT = 0, readerMission = null, doneBtn = null;
+function updateDoneBtn() {
+  if (!doneBtn || !readerMission) return;
+  const d = state.done.has(readerMission.id);
+  doneBtn.className = "btn" + (d ? " ok" : "");
+  doneBtn.replaceChildren(ico("check"), d ? "已完成（點一下取消）" : "標記完成");
+  doneBtn.setAttribute("aria-pressed", String(d));
+}
+function mkShot(path, i) {
+  const fig = h("figure", { class: "shot", "data-b": i });
+  const load = retry => {
+    fig.replaceChildren(); fig.classList.remove("ok"); fig.classList.add("loading");
+    const img = new Image();
+    img.referrerPolicy = "no-referrer"; img.decoding = "async"; img.loading = "lazy"; img.alt = "步驟圖";
+    img.addEventListener("load", () => { fig.classList.remove("loading"); fig.classList.add("ok"); });
+    img.addEventListener("error", () => {
+      fig.classList.remove("loading"); fig.replaceChildren(h("button", { class: "imgbtn", type: "button", onclick: () => load(true),
+        text: navigator.onLine ? "圖片載入失敗，點一下重試" : "離線中，這張圖還沒存過" }));
+    });
+    img.src = IMG + path + (retry ? "?r=" + Date.now() : "");
+    fig.append(img);
+  };
+  if (state.imgs) load(); else fig.append(h("button", { class: "imgbtn", type: "button", text: "顯示圖片", onclick: () => load() }));
+  return fig;
+}
+function readerView(m, q) {
+  readerMission = m;
+  view.dataset.v = "reader";
+  setTop(m.name, true); readerBar(m);
+  const art = h("article", { class: "art", id: "art" });
+  art.append(h("div", { class: "kick", text: `${m.chap.title}${m.chap.sub ? " · " + m.chap.sub : ""}　#${String(m.n).padStart(2, "0")}` }),
+    h("h1", { text: m.name }),
+    h("div", { class: "meta" }, badge(m) || h("span", { class: "badge b-main", text: "主線" }), whoChip(m.who), m.en && m.en !== m.name ? h("span", { text: m.en }) : null,
+      m.note ? h("span", { text: "· " + m.note }) : null));
+  if (m.sum) art.append(h("div", { class: "sum" }, h("b", { text: "摘要　" }), m.sum));
+
+  if (m.full) {
+    m.blocks.forEach((b, i) => art.append(typeof b === "string" ? h("p", { "data-b": i, text: b }) : mkShot(b.i, i)));
+  } else {
+    art.append(h("div", { class: "nosteps" }, h("b", { text: "這個任務還沒有逐步圖文攻略" }),
+      "遊民星空的作者還沒寫到這裡。上面是 promptowy 的一句話摘要，要看詳細流程、條件與獎勵可以到原站。原作者更新後，重新整理資料就會自動補上圖文。"));
+  }
+
+  doneBtn = h("button", { type: "button", onclick: () => { toggleDone(m.id); } });
+  const next = missions[m.n];
+  const row = h("div", { class: "cta" }, doneBtn, next ? h("a", { class: "btn pri", href: "#/m/" + enc(next.id) }, "下一個", ico("next")) : null);
+  art.append(row);
+  if (m.url) art.append(h("div", { class: "cta", style: "margin-top:0" },
+    h("a", { class: "btn", href: m.url, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "在 promptowy 看這個任務")));
+  if (!next) art.append(h("p", { class: "muted small", text: "已經讀到目前整理的最後一個任務。" }));
+  view.append(art); updateDoneBtn();
+
+  const p = q.get("p");
+  let target = p != null ? +p : (m.full && state.pos && state.pos.id === m.id ? state.pos.b : 0);
+  if (m.full && target > 0) {
+    requestAnimationFrame(() => {
+      const el = $(`#art [data-b="${target}"]`);
+      if (!el) return;
+      el.scrollIntoView({ block: "start" });
+      if (p != null) { el.classList.add("flash"); }
+      else toast("已回到上次讀到的位置", "從頭開始", () => { scrollTo(0, 0); state.pos = { id: m.id, b: 0 }; store.set("pos", state.pos); });
+    });
+  } else if (m.full) { state.pos = { id: m.id, b: 0 }; store.set("pos", state.pos); }
+  updateProg();
+}
+function updateProg() {
+  if (view.dataset.v !== "reader") { prog.style.width = "0"; return; }
+  const max = document.documentElement.scrollHeight - innerHeight;
+  prog.style.width = (max > 0 ? Math.min(1, scrollY / max) * 100 : 0) + "%";
+}
+function savePos() {
+  if (view.dataset.v !== "reader" || !readerMission || !readerMission.full) return;
+  const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hh")) || 60;
+  let b = 0;
+  for (const el of $$("#art [data-b]")) { b = +el.dataset.b; if (el.getBoundingClientRect().bottom > top + 6) break; }
+  state.pos = { id: readerMission.id, b }; store.set("pos", state.pos);
+}
+addEventListener("scroll", () => { updateProg(); clearTimeout(saveT); saveT = setTimeout(savePos, 300); }, { passive: true });
+document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); });
+addEventListener("pagehide", savePos);
+
+/* 圖片放大：點一下開，再點圖片切換 2.3 倍，點旁邊或 ✕ 關閉 */
+document.addEventListener("click", e => {
+  const img = e.target.closest && e.target.closest(".shot img");
+  if (!img) return;
+  const big = h("img", { src: img.src, alt: "", referrerpolicy: "no-referrer" });
+  const lb = h("div", { class: "lb", role: "dialog", "aria-modal": "true", "aria-label": "放大檢視" }, big,
+    h("button", { class: "x", type: "button", "aria-label": "關閉", text: "✕" }));
+  const close = () => { lb.remove(); document.documentElement.classList.remove("lock"); document.removeEventListener("keydown", onKey); };
+  const onKey = ev => { if (ev.key === "Escape") close(); };
+  lb.addEventListener("click", ev => { if (ev.target === big) big.classList.toggle("zoom"); else close(); });
+  document.addEventListener("keydown", onKey);
+  document.documentElement.classList.add("lock"); document.body.append(lb);
+});
+
+/* ───── 路由 ───── */
+const scrolls = {};
+let routeKey = "";
+function parseHash() {
+  const raw = location.hash.slice(1) || "/";
+  const [path, qs] = raw.split("?");
+  return { parts: path.split("/").filter(Boolean).map(dec), q: new URLSearchParams(qs || "") };
+}
+function route(keepScroll) {
+  if (closeSheet) closeSheet();
+  if (routeKey && !keepScroll) scrolls[routeKey] = scrollY;
+  savePos();
+  const { parts, q } = parseHash();
+  const root = parts[0] || "toc";
+  routeKey = (root === "m" ? "m/" + parts[1] : root);
+  view.replaceChildren(); view.dataset.v = ""; readerMission = null; doneBtn = null; clearTimeout(saveT);
+  if (root === "m" && byId[parts[1]]) { view.dataset.v = "reader"; readerView(byId[parts[1]], q); }
+  else {
+    view.dataset.v = root;
+    if (root === "index") indexView(); else if (root === "search") searchView(q); else if (root === "settings") settingsView(); else tocView();
+    scrollTo(0, keepScroll ? scrollY : (scrolls[routeKey] || 0));
+  }
+  if (root === "m" && !(q.get("p") != null) && !(state.pos && state.pos.id === parts[1] && state.pos.b > 0)) scrollTo(0, 0);
+  updateProg();
+}
+addEventListener("hashchange", () => { navCount++; route(); });
+backBtn.addEventListener("click", () => { if (navCount > 0) history.back(); else location.hash = "#/"; });
+$("#aa").addEventListener("click", () => sheet("閱讀設定", controls()));
+addEventListener("keydown", e => {
+  if (view.dataset.v !== "reader" || !readerMission || e.target.closest("input,textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.key === "ArrowLeft" ? missions[readerMission.n - 2] : e.key === "ArrowRight" ? missions[readerMission.n] : null;
+  if (t) location.hash = "#/m/" + enc(t.id);
+});
+const offline = $("#offline");
+const syncOnline = () => { offline.hidden = navigator.onLine; };
+addEventListener("online", syncOnline); addEventListener("offline", syncOnline); syncOnline();
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+route();
+
+/* ───── 離線（Service Worker） ───── */
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloading) return;
+    toast("攻略已更新到新版本", "重新整理", () => { reloading = true; location.reload(); });
+  });
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(err => console.warn("離線功能啟用失敗", err));
+}
+})();
+</script>
+</body>
+</html>

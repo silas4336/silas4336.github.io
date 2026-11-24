@@ -12,6 +12,7 @@ GitHub Pages ◀── main 分支（整個 repo 原樣發佈，.nojekyll）
 │   ├── style.css                      12 頁共用
 │   └── assets/                        截圖；-zh／-en 結尾是分語言的同一張圖
 ├── math-logic/、neko/                 由 math-logic-games 的 deploy.sh 同步進來（部署工作區 ../_site_deploy）
+├── gta6/                              個人用 GTA 6 攻略 PWA，noindex、不進 sitemap
 ├── preview-*/                         設計預覽，noindex
 └── scripts/                           本機檢查，不影響網站
 ```
@@ -44,7 +45,8 @@ GitHub Pages ◀── main 分支（整個 repo 原樣發佈，.nojekyll）
 | 檔案 | 作用 |
 |---|---|
 | `check_i18n.py` | 逐對比較中英頁：內文數字（`eight` 也能對上 `8`，年份與日期不比）、圖片檔（忽略 `-zh`／`-en`）、作品頁連結、英文頁不連回中文頁（`../`、`/en/` 以外的站內絕對路徑或完整網址，`hreflang` 除外）。`main(root)` 回傳結束碼，有不一致回 1 |
-| `test_site.py` | `check_i18n.py` 各規則的單元測試（暫存資料夾假頁面）；12 頁本機連結與圖片都存在；sitemap 與主站頁面一致；robots.txt；隱藏區每頁有 noindex；`.gitignore` 擋住快取與 `.env`，且版控裡沒有這些檔 |
+| `build_gta6.py` | 產生 `gta6/data.js`，見上一節。**會寫檔**，其餘腳本都是唯讀 |
+| `test_site.py` | `check_i18n.py` 各規則的單元測試（暫存資料夾假頁面）；`gta6/data.js` 結構、離線檔案清單、不在 sitemap；`build_gta6.py` 的解析與合併；12 頁本機連結與圖片都存在；sitemap 與主站頁面一致；robots.txt；隱藏區（含 `gta6/`）每頁有 noindex；`.gitignore` 擋住快取與 `.env`，且版控裡沒有這些檔 |
 
 資料流：
 
@@ -54,6 +56,30 @@ en/index.html、en/work-*.html ─┴▶ check_i18n.parse()：數字、圖片、
                                     └▶ num_diff()／diff() 比較 ─▶ main() 印出 ✓／✗ 與結束碼
 主站 12 頁、sitemap.xml、robots.txt、隱藏區 HTML ─▶ test_site.SiteTest
 ```
+
+## gta6/（攻略 PWA）
+
+```
+遊民星空圖文攻略（逐步，只寫到第 2 章開頭）─┐
+promptowy 主線任務清單（5 章約 100 個，只有摘要）─┴▶ scripts/build_gta6.py ─▶ gta6/data.js ─▶ gta6/index.html
+```
+
+| 檔案 | 作用 |
+|---|---|
+| `index.html` | 整個 App（CSS、JS 都內嵌）。hash 路由：`#/` 目錄、`#/index` 索引（類型篩選、獎盃、可選任務）、`#/search?q=` 全文搜尋、`#/settings`、`#/m/<任務ID>?p=<段落>` 閱讀。資料文字一律用 `textContent` 放進頁面，不用 `innerHTML` |
+| `data.js` | `window.GUIDE`，**由腳本產生，不要手改**。章節 → 任務 → `blocks`（字串＝段落，`{"i": 路徑}`＝圖片） |
+| `sw.js` | 離線：頁面與文字「有網路先抓新版、3 秒沒回應用快取」；圖片在原站 CDN，看過的存起來（上限 120 張，no-cors 的 opaque 回應） |
+| `manifest.webmanifest`、`icons/` | 安裝到主畫面用 |
+
+- 瀏覽器儲存（`localStorage`，鍵都以 `gta6.` 開頭）：`done` 已完成任務 ID、`pos` 上次閱讀位置、`fs` 字級、`theme`、`imgs` 是否載入圖片、`open` 目錄展開的章節。
+- 任務 ID 由英文名（`p-gone-fishing`）或中文名（`y-女鄰居雪麗`）產生，來源更新後不變，已勾選進度不會跑掉。**改 `YOUMIN_TO_EN` 對照時小心：改名等於換 ID。**
+- 圖片直接引用 `img1.entertainment14.net`（沒有防盜連結），不複製進 repo。
+
+**原作者補寫了新內容時**：
+
+1. `py -3 scripts/build_gta6.py`（不帶參數會線上抓兩個來源；也可帶本機 HTML 檔）。新寫的任務若是 promptowy 已有的，把中文名對應加進 `build_gta6.py` 的 `YOUMIN_TO_EN`，沒對上會印警告。
+2. 把 `gta6/sw.js` 的 `CACHE` 版本號加 1，已安裝的 PWA 才會收到新內容。
+3. 跑測試，push。
 
 ## 改東西時
 
