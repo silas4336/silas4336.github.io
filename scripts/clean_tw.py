@@ -20,13 +20,19 @@ CHAPTER_CHECKLISTS = [
         "items": [
             {"id": "chk.c1.scratch", "cat": "prep", "m": "p-just-a-scratch",
              "title": "修車前帶 $100 現金，進店前先別自己改車",
-             "note": "〈一點小擦傷〉基本維修與烤漆免費，但引擎還原需 $100 現金；別在第一章的鋼納多花大錢改裝，章末會失去它"},
+             "note": "〈一點小擦傷〉基本維修與烤漆免費，但引擎還原需 $100 現金；初期先別在這台車上花大錢改裝"},
             {"id": "chk.c1.shark", "cat": "do", "m": "p-island-dreams",
              "title": "〈島之夢〉用魚叉槍趕走鯊魚救下多布斯",
              "note": "回程鯊魚出現時射 2～3 下趕跑，可拿專注增益與犯罪側寫加分"},
+            {"id": "chk.c1.crab-outpost", "cat": "do", "m": "p-building-a-life",
+             "title": "Pelican Valley 螃蟹研究站：拿免費獨特衝鋒槍 Crabshack VF5 ＋ $10,000",
+             "note": "開屋旁電箱 → 電腦密碼 CLEAVES → 保險箱 0072 → 船屋門 0212，拿走獨特槍與 $10,000 贓物袋（旁邊沼澤木屋另可免費撿左輪與狙擊槍）"},
+            {"id": "chk.c1.bunker-rpg", "cat": "do", "m": "p-building-a-life",
+             "title": "〈打造新生活〉後到 Balsero 廢車場天線露營車：免費拿衝鋒手槍與火箭筒",
+             "note": "打開露營車地板暗門進地下碉堡，可免費拿獨特槍 Conspiracist Type 9、Hauners H-AT 火箭筒（附 4 發火箭）與手榴彈"},
             {"id": "chk.c1.house-prep", "cat": "miss", "m": "p-coming-home",
              "title": "接露西亞出獄前：修好傑森家＋完成 5 項迎接準備",
-             "note": "前門樓梯、屋頂、後陽台欄杆、臥室牆（修完可漆牆）免費加感情；買項鍊需 $475（第 2 章可當房租抵押），拿衣服後袋子放後斗別亂動"},
+             "note": "前門樓梯、屋頂、後陽台欄杆、臥室牆（修完可漆牆）免費加感情；買項鍊需 $475（後續很有用且加感情），拿衣服後袋子放後斗別亂動"},
             {"id": "chk.c1.meditation", "cat": "miss", "m": "p-down-to-earth",
              "title": "〈實地行動〉後早上回廚房，跟著露西亞去陽台冥想",
              "note": "第 1 章限定、地圖不標示，關乎白金獎盃〈正向心態〉（18 次冥想之一），錯過最危險"},
@@ -43,10 +49,10 @@ CHAPTER_CHECKLISTS = [
              "title": "撈〈唐尼弄丟的貨〉拿去布萊恩儲藏庫（密碼 7700）賣 $1,200",
              "note": "交貨後等約一天入帳，再把錢存進家庭儲蓄"},
             {"id": "chk.c1.bed-cash", "cat": "miss", "m": "p-tourist-trap",
-             "title": "拿走傑森床底下現金，確認所有收藏與支線已清",
-             "note": "離開第 1 章後無法再住傑森家（第 2 章可偷溜回舊家拿額外的 $5,000 緊急預備金與照片）"},
+             "title": "拿走傑森床底下現金，確認第 1 章收藏與支線皆已清完",
+             "note": "進入〈遊客陷阱〉前把屋內現金拿走，並清完第 1 章限定互動與支線"},
             {"id": "chk.c1.save-money", "cat": "prep", "m": "p-tourist-trap",
-             "title": "開〈遊客陷阱〉（第 1 章不歸點）前：手動另存＋轉 $5,000 進家庭儲蓄＋花光餘錢",
+             "title": "開〈遊客陷阱〉（第 1 章無回頭點）前：手動另存＋轉 $5,000 進家庭儲蓄＋花光餘錢",
              "note": "章末身上現金、床底藏錢與 BuckMe 支票帳戶全會歸零，只有家庭儲蓄（上限 $5,000）留得住；超過 $5,000 全拿去買槍、衣服或刺青（會繼承，但別留東西在車後箱）"},
         ],
     },
@@ -193,6 +199,7 @@ CHAPTER_CHECKLISTS = [
 MISSION_TODOS = {
     "p-just-a-scratch": ["chk.c1.scratch"],
     "p-island-dreams": ["chk.c1.shark"],
+    "p-building-a-life": ["chk.c1.crab-outpost", "chk.c1.bunker-rpg"],
     "p-coming-home": ["chk.c1.house-prep"],
     "p-down-to-earth": ["chk.c1.meditation"],
     "y-793266265": ["chk.c1.shirley"],
@@ -235,7 +242,7 @@ MISSION_OVERRIDES = {
         "keys": [
             "身上先帶 **$100 現金**：基本維修與烤漆免費，但任務要求的「Stock Engine (Restore)」需付 $100",
             "進店前先手動存檔、別先自己修車或改裝，避免觸發選單卡死；別誤買旁邊 $50 的「Restore Engine Bay」",
-            "鋼納多在第 1 章結尾會失去，連帶改裝一起歸零，前期別在這台車上花大錢",
+            "前期先別在鋼納多上花大錢改裝，後面會換更實用的座駕",
         ],
     },
     "p-island-dreams": {
@@ -398,14 +405,20 @@ MISSION_OVERRIDES = {
             ]},
         ],
     },
+    "p-starting-from-zero": {
+        "name": "從零開始",
+        "en": "Starting from Zero",
+    },
     "p-protective-custody": {
         "keys": [
-            "**最終不歸點（門外會有繼續／延後提示）**：開始前務必確認家庭儲蓄滿 **$2,000,000**、感情滿級「炙熱相伴」、側寫低檔，並**手動另存獨立存檔**",
+            "**最終無回頭點（門外會有繼續／延後提示）**：開始前務必確認家庭儲蓄滿 **$2,000,000**、感情滿級「炙熱相伴」、側寫低檔，並**手動另存獨立存檔**",
             "若兩人感情過低，任務開頭會觸發**分手過場**並進入分手結局分支；想走最好結局務必**拒絕門德茲交易**",
-            "全程約 40～50 分鐘，後半段為長槍戰，並會直接銜接最終任務〈旅程終點〉",
+            "全程約 40～50 分鐘，後半段為長槍戰，並會直接銜接最終任務〈路到盡頭〉",
         ],
     },
     "p-the-end-of-the-road": {
+        "name": "路到盡頭",
+        "en": "The End of the Road",
         "keys": [
             "最好結局選法：前面拒絕門德茲交易 ＋ 最後選擇「**游過去（Swim for It）**」並及時按下撤離",
             "片尾字幕**別跳過**，後面還有一段收尾畫面；結束後點「繼續」可回到自由探索補 100% 與白金獎盃（想試不同結局讀〈保護性拘留〉前存檔最保險）",
@@ -587,7 +600,174 @@ def clean_text(s: str) -> str:
     return s.strip()
 
 
-def _clean_deep(obj, skip_keys=("id", "slug", "url", "i", "map", "href", "tick", "imgBase", "builtOn", "sourceUpdated", "cat", "ch", "m", "see", "covers", "aliases")):
+# ───────────────────────── 4. 無回頭點、保險箱密碼與防雷分級 ─────────────────────────
+
+# 各章無回頭點（Point of No Return）：對應任務卡自動顯示醒目存檔提醒
+CHAPTER_PONR = {
+    1: {"m": "p-tourist-trap",
+        "note": "開〈遊客陷阱〉會一路連打至〈出院時間〉並清空身上現金與支票帳戶（只留 BuckMe 家庭儲蓄上限 $5,000），開打前請先手動存檔並確認第 1 章必做清單。"},
+    2: {"m": "p-checking-out",
+        "note": "開〈辦理退房〉會觸發槍戰並永久鎖住初星汽車旅館房間；開打前確認旅館收藏、懷曼修車已完成，支票／現金留足 $15,000 並手動存檔。"},
+    3: {"m": "p-the-cartel-heist",
+        "note": "開〈搶劫販毒集團〉前確認 3 組前置任務（公司財產全貨物、隱藏炸藥 3 座基地台、通關密語）做滿，並手動另存一格存檔。"},
+    4: {"m": "p-sunset",
+        "note": "在 Y 飯店櫃檯開〈日落〉會一路連打至〈從零開始〉並暫時凍結帳戶；進門前務必先清完〈爛駕駛！〉與第 4 章必做清單並手動存檔。"},
+    5: {"m": "p-protective-custody",
+        "note": "〈保護性拘留〉為最終結局分歧起點！開打前務必另開獨立存檔，確認家庭儲蓄滿 $2,000,000、感情滿級「炙熱相伴」且側寫偏低。"},
+}
+
+# 實測確認的保險箱、門鎖與電腦密碼（依章節分組，自動套用防雷上限）
+# fixed=1 表示主線固定密碼每人相同；據點與探索密碼若個別存檔偶有變動，note 會指明現場線索位置
+SAFE_DOOR_CODES = [
+    # 第 1 章
+    {"id": "code.c1.lab", "ch": 1, "cat": "主線", "fixed": 1, "code": "0420",
+     "name": "月長石精品店製毒室門鎖", "where": "第 1 章・〈實驗室費用〉", "m": "p-lab-fees",
+     "note": "任務內店員也會提示密碼"},
+    {"id": "code.c1.brian", "ch": 1, "cat": "主線", "fixed": 1, "code": "7700",
+     "name": "布萊恩的儲藏庫小巷門鎖", "where": "第 1 章・〈實驗室費用〉／賣沉船毒品", "m": "p-lab-fees",
+     "note": "〈唐尼弄丟的貨〉撈回毒品後同樣送這裡賣 $1,200"},
+    {"id": "code.c1.crab-pc", "ch": 1, "cat": "探索", "fixed": 0, "code": "CLEAVES",
+     "name": "螃蟹研究站客廳電腦密碼", "where": "Pelican Valley 廢棄研究站",
+     "note": "先開屋旁電箱通電；密碼刻在臥室木地板上，用完電腦記得按提示躲巨蟹突襲"},
+    {"id": "code.c1.crab-safe", "ch": 1, "cat": "探索", "fixed": 0, "code": "0072",
+     "name": "螃蟹研究站屋內保險箱", "where": "Pelican Valley 廢棄研究站",
+     "note": "電腦提示「成功編號乘以二」，旁邊棚屋實驗紀錄寫 0036 × 2 = 0072"},
+    {"id": "code.c1.crab-door", "ch": 1, "cat": "探索", "fixed": 0, "code": "0212",
+     "name": "螃蟹研究站木棧道盡頭船屋門鎖", "where": "Pelican Valley 廢棄研究站",
+     "note": "開門可免費拿獨特衝鋒槍 Crabshack VF5 ＋ $10,000 贓物袋，門旁開關可開閘門開走水上摩托車"},
+    {"id": "code.c1.party-garage", "ch": 1, "cat": "探索", "fixed": 0, "code": "092319",
+     "name": "蘭托礁島派對屋車庫門鎖", "where": "蘭托礁島（Key Lento）",
+     "note": "自由探索密碼，若個別存檔不同請掃描現場筆記"},
+    # 第 2 章
+    {"id": "code.c2.delights", "ch": 2, "cat": "主線", "fixed": 1, "code": "2008",
+     "name": "Delights 俱樂部辦公室保險箱", "where": "第 2 章・〈午後歡豔〉", "m": "p-afternoon-delight",
+     "note": "任務開始後維吉會傳簡訊告知密碼，須推進到此任務才可開啟"},
+    {"id": "code.c2.brooks", "ch": 2, "cat": "據點", "fixed": 0, "code": "6823",
+     "name": "Brooks Boatworks 船廠保險箱", "where": "蓋爾霍恩港・Kolt & Associates 據點",
+     "note": "進大門左轉上樓撞球桌旁；密碼寫在船廠右側辦公室牆上地圖（同張地圖會一次列出保齡球館與旅館密碼）"},
+    {"id": "code.c2.kingpin", "ch": 2, "cat": "據點", "fixed": 0, "code": "0300",
+     "name": "霸道保齡球館辦公室保險箱", "where": "蓋爾霍恩港・Kingpin Bowling", "m": "p-hit-kingpin-bowling",
+     "note": "在儲藏室旁辦公室左後角；注意密碼寫在 Brooks Boatworks 牆上地圖（不在保齡球館內），部分版本亦可能為 0330"},
+    {"id": "code.c2.cascara", "ch": 2, "cat": "據點", "fixed": 0, "code": "6969",
+     "name": "La Cascara 汽車旅館頂樓保險箱", "where": "蓋爾霍恩港・Kolt & Associates 據點",
+     "note": "在頂樓中央小房內；若個別存檔不同可回 Brooks Boatworks 牆上地圖確認"},
+    {"id": "code.c2.sunrise", "ch": 2, "cat": "據點", "fixed": 0, "code": "6769",
+     "name": "日出露營公園碼頭屋保險箱", "where": "Sunrise RV Park・翠鳥幫據點",
+     "note": "據點碼頭建築內；若無效請檢查據點內桌面筆記"},
+    {"id": "code.c2.nova", "ch": 2, "cat": "據點", "fixed": 0, "code": "7777",
+     "name": "Nova 汽車報廢場車庫保險箱", "where": "哈姆雷特（Hamlet）・M7 據點",
+     "note": "廢棄校車旁車庫儲藏室內；密碼印在同車庫內 77 年老爺車車牌上"},
+    {"id": "code.c2.farmfix", "ch": 2, "cat": "據點", "fixed": 0, "code": "2121",
+     "name": "Farm Fix 製毒廠二樓辦公室保險箱", "where": "貝爾維爾（Belville）・Final Chapter 據點",
+     "note": "主廠房二樓天橋辦公室；現場密碼寫在後房發光櫃右側工作台記事本"},
+    {"id": "code.c2.cottonmouth", "ch": 2, "cat": "探索", "fixed": 0, "code": "44017",
+     "name": "Cottonmouth 湖拖車保險箱", "where": "Cottonmouth Lake",
+     "note": "密碼藏在拖車牆上照片堆之間"},
+    {"id": "code.c2.vamos", "ch": 2, "cat": "探索", "fixed": 0, "code": "2727",
+     "name": "藏有 '74 Vamos 的上鎖車庫", "where": "Grayson",
+     "note": "自由探索密碼，開啟可免費開走經典車款"},
+    # 第 3 章
+    {"id": "code.c3.first", "ch": 3, "cat": "主線", "fixed": 1, "code": "2404",
+     "name": "〈第一印象〉開場車庫門鎖", "where": "第 3 章・〈第一印象〉", "m": "p-first-impressions",
+     "note": "主線固定密碼"},
+    {"id": "code.c3.pawn", "ch": 3, "cat": "主線", "fixed": 1, "code": "1680",
+     "name": "Casa de Empeño 當鋪保險箱", "where": "第 3 章・〈亞斯馬尼的珠寶活〉", "m": "p-yasmanis-jewelry-jobs",
+     "note": "建議先搶這家可順手拿撬鎖槍；日後自由再搶同一家時密碼可能會重新隨機"},
+    {"id": "code.c3.richardson", "ch": 3, "cat": "主線", "fixed": 1, "code": "6815",
+     "name": "Richardson 珠寶店保險箱", "where": "第 3 章・〈亞斯馬尼的珠寶活〉", "m": "p-yasmanis-jewelry-jobs",
+     "note": "主線搶劫固定密碼"},
+    {"id": "code.c3.donovan", "ch": 3, "cat": "主線", "fixed": 1, "code": "0104",
+     "name": "Donovan Banks & Co. 珠寶店保險箱", "where": "第 3 章・〈亞斯馬尼的珠寶活〉", "m": "p-yasmanis-jewelry-jobs",
+     "note": "主線搶劫固定密碼"},
+    {"id": "code.c3.sneaker", "ch": 3, "cat": "據點", "fixed": 0, "code": "4124",
+     "name": "非法球鞋交易據點保險箱", "where": "罪惡市・San4San 據點",
+     "note": "幫派據點密碼，若個別存檔有變動請查看現場線索"},
+    {"id": "code.c3.janjak", "ch": 3, "cat": "據點", "fixed": 0, "code": "4444",
+     "name": "Janjak 車庫保險箱", "where": "La Perle・San4San 據點",
+     "note": "幫派據點密碼"},
+    {"id": "code.c3.guardia", "ch": 3, "cat": "據點", "fixed": 0, "code": "1965",
+     "name": "Casa Guardia 保險箱", "where": "小古巴（Little Cuba）・Guardia 兄弟據點",
+     "note": "幫派據點密碼"},
+    {"id": "code.c3.saber", "ch": 3, "cat": "據點", "fixed": 0, "code": "8046",
+     "name": "Saber 貨運場保險箱", "where": "小古巴（Little Cuba）・Guardia 兄弟據點",
+     "note": "幫派據點密碼"},
+    {"id": "code.c3.auntie", "ch": 3, "cat": "探索", "fixed": 0, "code": "92665",
+     "name": "Auntie's Place 車庫門鎖", "where": "La Perle",
+     "note": "開啟可拿取特殊載具"},
+    {"id": "code.c3.marbelle", "ch": 3, "cat": "探索", "fixed": 0, "code": "955214",
+     "name": "Marbelle 飯店保險箱", "where": "Crosstown",
+     "note": "自由探索密碼"},
+    {"id": "code.c3.kalaga", "ch": 3, "cat": "探索", "fixed": 0, "code": "69185",
+     "name": "卡拉加山國家公園上鎖門", "where": "卡拉加山國家公園（Mount Kalaga）",
+     "note": "自由探索門鎖密碼"},
+]
+
+# 各篇實用攻略的防雷安全章節（0=開局隨時安全，1~5=該章起安全，6=破關後）
+NOTE_META = {
+    "controls":      {"minCh": 0},
+    "faq":           {"minCh": 0},
+    "wanted":        {"minCh": 0},
+    "stats":         {"minCh": 0},
+    "patches":       {"minCh": 0},
+    "rewards":       {"minCh": 0},
+    "leonida":       {"minCh": 0},
+    "where":         {"minCh": 1},
+    "mechanics":     {"minCh": 1},
+    "money":         {"minCh": 1},
+    "money-glitch":  {"minCh": 1},
+    "aircraft":      {"minCh": 1},
+    "weapons":       {"minCh": 1},
+    "early-weapons": {"minCh": 1},
+    "cars":          {"minCh": 1},
+    "collectibles":  {"minCh": 1},
+    "ranges":        {"minCh": 1},
+    "stuck":         {"minCh": 1, "spoilerNote": "含部分中後期任務卡關排解，請只看自己目前章節"},
+    "robberies":     {"minCh": 2},
+    "strangers":     {"minCh": 2},
+    "events":        {"minCh": 2},
+    "romance":       {"minCh": 2, "spoilerNote": "含第 5 章結局分歧條件"},
+    "banks":         {"minCh": 3},
+    "choices":       {"minCh": 4, "spoilerNote": "涵蓋第 1～5 章重大選擇與後果"},
+    "missables":     {"minCh": 5, "spoilerNote": "總覽全 5 章會錯過項目（平時建議改看「清單 → 會錯過」分章檢視）"},
+    "endings":       {"minCh": 5, "spoilerNote": "含最終章與結局分歧完整劇透"},
+    "challenges":    {"minCh": 6},
+    "completion":    {"minCh": 6},
+    "cheats":        {"minCh": 6},
+}
+
+# 新增實用攻略：各章免費獨特武器與開荒神裝（整合自實測攻略與影片）
+EARLY_WEAPONS_NOTE = {
+    "slug": "early-weapons",
+    "cat": "farm",
+    "title": "免費獨特武器與開荒神裝",
+    "sub": "免花冤枉錢買槍：撿起即永久解鎖，隨時可在武裝國度武器櫃免費領回",
+    "badge": "實用",
+    "minCh": 1,
+    "blocks": [
+        "遊戲裡的**獨特／傳奇武器**只要撿過一次就會永久解鎖，之後就算丟掉或換章，隨時都能在武裝國度（Ammu-Nation）的武器櫃免費取回，開荒期非常值得先繞去撿齊。",
+        {"h": "第 1 章就能免費撿的開荒神裝", "l": 2},
+        {"ul": [
+            "**Assassin Nipper .38（消音手槍）**：從蘭托礁島開船往西南到 Permit Keys 最東南狹長小島，爬上擱淺木船開啟甲板中央艙門取得。有消音器，建議第一個去撿，打據點超好用。",
+            "**Smuggler Gorse 425（霰彈槍）**：順路往北開到 Permit Keys 最北端小島岸邊，在傾斜走私船旁的沙地上直接撿起（晚上開手電筒比較好找）。",
+            "**Swamp Bait Akulus 左輪 ＋ Cruel Huntsman's SM-69 狙擊槍**：開船到 Pelican Valley 沼澤中的廢棄木屋，血跡地板上拿左輪、後廊拿狙擊槍與子彈（小心沼澤鱷魚）。",
+            "**Crabshack VF5 軍用衝鋒槍 ＋ $10,000**：Pelican Valley 西南廢棄螃蟹研究站。屋旁電箱通電 → 客廳電腦輸 **CLEAVES**（逃過巨蟹突襲）→ 保險箱輸 **0072** → 木棧道盡頭船屋門輸 **0212**，免費帶走獨特衝鋒槍與 $10,000 贓物袋。",
+            "**Conspiracist Type 9 衝鋒手槍 ＋ 免費火箭筒**：完成〈打造新生活〉後，到 Balsero 廢車場找滿是天線與衛星盤的露營車，開地板暗門下地下碉堡，一次拿獨特衝鋒手槍、**Hauners H-AT 火箭筒（附 4 發火箭）**與手榴彈。",
+            "**Kingfishers W-22（消音瞄鏡步槍）**：濕人灣（Wetman Bay）中島釣魚棚屋翠鳥幫據點（高警戒，建議開船並帶消音手槍），清完敵人後在靠水小屋桌上的武器箱取得。",
+            "**Drug Mule KZ-59（突擊步槍）**：Riquezas Keys 北岸水面找漂浮毒品袋，潛入水底沉沒快艇下方撿起。",
+            "**Turnt Nipper .38（獨特手槍）**：瑪麗安娜郡卡普里島 Bobcat Bight 岸邊松樹上掛著一台墜毀動力傘，開槍打斷繩索等它掉下來撿（無戰鬥）。",
+            "**Donnie's H&L .38（會錯過！）**：第 1 章任務〈消失的老唐〉要你銷毀唐尼的車之前，務必先開後車廂拿走這把左輪，炸掉車就拿不回來了。",
+        ]},
+        {"h": "第 2 章推薦免費獨特武器", "l": 2},
+        {"ul": [
+            "**Hunter's Laird 350（獵用狙擊槍＋3% 專注）**：哈姆雷特（Hamlet）南方靠近草河沼澤的土路遇到兩名獵人，幫他們找回皮卡並送傷患去醫院即可免費獲得（無戰鬥）。",
+            "**Marabunta Grande Hobo（霰彈槍＋現金）**：哈姆雷特南方靠近公路的工業倉庫，聽到尖叫聲進去搜房間武器箱，順便拿桌與工具箱現金。",
+            "**Killtelligence SM-69（打獵狙擊槍）**：完成〈咖啡時間〉後用傑森看簡訊找布雷特（Bret）接打獵任務免費拿到，打獵拿完美毛皮極好用。",
+        ]},
+    ],
+}
+
+
+def _clean_deep(obj, skip_keys=("id", "slug", "url", "i", "map", "href", "tick", "imgBase", "builtOn", "sourceUpdated", "cat", "ch", "m", "see", "covers", "aliases", "code")):
     if isinstance(obj, str):
         return clean_text(obj)
     if isinstance(obj, list):
@@ -625,13 +805,26 @@ def _strip_note_meta_sections(blocks):
 
 
 def _patch_notes(notes):
-    """將實測查證後的結論更新到對應系統筆記，裁掉資料來源尾段，消除矛盾寫法。"""
+    """將實測查證後的結論更新到對應系統筆記，裁掉資料來源尾段，補上防雷分級與推薦設定。"""
     for n in notes:
         n["blocks"] = _strip_note_meta_sections(n.get("blocks", []))
         n.pop("stamp", None)
     by_slug = {n["slug"]: n for n in notes}
+    if "early-weapons" not in by_slug:
+        idx = next((i + 1 for i, n in enumerate(notes) if n["slug"] == "weapons"), len(notes))
+        notes.insert(idx, dict(EARLY_WEAPONS_NOTE))
+        by_slug["early-weapons"] = notes[idx]
+    if "controls" in by_slug:
+        by_slug["controls"]["blocks"].insert(0, {"ul": [
+            "**畫面防暈**：把動態模糊（Motion Blur）調為 **0**、鏡頭晃動（Camera Shake）關掉、鏡頭微晃（Camera Bob）調在 **3～5**，長時間玩舒服很多。",
+            "**射擊手感**：鎖定模式選**部分鎖定（Partial Targeting）**、瞄準輔助強度調 **4**，兼顧鎖敵效率與微調爆頭。",
+            "**叫出介面**：畫面預設動態隱藏血條與錢，**短按十字鍵下**就會馬上叫出左上三條、小地圖與現金。",
+        ]})
+        by_slug["controls"]["blocks"].insert(0, {"h": "開局先改這幾項設定（PS5／Xbox）", "l": 2})
+    if "money" in by_slug:
+        by_slug["money"]["sub"] = "各階段實用賺錢路線、搶劫收益與資金規劃"
     if "endings" in by_slug:
-        by_slug["endings"]["sub"] = "存滿 $200 萬、側寫壓低、感情炙熱相伴，見亞伯前先存檔"
+        by_slug["endings"]["sub"] = "最終章結局分歧條件與分歧點存檔說明"
         by_slug["endings"]["blocks"].insert(0,
             "**最好結局實測確認條件**：BuckMe 家庭儲蓄達 **$2,000,000** ＋ 兩人感情滿級「炙熱相伴」 ＋ 兩人犯罪側寫維持低檔（冷靜專業或鐵石心腸） ＋ 拒絕門德茲交易 ＋ 最終選擇「游過去」並及時按下撤離。若感情過低會在〈保護性拘留〉開頭觸發分手路線。")
     if "romance" in by_slug:
@@ -647,6 +840,11 @@ def _patch_notes(notes):
         for b in by_slug["events"]["blocks"]:
             if isinstance(b, dict) and b.get("h") == "本站還沒核對的":
                 b["h"] = "其他罕見隨機事件"
+    for n in notes:
+        meta = NOTE_META.get(n["slug"], {"minCh": 1})
+        n["minCh"] = meta["minCh"]
+        if meta.get("spoilerNote"):
+            n["spoilerNote"] = meta["spoilerNote"]
 
 
 def _patch_codex(codex):
@@ -664,12 +862,15 @@ def _patch_codex(codex):
 
 
 def process_guide(guide: dict) -> dict:
-    """套用查證修訂、移除外站日記／作者公告、注入各章／任務該做清單，並全量轉為台灣用語。"""
+    """套用查證修訂、移除外站日記／作者公告、注入各章無回頭點／密碼速查／必做清單，並全量轉為台灣用語。"""
     guide["intro"] = []
     guide["notices"] = []
     guide["sources"] = []
 
+    ponr_ids = {v["m"] for v in CHAPTER_PONR.values()}
     for ch in guide.get("chapters", []):
+        if ch["no"] in CHAPTER_PONR:
+            ch["ponr"] = dict(CHAPTER_PONR[ch["no"]])
         for m in ch.get("missions", []):
             ov = MISSION_OVERRIDES.get(m["id"])
             if ov:
@@ -678,6 +879,8 @@ def process_guide(guide: dict) -> dict:
             m.pop("aka", None)
             if m["id"] in MISSION_TODOS:
                 m["todo"] = list(MISSION_TODOS[m["id"]])
+            if m["id"] in ponr_ids:
+                m["ponr"] = 1
 
         for sec in ch.get("info", []):
             for r in sec.get("rows", []):
@@ -686,6 +889,7 @@ def process_guide(guide: dict) -> dict:
 
     _patch_notes(guide.get("notes", []))
     guide["checklists"] = CHAPTER_CHECKLISTS
+    guide["codes"] = SAFE_DOOR_CODES
     guide = _clean_deep(guide)
     return guide
 
@@ -693,6 +897,6 @@ def process_guide(guide: dict) -> dict:
 def process_codex(codex: dict) -> dict:
     """清理圖鑑、彩蛋、HUD 與更新紀錄的外站字眼並標準化為台灣用語。"""
     _patch_codex(codex)
-    codex_skip = ("id", "slug", "url", "i", "map", "href", "tick", "imgBase", "builtOn", "sourceUpdated", "ch", "m", "see", "covers", "aliases")
+    codex_skip = ("id", "slug", "url", "i", "map", "href", "tick", "imgBase", "builtOn", "sourceUpdated", "ch", "m", "see", "covers", "aliases", "code")
     codex = _clean_deep(codex, skip_keys=codex_skip)
     return codex

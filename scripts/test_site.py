@@ -288,7 +288,7 @@ class Gta6DataTest(unittest.TestCase):
 
     def test_notes_structure(self):
         d = load_gta6_data()
-        self.assertEqual(len(d["notes"]), 28)
+        self.assertEqual(len(d["notes"]), 29)
         cats = {c["id"] for c in d["noteCats"]}
         slugs = [n["slug"] for n in d["notes"]]
         self.assertEqual(len(slugs), len(set(slugs)))
@@ -296,6 +296,8 @@ class Gta6DataTest(unittest.TestCase):
             self.assertIn(n["cat"], cats)
             self.assertRegex(n["slug"], r"^[a-z0-9-]+$")
             self.assertTrue(n["title"] and n["blocks"], n["slug"])
+            self.assertIsInstance(n.get("minCh"), int, n["slug"])
+            self.assertIn(n["minCh"], range(0, 7), n["slug"])
 
     def test_only_safe_urls_and_images(self):
         d = load_gta6_data()
@@ -387,12 +389,29 @@ class Gta6DataTest(unittest.TestCase):
         self.assertEqual(len(chk_ids), len(set(chk_ids)), "清單 ID 重複")
         self.assertGreaterEqual(len(chk_ids), 40)
         chk_set = set(chk_ids)
+        by_id = {m["id"]: m for ch in d["chapters"] for m in ch["missions"]}
         for ch in d["chapters"]:
+            ponr = ch.get("ponr")
+            self.assertIsInstance(ponr, dict, f"第 {ch['no']} 章缺少 ponr")
+            self.assertIn(ponr["m"], by_id, f"第 {ch['no']} 章 ponr 指向不存在任務")
+            self.assertEqual(by_id[ponr["m"]].get("ponr"), 1, f"{ponr['m']} 缺少 ponr=1")
             for m in ch["missions"]:
                 for tid in m.get("todo", []):
                     self.assertIn(tid, chk_set, f"{m['id']} 的 todo 指向不存在清單：{tid}")
 
-        skip_keys = {"url", "map", "imgBase", "i", "id", "slug", "tick", "m", "see", "covers", "todo", "aliases", "items"}
+        codes = d.get("codes", [])
+        self.assertGreaterEqual(len(codes), 25)
+        code_ids = []
+        for it in codes:
+            self.assertTrue(it["id"].startswith("code."), it["id"])
+            self.assertIn(it["ch"], (1, 2, 3), it["id"])
+            self.assertTrue(it.get("code") and it.get("name"), it["id"])
+            if "m" in it:
+                self.assertIn(it["m"], mission_ids, "密碼指向不存在任務：" + it["id"])
+            code_ids.append(it["id"])
+        self.assertEqual(len(code_ids), len(set(code_ids)), "密碼 ID 重複")
+
+        skip_keys = {"url", "map", "imgBase", "i", "id", "slug", "tick", "m", "see", "covers", "todo", "aliases", "items", "code"}
         site_re = re.compile(
             r"PowerPyx|Output\s*Lag|GamesRadar|GTABase|MetaForge|4Gamers|Game8|Gameriv|thegameswiki|"
             r"oplay\.cc|遊民星空|本站未實測|還沒核到|一家說|兩說",
