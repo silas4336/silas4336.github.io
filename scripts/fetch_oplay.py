@@ -2,8 +2,8 @@
 
 把 oplay.cc 的 GTA 6 攻略（繁體中文）抓到本機快取，給 build_gta6.py 解析。只用標準函式庫。
 
-只抓需要的頁面（章節頁 5 頁＋筆記索引＋28 篇筆記，共約 34 頁），每頁間隔 1 秒，已在快取裡的不重抓
-（--refresh 才會重抓）。章節頁一頁就含該章全部任務的完整內容，所以不用逐個任務頁爬。
+只抓需要的頁面（章節頁 5 頁＋筆記索引＋28 篇筆記＋圖鑑索引＋23 個圖鑑分類＋彩蛋／圖示全解／更新紀錄／進度清單，共 62 頁），
+每頁間隔 1 秒，已在快取裡的不重抓（--refresh 才會重抓）。章節頁一頁就含該章全部任務的完整內容，所以不用逐個任務頁爬。
 遵守 oplay.cc 的 robots.txt（只禁 /api/）；快取資料夾已列入 .gitignore，不會進 repo。
 """
 import os
@@ -17,6 +17,9 @@ CHAPTERS = [1, 2, 3, 4, 5]
 NOTES = ["aircraft", "banks", "cars", "challenges", "cheats", "choices", "collectibles", "completion", "controls",
          "endings", "events", "faq", "leonida", "mechanics", "missables", "money", "money-glitch", "patches",
          "ranges", "rewards", "robberies", "romance", "stats", "strangers", "stuck", "wanted", "weapons", "where"]
+CARD_CATS = ["vehicle", "weapon", "animal", "style", "collect", "reward", "place", "org", "char", "term", "merch",
+             "story", "mission", "challenge", "trophy", "set", "miss", "howto", "hud", "unlock", "money", "stuck", "cheat"]
+EXTRA_PAGES = ["cards", "eggs", "hud", "updates", "progress"]
 DELAY = 1.0
 
 
@@ -25,6 +28,8 @@ def pages():
     out = [(f"chapters-{n}.html", f"{BASE}chapters/{n}") for n in CHAPTERS]
     out.append(("notes.html", f"{BASE}notes"))
     out += [(f"notes-{s}.html", f"{BASE}notes/{s}") for s in NOTES]
+    out += [(f"{p}.html", f"{BASE}{p}") for p in EXTRA_PAGES]
+    out += [(f"cards-{c}.html", f"{BASE}cards/{c}") for c in CARD_CATS]
     return out
 
 
@@ -44,7 +49,7 @@ def fetch_all(cache_dir, refresh=False, log=print):
         if got:
             time.sleep(DELAY)
         html = get(url)
-        if "GTA 6" not in html or len(html) < 20000:
+        if "GTA 6" not in html or len(html) < 12000:
             raise SystemExit(f"{url} 抓到的內容不像攻略頁，來源結構可能變了")
         with open(path, "w", encoding="utf-8", newline="\n") as f:
             f.write(html)

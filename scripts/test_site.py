@@ -223,20 +223,31 @@ def load_gta6_data():
     return json.loads(text[text.index("{"):text.rindex("}") + 1])
 
 
+def load_gta6_codex():
+    with open(os.path.join(ROOT, "gta6", "codex.js"), encoding="utf-8") as f:
+        text = f.read()
+    return json.loads(text[text.index("{"):text.rindex("}") + 1])
+
+
 class Gta6DataTest(unittest.TestCase):
-    """gta6/data.js 是 scripts/build_gta6.py 產生的，頁面直接用它，結構壞了整頁就空白。"""
+    """gta6/data.js 與 gta6/codex.js 是 scripts/build_gta6.py 產生的，頁面直接用它們，結構壞了整頁就空白。"""
 
     def test_structure_and_unique_ids(self):
         d = load_gta6_data()
         self.assertEqual([c["no"] for c in d["chapters"]], [1, 2, 3, 4, 5])
         ids = [m["id"] for c in d["chapters"] for m in c["missions"]]
         self.assertEqual(len(ids), len(set(ids)), "任務 ID 重複")
+        id_set = set(ids)
         types = {"主線", "支線", "搶劫", "陌生人", "可選", "額外"}
         for c in d["chapters"]:
             for m in c["missions"]:
                 self.assertIn(m["type"], types, m["id"])
                 self.assertTrue(m["name"], m["id"])
                 self.assertTrue(m.get("steps") or m.get("blocks"), "任務沒有任何內容：" + m["id"])
+                if "see" in m:
+                    self.assertIn(m["see"], id_set, "see 指向不存在的任務：" + m["id"])
+                for cid in m.get("covers", []):
+                    self.assertIn(cid, id_set, "covers 指向不存在的任務：" + m["id"])
 
     def test_every_oplay_mission_has_steps_and_link(self):
         """第 2～5 章的最後一個任務曾經因為截斷邏輯漏掉連結，這裡確保 oplay 的任務都有逐步文字與原站連結。"""
@@ -314,12 +325,38 @@ class Gta6DataTest(unittest.TestCase):
             else:
                 self.assertIsInstance(by_id[x["m"]]["blocks"][x["p"]], str)
 
+    def test_progress_and_codex_integrity(self):
+        d = load_gta6_data()
+        self.assertIn("progress", d)
+        self.assertGreaterEqual(len(d["progress"]["rows"]), 40)
+
+        c = load_gta6_codex()
+        self.assertEqual(len(c["cards"]), 23)
+        total_cards = sum(len(v) for v in c["cards"].values())
+        self.assertGreaterEqual(total_cards, 1200)
+        self.assertGreaterEqual(sum(len(g["items"]) for g in c["eggs"]), 60)
+        self.assertGreaterEqual(sum(len(g["items"]) for g in c["hud"]), 25)
+        self.assertGreaterEqual(sum(len(x["items"]) for x in c["updates"]), 20)
+        for slug, items in c["cards"].items():
+            for it in items:
+                self.assertTrue(it.get("n"), slug)
+                self.assertNotIn("img", it, "不應複製原站圖鑑圖片：" + slug)
+                for ukey in ("url", "map"):
+                    if ukey in it:
+                        self.assertTrue(it[ukey].startswith("https://oplay.cc/"), it[ukey])
+                for tkey in ("n", "a", "how"):
+                    val = it.get(tkey, "")
+                    self.assertEqual(val.count("**") % 2, 0, val[:40])
+                    self.assertEqual(val.count("⟦"), val.count("⟧"), val[:40])
+
     def test_pwa_files_exist_and_not_in_sitemap(self):
         base = os.path.join(ROOT, "gta6")
         with open(os.path.join(base, "sw.js"), encoding="utf-8") as f:
             sw = f.read()
         files = re.search(r"const FILES = \[(.*?)\];", sw, re.S).group(1)
-        for rel in re.findall(r'"\./([^"]*)"', files):
+        rels = re.findall(r'"\./([^"]*)"', files)
+        self.assertIn("codex.js", rels)
+        for rel in rels:
             self.assertTrue(os.path.exists(os.path.join(base, rel or "index.html")), rel)
         with open(os.path.join(base, "manifest.webmanifest"), encoding="utf-8") as f:
             manifest = json.load(f)
@@ -436,6 +473,88 @@ class OplayParseTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             oplay_parse.parse_note("<h1>x</h1>")
 
+    def test_parse_cards_index_and_card_page_variants(self):
+        idx_html = (
+            '<section class="dxh-fam"><h2 class="dxb-h">收集<em class="tnum">277</em></h2><ul class="dxh-grid">'
+            '<li><a class="ui-card dxh-tile" href="/gta6/cards/vehicle" data-k="vehicle"><strong>載具</strong><em class="tnum">208</em><span class="dxh-s">跑車…</span></a></li>'
+            '<li><a class="ui-card dxh-tile" href="/gta6/eggs" data-k="egg"><strong>彩蛋</strong><em class="tnum">62</em><span class="dxh-s">UFO…</span></a></li>'
+            '</ul></section>'
+        )
+        groups = oplay_parse.parse_cards_index(idx_html)
+        self.assertEqual(groups, [{"group": "收集", "cats": [
+            {"slug": "vehicle", "name": "載具", "count": 208, "preview": "跑車…"},
+            {"slug": "egg", "name": "彩蛋", "count": 62, "preview": "UFO…", "egg": 1},
+        ]}])
+
+        # 同時包含 <tr data-d>（有評分）與 <li data-d>（未排行）、以及 img 被剔除
+        veh_html = (
+            '<div data-unit="台" data-common="掃描就算"><ul class="dx-seg"><li><button>速度</button></li><li><button>耐久</button></li></ul>'
+            '<table><tbody><tr data-d="{&quot;id&quot;:&quot;vehicle.a&quot;,&quot;zh&quot;:&quot;甲車&quot;,&quot;cat&quot;:&quot;跑車&quot;,'
+            '&quot;img&quot;:{&quot;src&quot;:&quot;/img/x.webp&quot;},&quot;map&quot;:&quot;/gta6/map?at=1,2,3&quot;,'
+            '&quot;st&quot;:{&quot;v&quot;:{&quot;速度&quot;:8.3}}}"></tr></tbody></table>'
+            '<ul><li data-d="{&quot;id&quot;:&quot;vehicle.b&quot;,&quot;zh&quot;:&quot;乙車&quot;,&quot;edition&quot;:&quot;終極版&quot;}"></li></ul></div>'
+        )
+        veh = oplay_parse.parse_card_page(veh_html, "vehicle")
+        self.assertEqual(veh["unit"], "台")
+        self.assertEqual(veh["common"], "掃描就算")
+        self.assertEqual(veh["stats"], ["速度", "耐久"])
+        self.assertEqual(len(veh["items"]), 2)
+        self.assertNotIn("img", veh["items"][0])
+        self.assertEqual(veh["items"][0]["map"], "https://oplay.cc/gta6/map?at=1,2,3")
+        self.assertEqual(veh["items"][0]["st"], {"速度": 8.3})
+        self.assertEqual(veh["items"][1], {"id": "vehicle.b", "n": "乙車", "ed": "終極版"})
+
+        # dxc-card（地圖卡）＋ dxa-row（清單，含空欄位與最後一列）
+        mix_html = (
+            '<div data-unit="則"><ul>'
+            '<li data-c="幫派據點"><a class="ui-card dxc-card" href="/gta6/c/gang.a"><span class="dxc-map"><img src="/x.webp"><em class="tg tg--cat">幫派據點</em></span>'
+            '<span class="dxc-b"><strong>小屋</strong><span class="dxc-a"></span><span class="dxc-f"><span class="dx-tags"><em class="tg tg--where">礁島</em></span><b class="dxc-val">$5,000</b></span></span></a></li>'
+            '<li data-c="飛機"><a class="dxa-row dxa-row--noic" href="#c-place.air1"><span class="dxa-t"><strong>機場</strong><small>Airfield</small></span>'
+            '<span class="dx-tags"><em class="tg">第一章起</em></span><span class="dxa-a">按 <b>L2</b> 起飛</span></a></li>'
+            '</ul></div>'
+        )
+        mix = oplay_parse.parse_card_page(mix_html, "place")
+        self.assertEqual(len(mix["items"]), 2)
+        self.assertEqual(mix["items"][0], {"n": "小屋", "onMap": 1, "id": "gang.a", "cat": "幫派據點", "where": "礁島", "val": "$5,000", "url": "https://oplay.cc/gta6/c/gang.a"})
+        self.assertEqual(mix["items"][1], {"n": "機場", "id": "place.air1", "en": "Airfield", "cat": "飛機", "tags": ["第一章起"], "a": "按 **L2** 起飛"})
+
+    def test_parse_eggs_hud_updates_progress(self):
+        eggs_html = (
+            '<section class="ui-card dxe-reg"><h2 class="g6e-reg-n">礁島群<em>1</em></h2><a href="/gta6/map?at=1,2,3">地圖</a>'
+            '<ul class="dxa"><li data-c="傳說"><a class="dxa-row" href="/gta6/c/egg.ufo"><i class="dxa-no">7</i>'
+            '<span class="dxa-t"><strong>UFO</strong><small>UFO</small></span><span class="dx-tags"><em class="tg tg--gift">加耐力</em></span>'
+            '<span class="dxa-a">晚上出現</span></a></li></ul></section>'
+            '<section class="dxb-sec"><h2>不用找，玩著會遇到<em>1</em></h2>'
+            '<div class="dxb-sec"><h3>主線裡<em>1</em></h3><ul class="dxa"><li data-c="致敬"><a class="dxa-row dxa-row--noic" href="/gta6/c/egg.sam">'
+            '<span class="dxa-t"><strong>小山姆</strong></span><span class="dx-tags"></span><span class="dxa-a">路過</span></a></li></ul></div></section>'
+        )
+        eggs = oplay_parse.parse_eggs(eggs_html)
+        self.assertEqual(len(eggs), 2)
+        self.assertEqual(eggs[0]["region"], "礁島群")
+        self.assertEqual(eggs[0]["map"], "https://oplay.cc/gta6/map?at=1,2,3")
+        self.assertEqual(eggs[0]["items"][0]["gift"], "加耐力")
+        self.assertEqual(eggs[1]["region"], "不用找・主線裡")
+        self.assertEqual(eggs[1]["items"][0]["n"], "小山姆")
+
+        hud_html = (
+            '<section class="g6-grp"><h2>左上角三條</h2><ul class="hud-rows">'
+            '<li><button class="hud-row" data-g6card="hud.o2"><span class="hud-n">氧氣條<em class="hud-pend">還沒確認</em></span>'
+            '<span class="hud-say">剩多少氣</span><span class="hud-do"><b>按 × 浮上來</b></span></button></li></ul></section>'
+        )
+        hud = oplay_parse.parse_hud(hud_html)
+        self.assertEqual(hud, [{"title": "左上角三條", "items": [{"n": "氧氣條", "id": "hud.o2", "tag": "還沒確認", "say": "剩多少氣", "do": "**按 × 浮上來**"}]}])
+
+        upd_html = (
+            '<section class="up-day"><p class="up-d"><b>11/26</b><span>週四</span><span>2026</span></p>'
+            '<ul><li data-t="地圖"><a href="/gta6/map"><span class="up-t">新點 5 個</span></a></li></ul></section>'
+        )
+        upd = oplay_parse.parse_updates(upd_html)
+        self.assertEqual(upd, [{"date": "11/26", "dow": "週四", "year": "2026", "items": [{"tag": "地圖", "text": "新點 5 個", "url": "https://oplay.cc/gta6/map"}]}])
+
+        prog_html = '<script type="application/json" id="ppData">{"secs":["劇情"],"rows":[{"id":"main","name":"主線","sec":"劇情","type":"cards","unit":"個","goals":["100"],"need":130,"total":130,"ico":"<svg/>","items":["story.a"]}]}</script>'
+        prog = oplay_parse.parse_progress(prog_html)
+        self.assertEqual(prog, {"secs": ["劇情"], "rows": [{"id": "main", "name": "主線", "sec": "劇情", "type": "cards", "unit": "個", "goals": ["100"], "need": 130, "total": 130, "items": ["story.a"]}]})
+
 
 class BuildGta6Test(unittest.TestCase):
     def test_parse_youmin(self):
@@ -450,6 +569,35 @@ class BuildGta6Test(unittest.TestCase):
         self.assertEqual(ms[0]["blocks"], ["開始主線任務【序幕】", {"i": "a/1_S.jpg", "w": 600, "h": 338}])
         self.assertEqual(ms[2]["blocks"], ["主線任務【垂釣】", "第二 行"])
         self.assertEqual(notices, [{"title": "正在推第2章", "text": "25號開更。"}])
+
+    def test_tagless_node_with_image_and_one_to_many_merge(self):
+        """漏標標籤但有截圖的節點（如 D7、D9）不能誤判為作者預告；一對多對應要產生 covers 與 see，且不覆蓋主線類型。"""
+        html = (
+            '<html><body>'
+            + node("101", "D6", "買槍、理髮", "可選任務", "<p>先買槍再理髮</p>" + img("https://img1.gamersky.com/a/d6_S.jpg"))
+            + node("102", "D7", "付房錢", "", "<p>回旅館付錢</p>" + img("https://img1.gamersky.com/a/d7_S.jpg"))
+            + node("103", "D10", "正在推第2章", "", "<p>預告</p>")
+            + '</body></html>'
+        )
+        _, _, notices, ms = build_gta6.parse_youmin(html)
+        self.assertEqual([m["name"] for m in ms], ["買槍、理髮", "付房錢"])
+        self.assertEqual(notices, [{"title": "正在推第2章", "text": "預告"}])
+        old_map = dict(build_gta6.YOUMIN_TO_SLUG)
+        build_gta6.YOUMIN_TO_SLUG.clear()
+        build_gta6.YOUMIN_TO_SLUG.update({"買槍、理髮": ("prologue", "gone-fishing"), "付房錢": "extra-one"})
+        try:
+            chapters, aliases = build_gta6.merge(ms, oplay_chapters())
+        finally:
+            build_gta6.YOUMIN_TO_SLUG.clear()
+            build_gta6.YOUMIN_TO_SLUG.update(old_map)
+        by_id = {m["id"]: m for m in chapters[0]["missions"]}
+        self.assertEqual(by_id["p-prologue"]["type"], "主線")
+        self.assertEqual(by_id["p-prologue"]["covers"], ["p-gone-fishing"])
+        self.assertEqual(by_id["p-gone-fishing"]["see"], "p-prologue")
+        self.assertEqual(by_id["p-gone-fishing"]["seeLabel"], "買槍、理髮")
+        self.assertEqual(by_id["p-extra-one"]["type"], "主線")
+        self.assertEqual(aliases["y-101"], "p-prologue")
+        self.assertEqual(aliases["y-102"], "p-extra-one")
 
     def _merge(self, youmin_html=YOUMIN):
         _, _, _, ms = build_gta6.parse_youmin(youmin_html, lambda t: t.replace("线", "線"))

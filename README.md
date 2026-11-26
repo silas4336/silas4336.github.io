@@ -16,9 +16,9 @@
 | `style.css`、`assets/` | 共用樣式；截圖（WebP 為主，部分保留 JPG） |
 | `robots.txt`、`sitemap.xml` | sitemap 只列主站 12 頁 |
 | `math-logic/`、`neko/` | 八大智能活動小遊戲與貓咪數獨 1000 關 App，**不在這裡改**：原始檔在私人 repo `math-logic-games`，用它的 `deploy.sh` 同步過來 |
-| `gta6/` | 自己用的 GTA 6 攻略 PWA（手機閱讀、離線；5 章 130 個任務的逐步攻略、本章重點、筆記、搜尋）。不在 sitemap、首頁沒連結、每頁 `noindex`，網址 `/gta6/`。資料由 `scripts/build_gta6.py` 產生，見 [docs/code-map.md](docs/code-map.md) |
+| `gta6/` | 自己用的 GTA 6 攻略 PWA（遊民路書風格時間軸、離線；5 章 143 節點、本章重點、28 篇筆記、23 分類圖鑑、彩蛋、HUD 圖示全解、100% 進度儀表板、全站搜尋）。不在 sitemap、首頁沒連結、每頁 `noindex`，網址 `/gta6/`。資料由 `scripts/build_gta6.py` 產生（`data.js`＋`codex.js`），見 [docs/code-map.md](docs/code-map.md) |
 | `preview-*/` | 給人看的設計預覽頁，每頁 `noindex`，首頁不連 |
-| `scripts/` | 檢查腳本與測試；`fetch_oplay.py` 爬 oplay 進本機快取、`build_gta6.py` 會重寫 `gta6/data.js` |
+| `scripts/` | 檢查腳本與測試；`fetch_oplay.py` 爬 oplay 進本機快取、`build_gta6.py` 會重寫 `gta6/data.js` 與 `gta6/codex.js` |
 
 ## 檢查
 

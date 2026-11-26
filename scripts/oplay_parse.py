@@ -5,6 +5,7 @@
   內容區塊（blocks）：字串＝段落；{"h": 標題, "l": 層級}；{"ul": [項目…]}；{"ol": [項目…]}；{"tb": [[格…]…], "hd": 1}。
 """
 import html as htmllib
+import json
 import re
 from html.parser import HTMLParser
 
@@ -295,3 +296,333 @@ def parse_note(html):
         raise SystemExit("找不到文章內容（div.prose），來源頁面的結構可能變了")
     return {"title": text_of(h1.group(1)) if h1 else "", "stamp": text_of(stamp.group(1)).replace(" ・ ", "・") if stamp else "",
             "blocks": to_blocks(extract_div(a, prose.start()))}
+
+
+# ───────────────────────── 圖鑑／彩蛋／圖示／更新／進度 ─────────────────────────
+
+def _oplay_url(href):
+    """只接受站內 /gta6/… 路徑並補成完整 https://oplay.cc/… 網址。"""
+    if not href or not href.startswith("/gta6/"):
+        return ""
+    return "https://oplay.cc" + href
+
+
+def _id_from_href(href):
+    if not href:
+        return ""
+    if href.startswith("/gta6/c/"):
+        return href[len("/gta6/c/"):]
+    if href.startswith("#c-"):
+        return href[len("#c-"):]
+    return ""
+
+
+def _parse_tags(frag, skip_cat=True):
+    """從 <em class="tg ..."> 擷取 cat、where、gift、其他 tags。"""
+    cat, where, gift, tags = "", "", "", []
+    for m in re.finditer(r'<em class="([^"]*)"[^>]*>([\s\S]*?)</em>', frag):
+        cls = m.group(1).split()
+        val = text_of(m.group(2))
+        if not val:
+            continue
+        if "tg--cat" in cls:
+            if not cat:
+                cat = val
+        elif "tg--where" in cls:
+            where = val
+        elif "tg--gift" in cls:
+            gift = val
+        elif "tg" in cls:
+            tags.append(val)
+    return cat, where, gift, tags
+
+
+def _parse_dxa_li(li_attrs, href, body):
+    """解析 <li ...><a class="dxa-row..." href="...">...</a></li>。"""
+    cid = _id_from_href(href)
+    url = _oplay_url(href) if href.startswith("/gta6/c/") else ""
+    t_blk = re.search(r'<span class="dxa-t">([\s\S]*?)</span>', body)
+    name = re.search(r"<strong>([\s\S]*?)</strong>", t_blk.group(1)) if t_blk else re.search(r"<strong>([\s\S]*?)</strong>", body)
+    en = re.search(r"<small[^>]*>([\s\S]*?)</small>", t_blk.group(1)) if t_blk else None
+    a_m = re.search(r'<span class="dxa-a">([\s\S]*?)</span>', body)
+    no_m = re.search(r'<i class="dxa-no[^"]*"[^>]*>([\s\S]*?)</i>', body)
+    dc = re.search(r'data-c="([^"]+)"', li_attrs)
+    tags_blk = re.search(r'<span class="dx-tags">([\s\S]*?)</span>', body)
+    cat, where, gift, tags = _parse_tags(tags_blk.group(1)) if tags_blk else ("", "", "", [])
+    if dc and not cat:
+        cat = htmllib.unescape(dc.group(1)).strip()
+
+    item = {"n": text_of(name.group(1)) if name else ""}
+    if cid:
+        item["id"] = cid
+    if en and text_of(en.group(1)):
+        item["en"] = text_of(en.group(1))
+    if no_m and text_of(no_m.group(1)):
+        item["no"] = text_of(no_m.group(1))
+    if cat:
+        item["cat"] = cat
+    if where:
+        item["where"] = where
+    if gift:
+        item["gift"] = gift
+    if tags:
+        item["tags"] = tags
+    if a_m and inline(a_m.group(1)):
+        item["a"] = inline(a_m.group(1))
+    if url:
+        item["url"] = url
+    return item
+
+
+def _parse_dxc_li(li_attrs, href, body):
+    """解析標在地圖上的卡片 <li ...><a class="... dxc-card" href="...">...</a></li>（不收圖鑑／地圖縮圖）。"""
+    cid = _id_from_href(href)
+    url = _oplay_url(href) if href.startswith("/gta6/c/") else ""
+    dc = re.search(r'data-c="([^"]+)"', li_attrs)
+    cat, where, gift, tags = _parse_tags(body)
+    if dc and not cat:
+        cat = htmllib.unescape(dc.group(1)).strip()
+    b_m = re.search(r'<span class="dxc-b">([\s\S]*)$', body)
+    b_src = b_m.group(1) if b_m else body
+    name = re.search(r"<strong>([\s\S]*?)</strong>", b_src)
+    en = re.search(r"<small[^>]*>([\s\S]*?)</small>", b_src)
+    a_m = re.search(r'<span class="dxc-a">([\s\S]*?)</span>', b_src)
+    val_m = re.search(r'<b class="dxc-val[^"]*">([\s\S]*?)</b>', b_src)
+
+    item = {"n": text_of(name.group(1)) if name else "", "onMap": 1}
+    if cid:
+        item["id"] = cid
+    if en and text_of(en.group(1)):
+        item["en"] = text_of(en.group(1))
+    if cat:
+        item["cat"] = cat
+    if where:
+        item["where"] = where
+    if gift:
+        item["gift"] = gift
+    if tags:
+        item["tags"] = tags
+    if a_m and inline(a_m.group(1)):
+        item["a"] = inline(a_m.group(1))
+    if val_m and text_of(val_m.group(1)):
+        item["val"] = text_of(val_m.group(1))
+    if url:
+        item["url"] = url
+    return item
+
+
+def parse_cards_index(html):
+    """解析 /gta6/cards，回傳 [{group, cats: [{slug, name, count, preview, egg?}]}]。"""
+    a = clean(html)
+    groups = []
+    for sec in re.split(r'(?=<section class="dxh-fam")', a):
+        if not sec.startswith('<section class="dxh-fam"'):
+            continue
+        h2 = re.search(r"<h2[^>]*>([\s\S]*?)</h2>", sec)
+        gname = text_of(re.sub(r"<em[\s\S]*?</em>", "", h2.group(1))) if h2 else ""
+        cats = []
+        for m in re.finditer(r'<a[^>]*class="[^"]*\bdxh-tile\b[^"]*"[^>]*href="([^"]+)"[^>]*data-k="([^"]+)"[^>]*>([\s\S]*?)</a>', sec):
+            href, slug, body = m.group(1), m.group(2), m.group(3)
+            st = re.search(r"<strong>([\s\S]*?)</strong>", body)
+            em = re.search(r"<em[^>]*>(\d+)</em>", body)
+            pv = re.search(r'<span class="dxh-s">([\s\S]*?)</span>', body)
+            entry = {
+                "slug": slug,
+                "name": text_of(st.group(1)) if st else slug,
+                "count": int(em.group(1)) if em else 0,
+                "preview": text_of(pv.group(1)) if pv else "",
+            }
+            if href == "/gta6/eggs":
+                entry["egg"] = 1
+            cats.append(entry)
+        if cats:
+            groups.append({"group": gname, "cats": cats})
+    return groups
+
+
+def parse_card_page(html, slug):
+    """解析 /gta6/cards/<slug>，同時處理 data-d 表格、dxc-card 地圖卡、dxa-row 清單。"""
+    a = clean(html)
+    unit_m = re.search(r'data-unit="([^"]*)"', a)
+    common_m = re.search(r'data-common="([^"]*)"', a)
+    seg_m = re.search(r'<ul[^>]*\bdx-seg\b[^>]*>([\s\S]*?)</ul>', a)
+    stats = [text_of(x) for x in re.findall(r"<button[^>]*>([\s\S]*?)</button>", seg_m.group(1))] if seg_m else []
+
+    items = []
+    # 1. data-d 表格列／清單列（載具、武器、動物、外觀、作弊碼）— 不收 img
+    for m in re.finditer(r'<(?:tr|li)\b[^>]*\bdata-d="([^"]+)"', a):
+        raw = json.loads(htmllib.unescape(m.group(1)))
+        item = {"id": raw.get("id", ""), "n": norm(str(raw.get("zh", "")))}
+        if raw.get("en"):
+            item["en"] = norm(str(raw["en"]))
+        if raw.get("cat"):
+            item["cat"] = norm(str(raw["cat"]))
+        if raw.get("how"):
+            item["how"] = norm(str(raw["how"]))
+        if raw.get("code"):
+            item["code"] = norm(str(raw["code"]))
+        if raw.get("price"):
+            item["price"] = norm(str(raw["price"]))
+        if raw.get("edition"):
+            item["ed"] = norm(str(raw["edition"]))
+        if raw.get("tr"):
+            item["tr"] = 1
+        if isinstance(raw.get("st"), dict) and isinstance(raw["st"].get("v"), dict) and raw["st"]["v"]:
+            item["st"] = raw["st"]["v"]
+        pg_url = _oplay_url(raw.get("pg", ""))
+        if pg_url:
+            item["url"] = pg_url
+        map_url = _oplay_url(raw.get("map", ""))
+        if map_url:
+            item["map"] = map_url
+        if item["n"]:
+            items.append(item)
+
+    # 2. dxc-card（標在地圖上的項目：地點、店家、人物、支線、挑戰、獎勵、賺錢）
+    for m in re.finditer(r'<li([^>]*)>\s*<a class="[^"]*\bdxc-card\b[^"]*" href="([^"]+)"[^>]*>([\s\S]*?)</a>\s*</li>', a):
+        it = _parse_dxc_li(m.group(1), m.group(2), m.group(3))
+        if it["n"]:
+            items.append(it)
+
+    # 3. dxa-row（清單項目）
+    for m in re.finditer(r'<li([^>]*)>\s*<a class="dxa-row(?:\s[^"]*)?" href="([^"]+)"[^>]*>([\s\S]*?)</a>\s*</li>', a):
+        it = _parse_dxa_li(m.group(1), m.group(2), m.group(3))
+        if it["n"]:
+            items.append(it)
+
+    out = {"slug": slug, "unit": unit_m.group(1) if unit_m else "則", "items": items}
+    if common_m and htmllib.unescape(common_m.group(1)).strip():
+        out["common"] = norm(htmllib.unescape(common_m.group(1)))
+    if stats:
+        out["stats"] = stats
+    return out
+
+
+def parse_eggs(html):
+    """解析 /gta6/eggs，回傳依地區（與「不用找，玩著會遇到」子分類）分組的彩蛋清單。"""
+    a = clean(html)
+    groups = []
+    # 1. 有地區地圖的各區
+    for m in re.finditer(r'<section class="[^"]*\bdxe-reg\b[^"]*"[^>]*>([\s\S]*?)</section>', a):
+        sec = m.group(1)
+        h2 = re.search(r"<h2[^>]*>([\s\S]*?)</h2>", sec)
+        reg = text_of(re.sub(r"<em[\s\S]*?</em>", "", h2.group(1))) if h2 else ""
+        map_m = re.search(r'<a[^>]*href="(/gta6/map[^"]*)"', sec)
+        items = [_parse_dxa_li(r.group(1), r.group(2), r.group(3))
+                 for r in re.finditer(r'<li([^>]*)>\s*<a class="dxa-row(?:\s[^"]*)?" href="([^"]+)"[^>]*>([\s\S]*?)</a>\s*</li>', sec)]
+        if items:
+            grp = {"region": reg, "items": items}
+            if map_m:
+                grp["map"] = _oplay_url(map_m.group(1))
+            groups.append(grp)
+
+    # 2. 「不用找，玩著會遇到」區塊（底下各個 <div class="dxb-sec"><h3>...</h3><ul class="... dxa">）
+    extra_m = re.search(r'<section class="dxb-sec"[^>]*>\s*<h2[^>]*>不用找[\s\S]*?</section>', a)
+    if extra_m:
+        sec = extra_m.group(0)
+        for sub in re.finditer(r'<div class="dxb-sec"[^>]*>\s*<h3[^>]*>([\s\S]*?)</h3>([\s\S]*?)</ul>\s*</div>', sec):
+            sub_title = text_of(re.sub(r"<em[\s\S]*?</em>", "", sub.group(1)))
+            items = [_parse_dxa_li(r.group(1), r.group(2), r.group(3))
+                     for r in re.finditer(r'<li([^>]*)>\s*<a class="dxa-row(?:\s[^"]*)?" href="([^"]+)"[^>]*>([\s\S]*?)</a>\s*</li>', sub.group(2))]
+            if items:
+                groups.append({"region": "不用找・" + sub_title if sub_title else "不用找，玩著會遇到", "items": items})
+    return groups
+
+
+def parse_hud(html):
+    """解析 /gta6/hud，回傳分組後的畫面圖示說明。"""
+    a = clean(html)
+    groups = []
+    for m in re.finditer(r'<section class="[^"]*\bg6-grp\b[^"]*"[^>]*>([\s\S]*?)</section>', a):
+        sec = m.group(1)
+        h2 = re.search(r"<h2[^>]*>([\s\S]*?)</h2>", sec)
+        if not h2:
+            continue
+        title = text_of(h2.group(1))
+        items = []
+        for r in re.finditer(r'<li[^>]*>\s*<button[^>]*class="hud-row"([^>]*)>([\s\S]*?)</button>\s*</li>', sec):
+            attrs, body = r.group(1), r.group(2)
+            cid = re.search(r'data-g6card="([^"]+)"', attrs)
+            n_m = re.search(r'<span class="hud-n">([\s\S]*?)</span>', body)
+            say_m = re.search(r'<span class="hud-say">([\s\S]*?)</span>', body)
+            do_m = re.search(r'<span class="hud-do">([\s\S]*?)</span>', body)
+            tag = ""
+            n_html = n_m.group(1) if n_m else ""
+            em_m = re.search(r"<em[^>]*>([\s\S]*?)</em>", n_html)
+            if em_m:
+                tag = text_of(em_m.group(1))
+                n_html = n_html[:em_m.start()] + n_html[em_m.end():]
+            item = {"n": text_of(n_html)}
+            if cid:
+                item["id"] = cid.group(1)
+            if tag:
+                item["tag"] = tag
+            if say_m and inline(say_m.group(1)):
+                item["say"] = inline(say_m.group(1))
+            if do_m and inline(do_m.group(1)):
+                item["do"] = inline(do_m.group(1))
+            if item["n"]:
+                items.append(item)
+        if items:
+            groups.append({"title": title, "items": items})
+    return groups
+
+
+def parse_updates(html):
+    """解析 /gta6/updates，回傳依日期分組的更新紀錄。"""
+    a = clean(html)
+    days = []
+    for m in re.finditer(r'<section class="up-day">([\s\S]*?)</section>', a):
+        sec = m.group(1)
+        dm = re.search(r'<p class="up-d">([\s\S]*?)</p>', sec)
+        d_html = dm.group(1) if dm else ""
+        b_m = re.search(r"<b[^>]*>([\s\S]*?)</b>", d_html)
+        spans = [text_of(x) for x in re.findall(r"<span[^>]*>([\s\S]*?)</span>", d_html)]
+        items = []
+        for li in re.finditer(r'<li[^>]*data-t="([^"]*)"[^>]*>([\s\S]*?)</li>', sec):
+            tag = htmllib.unescape(li.group(1)).strip()
+            body = li.group(2)
+            ut = re.search(r'<span class="up-t">([\s\S]*?)</span>', body)
+            href = re.search(r'href="([^"]+)"', body)
+            text = inline(ut.group(1)) if ut else text_of(body)
+            if not text:
+                continue
+            it = {"tag": tag, "text": text}
+            url = _oplay_url(href.group(1)) if href else ""
+            if url:
+                it["url"] = url
+            items.append(it)
+        if items:
+            day = {"date": text_of(b_m.group(1)) if b_m else "", "items": items}
+            if spans:
+                day["dow"] = spans[0]
+            if len(spans) > 1:
+                day["year"] = spans[1]
+            days.append(day)
+    return days
+
+
+def parse_progress(html):
+    """解析 /gta6/progress 內嵌的 ppData JSON，抽出 100%／白金／全收集總表（去掉 SVG 與重複卡片）。"""
+    m = re.search(r'<script[^>]*id="ppData"[^>]*>([\s\S]*?)</script>', html)
+    if not m:
+        return {"secs": [], "rows": []}
+    raw = json.loads(m.group(1))
+    rows = []
+    for r in raw.get("rows", []):
+        entry = {
+            "id": r["id"],
+            "name": norm(str(r.get("name", ""))),
+            "sec": norm(str(r.get("sec", ""))),
+            "type": r.get("type", "count"),
+            "unit": r.get("unit", ""),
+            "goals": r.get("goals", []),
+            "total": r.get("total", 0),
+        }
+        if r.get("need") is not None:
+            entry["need"] = r["need"]
+        if isinstance(r.get("items"), list) and r["items"]:
+            entry["items"] = r["items"]
+        rows.append(entry)
+    return {"secs": raw.get("secs", []), "rows": rows}
+
