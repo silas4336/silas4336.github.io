@@ -288,7 +288,7 @@ class Gta6DataTest(unittest.TestCase):
 
     def test_notes_structure(self):
         d = load_gta6_data()
-        self.assertEqual(len(d["notes"]), 29)
+        self.assertEqual(len(d["notes"]), 31)
         cats = {c["id"] for c in d["noteCats"]}
         slugs = [n["slug"] for n in d["notes"]]
         self.assertEqual(len(slugs), len(set(slugs)))
@@ -298,6 +298,39 @@ class Gta6DataTest(unittest.TestCase):
             self.assertTrue(n["title"] and n["blocks"], n["slug"])
             self.assertIsInstance(n.get("minCh"), int, n["slug"])
             self.assertIn(n["minCh"], range(0, 7), n["slug"])
+
+    def test_ending_guide_and_secrets_integrity(self):
+        """無劇透結局指南不含劇情爆雷關鍵字，且 10 項特別互動彩蛋結構與步驟鍵完整。"""
+        d = load_gta6_data()
+        c = load_gta6_codex()
+        eg = d.get("endingGuide")
+        self.assertIsInstance(eg, dict)
+        self.assertEqual(len(eg.get("pillars", [])), 3)
+        self.assertEqual(len(eg.get("prep", [])), 7)
+        self.assertEqual(len(eg.get("routes", [])), 8)
+        r_ids = [r["id"] for r in eg["routes"]]
+        self.assertEqual(len(r_ids), len(set(r_ids)))
+        # 確保無劇透結局指南不會透漏角色生死、角色名劇透或橋／沼澤／監獄橋段
+        eg_text = json.dumps(eg, ensure_ascii=False)
+        spoiler_re = re.compile(r"門德茲|Méndez|Tomás|Tomas|兒子|坐牢|出獄|監獄|鱷魚|頭骨|(?<!身陷)沼澤|被殺|死亡|槍殺|開槍打死|殉情")
+        self.assertIsNone(spoiler_re.search(eg_text), "無劇透結局指南洩漏了劇情劇透詞！")
+
+        secs = d.get("secrets", [])
+        self.assertGreaterEqual(len(secs), 10)
+        s_ids = [s["id"] for s in secs]
+        self.assertEqual(len(s_ids), len(set(s_ids)))
+        for s in secs:
+            self.assertTrue(s["id"].startswith("sec."), s["id"])
+            self.assertIn(s["ch"], (1, 2, 3), s["id"])
+            self.assertTrue(s.get("title") and s.get("steps"), s["id"])
+            ks = [st["k"] for st in s["steps"]]
+            self.assertEqual(len(ks), len(set(ks)), f"{s['id']} 步驟 key 重複")
+        vc = next(s for s in secs if s["id"] == "sec.vc2002")
+        self.assertEqual(len(vc["steps"]), 14, "2002 Vice City 應含起點＋12 座變電站＋傳送門共 14 步")
+
+        egg_ids = {it["id"] for g in c.get("eggs", []) for it in g.get("items", [])}
+        for req_id in ("egg.vice-city-portal", "egg.satan-hell", "egg.radio-vault", "egg.radio-laperle"):
+            self.assertIn(req_id, egg_ids)
 
     def test_only_safe_urls_and_images(self):
         d = load_gta6_data()

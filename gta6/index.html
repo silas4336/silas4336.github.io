@@ -699,6 +699,94 @@ h2.sh{font-size:1.15em}h3.sh{font-size:1.02em;color:var(--accent2)}h4.sh{font-si
 .mtile svg.i{width:25px;height:25px;color:var(--accent)}
 .mtile b{font-size:.98rem;font-weight:800}
 .mtile small{font-size:.76rem;color:var(--muted);line-height:1.4}
+.mtile.vi-hl{border-color:color-mix(in srgb,var(--accent) 44%,var(--line));
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 12%,var(--surface)),color-mix(in srgb,var(--accent2) 7%,var(--surface)))}
+.mtile.vi-safe{border-color:color-mix(in srgb,var(--ok) 44%,var(--line));
+  background:linear-gradient(145deg,color-mix(in srgb,var(--ok) 11%,var(--surface)),var(--surface))}
+.mtile.vi-safe svg.i{color:var(--ok)}
+
+/* 無劇透結局路線（#/endings）與特別互動彩蛋（#/secrets） */
+.safe-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:15px;margin-bottom:12px;
+  border:1px solid color-mix(in srgb,var(--ok) 48%,var(--line));
+  background:linear-gradient(135deg,color-mix(in srgb,var(--ok) 12%,var(--surface)),color-mix(in srgb,var(--cyan) 6%,var(--surface)))}
+.safe-banner svg.i{width:20px;height:20px;color:var(--ok);flex:none;margin-top:2px}
+.safe-banner b{display:block;font-size:.9rem;color:var(--ok);margin-bottom:2px}
+.safe-banner p{margin:0;font-size:.82rem;line-height:1.58;color:var(--text);opacity:.92}
+
+.promo-bar{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:15px;margin-bottom:12px;text-decoration:none;
+  border:1px solid color-mix(in srgb,var(--accent) 46%,var(--line));
+  background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 14%,var(--surface)),color-mix(in srgb,var(--accent2) 9%,var(--surface)));
+  transition:transform .18s cubic-bezier(.22,1,.36,1),border-color .18s}
+.promo-bar:hover{transform:translateY(-1px);border-color:var(--accent)}
+.promo-bar:active{transform:scale(.98)}
+.promo-bar svg.i{width:22px;height:22px;color:var(--accent);flex:none}
+.promo-bar .pt{flex:1;min-width:0}
+.promo-bar b{display:block;font-size:.9rem;font-weight:800}
+.promo-bar small{display:block;font-size:.76rem;color:var(--muted);margin-top:2px}
+.promo-bar .go{font-size:.82rem;font-weight:800;color:var(--accent);white-space:nowrap}
+
+.pillar-grid{display:grid;gap:10px;margin-bottom:14px}
+@media(min-width:640px){.pillar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pillar{padding:13px 14px;border-radius:15px;border:1px solid var(--line);background:var(--surface);position:relative;overflow:hidden}
+.pillar::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--grad-hot)}
+.pillar[data-p="bank"]::before{background:linear-gradient(90deg,var(--gold),var(--accent2))}
+.pillar[data-p="prof"]::before{background:linear-gradient(90deg,var(--cyan),var(--vi-violet))}
+.pillar b{display:block;font-size:.92rem;font-weight:800;margin-bottom:4px}
+.pillar .ptarget{display:inline-block;padding:2px 8px;border-radius:7px;font-size:.74rem;font-weight:800;margin-bottom:6px;
+  background:color-mix(in srgb,var(--accent2) 15%,var(--surface2));color:var(--accent2);border:1px solid color-mix(in srgb,var(--accent2) 34%,transparent)}
+.pillar p{margin:0 0 4px;font-size:.8rem;line-height:1.58;color:var(--text);opacity:.9}
+.pillar .pchk{font-size:.76rem;color:var(--muted);margin-bottom:0}
+
+.end-card{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:13px 14px;margin-bottom:10px;
+  transition:border-color .18s,background .18s}
+.end-card.done{border-color:color-mix(in srgb,var(--ok) 42%,var(--line));background:color-mix(in srgb,var(--ok) 5%,var(--surface))}
+.end-h{display:flex;align-items:flex-start;gap:10px}
+.end-code{flex:none;min-width:40px;height:30px;padding:0 8px;border-radius:9px;display:grid;place-items:center;
+  font-family:var(--font-disp);font-size:1.1rem;letter-spacing:.06em;font-weight:800;background:var(--surface2);color:var(--text)}
+.end-card.et-best .end-code{background:var(--grad-hot);color:#fff;box-shadow:0 4px 14px rgba(241,67,162,.38)}
+.end-card.et-good .end-code{background:color-mix(in srgb,var(--ok) 22%,var(--surface2));color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 45%,transparent)}
+.end-card.et-bad .end-code{background:color-mix(in srgb,#ff595e 18%,var(--surface2));color:#ff7b80;border:1px solid color-mix(in srgb,#ff595e 40%,transparent)}
+.end-card.et-worst .end-code{background:#5c1220;color:#ffb4b8;border:1px solid rgba(255,89,94,.5)}
+.end-t{flex:1;min-width:0}
+.end-t b{display:block;font-size:.96rem;line-height:1.35}
+.end-card.done .end-t b{color:var(--muted)}
+.end-reqs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.end-trig{margin:9px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:.85rem;line-height:1.62;color:var(--text)}
+.end-chk{flex:none;width:36px;height:36px;border:0;background:none;display:grid;place-items:center;margin:-4px -4px 0 0}
+.end-chk span{width:23px;height:23px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;transition:all .18s}
+.end-chk svg{width:15px;height:15px;stroke-width:3;opacity:0}
+.end-card.done .end-chk span{background:var(--ok);border-color:var(--ok);color:#042419;animation:chkPop .3s cubic-bezier(.22,1,.36,1)}
+.end-card.done .end-chk svg{opacity:1}
+
+.sec-card{border:1px solid var(--line);border-radius:17px;background:var(--surface);margin-bottom:12px;overflow:clip;
+  transition:border-color .18s;scroll-margin-top:calc(var(--hh) + 60px)}
+.sec-card[open]{border-color:color-mix(in srgb,var(--accent) 44%,var(--line))}
+.sec-card>summary{list-style:none;padding:14px 15px;cursor:pointer;display:flex;align-items:flex-start;gap:10px}
+.sec-card>summary::-webkit-details-marker{display:none}
+.sec-head{flex:1;min-width:0}
+.sec-tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:5px}
+.sec-title{display:block;font-size:1rem;font-weight:850;line-height:1.34}
+.sec-sub{display:block;font-size:.8rem;color:var(--muted);line-height:1.5;margin-top:3px}
+.sec-rew{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:4px 9px;border-radius:8px;font-size:.76rem;font-weight:750;
+  color:var(--gold);background:color-mix(in srgb,var(--gold) 13%,var(--surface2));border:1px solid color-mix(in srgb,var(--gold) 32%,transparent)}
+:root[data-theme="light"] .sec-rew{color:#9a5400}
+.sec-card .chev{flex:none;color:var(--muted);margin-top:4px;transition:transform .22s cubic-bezier(.22,1,.36,1)}
+.sec-card[open] .chev{transform:rotate(90deg);color:var(--accent)}
+.sec-body{padding:0 14px 14px;border-top:1px solid var(--line)}
+.sec-codes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sec-steps{margin-top:10px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface2)}
+.sec-step{display:flex;align-items:flex-start;border-top:1px solid var(--line)}
+.sec-step:first-child{border-top:0}
+.sec-step .chk{flex:none;width:44px;align-self:stretch;border:0;background:none;display:grid;place-items:start center;padding-top:11px}
+.sec-step .chk span{width:21px;height:21px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;transition:all .18s}
+.sec-step .chk svg{width:14px;height:14px;stroke-width:3;opacity:0}
+.sec-step.done .chk span{background:var(--ok);border-color:var(--ok);color:#042419;animation:chkPop .28s cubic-bezier(.22,1,.36,1)}
+.sec-step.done .chk svg{opacity:1}
+.sec-step .sb{flex:1;min-width:0;padding:10px 12px 10px 0}
+.sec-step .st{display:block;font-size:.88rem;font-weight:750;line-height:1.42}
+.sec-step.done .st{color:var(--muted);text-decoration:line-through}
+.sec-step .sd{margin:3px 0 0;font-size:.8rem;color:var(--muted);line-height:1.58}
+.sec-step.done .sd{opacity:.58}
 
 /* 彈層／設定／燈箱 */
 .sheet-back{position:fixed;inset:0;z-index:50;background:rgba(5,5,14,.62);backdrop-filter:blur(5px);animation:fade .16s}
@@ -826,6 +914,8 @@ const ICONS = {
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/>',
   key: '<circle cx="8.5" cy="12" r="4"/><path d="M12.5 12H21M18 12v3M21 12v2.2"/>',
   memo: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  spark: '<path d="M12 3l2.1 5.9L20 11l-5.9 2.1L12 19l-2.1-5.9L4 11l5.9-2.1z"/><path d="M19 3v3M20.5 4.5h-3M5 17v2.5M6.25 18.25h-2.5"/>',
+  route: '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 15.5V9a3 3 0 0 1 3-3h6.5M6 15.5a3 3 0 0 0 3 2.5h6.5"/>',
 };
 function ico(name, cls) {
   const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -2184,11 +2274,16 @@ function wikiView(q, defaultTab) {
     out.replaceChildren();
     if (tab === "guides") {
       const codeCnt = isSpoilOn() ? allCodes.filter(c => c.ch <= maxAllowedChap()).length : allCodes.length;
+      const secCnt = (G.secrets || []).length;
       out.append(h("div", { class: "mgrid", style: "margin-bottom:4px" },
+        h("a", { class: "mtile vi-safe", href: "#/endings" }, ico("route"), h("b", { text: "結局條件（無劇透）" }),
+          h("small", { text: "8 種結局觸發・零爆雷清單" })),
+        h("a", { class: "mtile vi-hl", href: "#/secrets" }, ico("spark"), h("b", { text: "特別彩蛋玩法" }),
+          h("small", { text: `2002 VC 穿越・外星人・${secCnt} 大精選` })),
         h("a", { class: "mtile", href: "#/codes" }, ico("key"), h("b", { text: "密碼速查" }),
           h("small", { text: isSpoilOn() ? `保險箱與門鎖・已顯示 ${codeCnt} 組` : `保險箱與門鎖・共 ${allCodes.length} 組` })),
+        h("a", { class: "mtile", href: "#/eggs" }, ico("egg"), h("b", { text: "彩蛋地點" }), h("small", { text: "依地區分組・64 則可勾選" })),
         h("a", { class: "mtile", href: "#/hud" }, ico("hud"), h("b", { text: "畫面圖示全解" }), h("small", { text: "血條、星星與小地圖" })),
-        h("a", { class: "mtile", href: "#/eggs" }, ico("egg"), h("b", { text: "彩蛋地點" }), h("small", { text: "依地區分組・可勾選" })),
         h("a", { class: "mtile", href: "https://oplay.cc/gta6/map", target: "_blank", rel: "noopener noreferrer" }, ico("map"), h("b", { text: "互動地圖 ↗" }), h("small", { text: "開啟網頁互動地圖" }))));
 
       const lockedNotes = [];
@@ -2455,7 +2550,14 @@ async function eggsView(q) {
     statLine.textContent = `已發現 ${found} / ${allItems.length}` + (shown < allItems.length ? `・顯示 ${shown}` : "");
   };
   const searchInput = h("input", { type: "search", placeholder: "篩選彩蛋…", autocomplete: "off" });
-  view.append(h("div", { class: "sbox", style: "margin-bottom:10px" }, ico("search"), searchInput));
+  view.append(
+    h("a", { class: "promo-bar", href: "#/secrets" },
+      ico("spark"),
+      h("div", { class: "pt" },
+        h("b", { text: "特別互動彩蛋與隱藏玩法（10 大精選）" }),
+        h("small", { text: "含 2002 罪惡都市 12 座變電站逐站打勾表、後室、外星人、下地獄打撒旦" })),
+      h("span", { class: "go", text: "開啟 ›" })),
+    h("div", { class: "sbox", style: "margin-bottom:10px" }, ico("search"), searchInput));
 
   const chips = h("div", { class: "chips" },
     h("button", { class: "chip", type: "button", "data-cat": "all", "aria-pressed": "true",
@@ -2697,6 +2799,246 @@ function codesView(q) {
   });
 }
 
+/* ───── 結局路線條件・無劇透版（#/endings） ───── */
+function endingsView(q) {
+  setTop("結局條件（無劇透）", true); tabs("wiki");
+  const eg = G.endingGuide;
+  if (!eg) { view.append(h("div", { class: "empty", text: "尚無結局條件資料" })); return; }
+
+  view.append(
+    h("div", { class: "safe-banner" },
+      ico("shield"),
+      h("div", {},
+        h("b", { text: "全頁零劇情劇透・開局即可安心看" }),
+        h("p", {}, rich(eg.summary)))));
+
+  view.append(h("div", { class: "sect", style: "margin-top:4px", text: "決定結局的三大長期數值" }));
+  const pg = h("div", { class: "pillar-grid" });
+  (eg.pillars || []).forEach(p => {
+    pg.append(h("div", { class: "pillar rv", "data-p": p.id },
+      h("b", { text: p.title }),
+      h("span", { class: "ptarget", text: p.target }),
+      h("p", {}, rich(p.tip)),
+      h("p", { class: "pchk" }, rich(p.check))));
+  });
+  view.append(pg);
+
+  const prep = eg.prep || [];
+  const prepStat = h("span", { class: "tnum" });
+  const prepBar = h("i", {});
+  const syncPrep = () => {
+    const done = prep.filter(it => state.ticks.has(it.id)).length;
+    prepStat.textContent = `已完成 ${done} / ${prep.length}`;
+    prepBar.style.width = (prep.length ? done / prep.length * 100 : 0).toFixed(1) + "%";
+  };
+  view.append(
+    h("div", { class: "sect", style: "display:flex;justify-content:space-between;align-items:center" },
+      h("span", { text: "最佳結局準備檢核表（可勾選）" }), prepStat),
+    h("div", { class: "bar", style: "margin:0 2px 10px" }, prepBar));
+  const prepCard = h("div", { class: "card" });
+  prep.forEach(it => {
+    const on = state.ticks.has(it.id);
+    const row = h("div", { class: "chkrow" + (on ? " done" : "") });
+    const btn = h("button", { class: "chk", type: "button", "aria-pressed": String(on), "aria-label": it.title,
+      onclick: e => {
+        const adding = !state.ticks.has(it.id);
+        if (adding) state.ticks.add(it.id); else state.ticks.delete(it.id);
+        if (adding) burstAt(e.currentTarget, false);
+        saveTicks();
+        row.classList.toggle("done", adding);
+        btn.setAttribute("aria-pressed", String(adding));
+        syncPrep();
+      } }, h("span", {}, ico("check")));
+    row.append(btn, h("div", { class: "cb" },
+      h("span", { class: "badge", style: "margin:0 6px 4px 0", text: `第 ${it.ch} 章起` }),
+      h("b", { class: "ctitle", text: it.title }),
+      h("p", { class: "cnote" }, rich(it.note))));
+    prepCard.append(row);
+  });
+  syncPrep();
+  view.append(prepCard);
+
+  let branch = q.get("b") || "all";
+  if (!["all", "A", "B"].includes(branch)) branch = "all";
+  const routes = eg.routes || [];
+  const seenStat = h("span", { class: "tnum" });
+  const syncSeen = () => {
+    const done = routes.filter(r => state.col.has(r.id)).length;
+    seenStat.textContent = `已解鎖 ${done} / ${routes.length}`;
+  };
+  view.append(h("div", { class: "sect", style: "display:flex;justify-content:space-between;align-items:center" },
+    h("span", { text: "8 種結局無劇透觸發對照" }), seenStat));
+  const bChips = h("div", { class: "chips", role: "tablist", "aria-label": "路線篩選" },
+    [["all", "全部 8 種"], ["A", "路線 A・高感情（5）"], ["B", "路線 B・低感情（3）"]].map(([k, l]) =>
+      h("button", { class: "chip", type: "button", role: "tab", "data-eb": k, "aria-pressed": String(branch === k), text: l,
+        onclick: () => { branch = k; drawRoutes(); } })));
+  const rOut = h("div", {});
+  view.append(bChips, rOut);
+
+  const TIER_LABEL = { best: "最佳結局", good: "好結局", bad: "壞結局", worst: "最壞結局" };
+  const drawRoutes = () => {
+    $$("[data-eb]", bChips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.eb === branch)));
+    rOut.replaceChildren();
+    routes.filter(r => branch === "all" || r.branch === branch).forEach(r => {
+      const done = state.col.has(r.id);
+      const card = h("article", { class: `end-card et-${r.tier}` + (done ? " done" : ""), "data-eid": r.id });
+      const btn = h("button", { class: "end-chk", type: "button", "aria-pressed": String(done), "aria-label": "已看過：" + r.title,
+        onclick: e => {
+          const adding = !state.col.has(r.id);
+          if (adding) state.col.add(r.id); else state.col.delete(r.id);
+          if (adding) burstAt(e.currentTarget, r.tier === "best");
+          saveCol();
+          card.classList.toggle("done", adding);
+          btn.setAttribute("aria-pressed", String(adding));
+          syncSeen();
+        } }, h("span", {}, ico("check")));
+      card.append(
+        h("div", { class: "end-h" },
+          h("span", { class: "end-code", text: r.code }),
+          h("div", { class: "end-t" },
+            h("b", { text: r.title }),
+            h("div", { class: "end-reqs" },
+              h("span", { class: "dtag" + (r.tier === "best" || r.tier === "good" ? " gift" : ""), text: TIER_LABEL[r.tier] || "" }),
+              ...(r.reqs || []).map(x => h("span", { class: "dtag", text: x })))),
+          btn),
+        h("p", { class: "end-trig" }, rich(r.trigger)));
+      rOut.append(card);
+    });
+    syncSeen();
+  };
+  drawRoutes();
+
+  if (eg.postgame && eg.postgame.length) {
+    view.append(
+      h("div", { class: "sect", text: "破關後補救與白金提醒" }),
+      h("div", { class: "card", style: "padding:12px 15px" },
+        h("ul", { style: "margin:0;padding-left:18px;font-size:.86rem;line-height:1.68" },
+          eg.postgame.map(t => h("li", { style: "margin:5px 0" }, rich(t))))));
+  }
+
+  view.append(
+    h("a", { class: "promo-bar", href: "#/n/endings", style: "margin-top:14px" },
+      ico("lock"),
+      h("div", { class: "pt" },
+        h("b", { text: "想看各結局完整劇情解析（含劇透）" }),
+        h("small", { text: isSpoilOn() && maxAllowedChap() < 5 ? "目前防雷保護中，點開會先跳出防雷確認" : "開啟實用攻略〈結局怎麼解〉" })),
+      h("span", { class: "go", text: "前往 ›" })));
+}
+
+/* ───── 特別互動彩蛋與隱藏玩法（#/secrets） ───── */
+function secretsView(q) {
+  setTop("特別彩蛋玩法", true); tabs("wiki");
+  const secs = G.secrets || [];
+  if (!secs.length) { view.append(h("div", { class: "empty", text: "尚無特別彩蛋資料" })); return; }
+
+  const cats = [...new Set(secs.map(s => s.cat))];
+  let curCat = q.get("cat") || "all";
+  if (curCat !== "all" && !cats.includes(curCat)) curCat = "all";
+  const hl = q.get("hl") || "";
+
+  view.append(
+    h("div", { class: "safe-banner" },
+      ico("spark"),
+      h("div", {},
+        h("b", { text: "可遊玩・可穿越・可打勾追蹤的 10 大特別彩蛋" }),
+        h("p", { text: "整理 GTA 6 最特別的互動隱藏玩法（含 2002 罪惡都市 12 站逐站打勾清單、後室迷宮、外星人三部曲、地獄撒旦與 4 款內建電玩），進度自動存入手機與備份碼。" }))));
+
+  const chips = h("div", { class: "chips", role: "tablist", "aria-label": "彩蛋玩法分類" },
+    h("button", { class: "chip", type: "button", role: "tab", "data-sc": "all", "aria-pressed": String(curCat === "all"),
+      onclick: () => { curCat = "all"; draw(); } }, "全部", h("small", { text: String(secs.length) })),
+    ...cats.map(c => h("button", { class: "chip", type: "button", role: "tab", "data-sc": c, "aria-pressed": String(curCat === c),
+      onclick: () => { curCat = c; draw(); } }, c, h("small", { text: String(secs.filter(s => s.cat === c).length) }))));
+  const out = h("div", {});
+  view.append(chips, out);
+
+  const draw = () => {
+    $$("[data-sc]", chips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sc === curCat)));
+    out.replaceChildren();
+    const list = secs.filter(s => curCat === "all" || s.cat === curCat);
+    list.forEach((s, idx) => {
+      const steps = s.steps || [];
+      const progBadge = h("span", { class: "dtag tnum" });
+      const syncCard = () => {
+        const done = steps.filter(st => state.ticks.has(`${s.id}.${st.k}`)).length;
+        progBadge.textContent = done === steps.length && steps.length ? `✓ ${done}/${steps.length}` : `${done}/${steps.length}`;
+        progBadge.classList.toggle("gift", done === steps.length && steps.length > 0);
+      };
+      syncCard();
+
+      const openInit = hl ? (s.id === hl) : (curCat !== "all" || idx === 0);
+      const det = h("details", { class: "sec-card", "data-sid": s.id, open: openInit ? "" : null },
+        h("summary", {},
+          h("div", { class: "sec-head" },
+            h("div", { class: "sec-tags" },
+              h("span", { class: "badge b-main", text: s.cat }),
+              h("span", { class: "dtag", text: `第 ${s.ch} 章起` }),
+              progBadge),
+            h("b", { class: "sec-title", text: s.title }),
+            h("span", { class: "sec-sub", text: s.sub }),
+            s.reward ? h("span", { class: "sec-rew", text: "🎁 " + s.reward }) : null),
+          ico("next", "chev")));
+
+      const body = h("div", { class: "sec-body" });
+      if (s.warn) {
+        body.append(h("div", { class: "ponr-box", style: "margin-top:10px" },
+          h("b", { text: "⚠ 觸發規則與注意事項" }),
+          h("p", {}, rich(s.warn))));
+      }
+      if (s.codes && s.codes.length) {
+        const cwrap = h("div", { class: "sec-codes" });
+        s.codes.forEach(code => {
+          cwrap.append(h("button", { class: "code-pin", type: "button", title: "點一下複製密碼", text: code,
+            onclick: async e => {
+              burstAt(e.currentTarget, false);
+              try { await navigator.clipboard.writeText(code); toast(`已複製密碼 ${code}`); }
+              catch (err) { toast(`密碼：${code}`); }
+            } }));
+        });
+        body.append(cwrap);
+      }
+      const listEl = h("div", { class: "sec-steps" });
+      steps.forEach(st => {
+        const tk = `${s.id}.${st.k}`;
+        const on = state.ticks.has(tk);
+        const row = h("div", { class: "sec-step" + (on ? " done" : "") });
+        const btn = h("button", { class: "chk", type: "button", "aria-pressed": String(on), "aria-label": st.t,
+          onclick: e => {
+            const adding = !state.ticks.has(tk);
+            if (adding) state.ticks.add(tk); else state.ticks.delete(tk);
+            const allDone = adding && steps.every(x => state.ticks.has(`${s.id}.${x.k}`));
+            if (adding) burstAt(e.currentTarget, allDone);
+            saveTicks();
+            row.classList.toggle("done", adding);
+            btn.setAttribute("aria-pressed", String(adding));
+            syncCard();
+            if (allDone) toast(`🎉 完成彩蛋「${s.title}」！`, null, null, { pass: true });
+          } }, h("span", {}, ico("check")));
+        row.append(btn, h("div", { class: "sb" },
+          h("b", { class: "st", text: st.t }),
+          st.d ? h("p", { class: "sd" }, rich(st.d)) : null));
+        listEl.append(row);
+      });
+      body.append(listEl);
+      det.append(body);
+      out.append(det);
+    });
+  };
+  draw();
+
+  view.append(
+    h("a", { class: "promo-bar", href: "#/eggs", style: "margin-top:8px" },
+      ico("egg"),
+      h("div", { class: "pt" },
+        h("b", { text: "查看全地圖 64 則世界彩蛋地點" }),
+        h("small", { text: "依地區分組、附地圖外連與個別發現勾選" })),
+      h("span", { class: "go", text: "前往 ›" })));
+
+  if (hl) requestAnimationFrame(() => {
+    const el = $(`[data-sid="${CSS.escape(hl)}"]`, out);
+    if (el) { el.open = true; el.scrollIntoView({ block: "start" }); el.classList.add("flash"); }
+  });
+}
+
 /* ───── 實用攻略文章頁（#/n/<slug>） ───── */
 function noteView(n, q) {
   setTop(n.title, true); tabs("wiki");
@@ -2712,8 +3054,20 @@ function noteView(n, q) {
     }));
     return;
   }
+  const cta = n.slug === "endings-guide"
+    ? h("a", { class: "promo-bar", href: "#/endings" }, ico("route"),
+        h("div", { class: "pt" }, h("b", { text: "開啟互動版「結局條件（無劇透）」" }),
+          h("small", { text: "可勾選 7 項準備檢核表、篩選 8 種結局觸發條件" })),
+        h("span", { class: "go", text: "開啟 ›" }))
+    : n.slug === "special-eggs"
+    ? h("a", { class: "promo-bar", href: "#/secrets" }, ico("spark"),
+        h("div", { class: "pt" }, h("b", { text: "開啟互動版「特別彩蛋玩法」" }),
+          h("small", { text: "含 2002 罪惡都市 12 座變電站逐站打勾表與密碼一鍵複製" })),
+        h("span", { class: "go", text: "開啟 ›" }))
+    : null;
   const art = h("article", { class: "art" },
     h("h1", { style: "margin-top:0", text: n.title }),
+    cta,
     (n.spoilerNote && isSpoilOn()) ? h("div", { class: "ponr-box", style: "margin-bottom:12px" },
       h("b", { text: "⚠ 閱讀防雷提醒" }), h("p", { text: n.spoilerNote })) : null,
     renderBlocks(n.blocks, {}));
@@ -2755,8 +3109,14 @@ function checklistsView(q, defaultTab) {
       onclick: () => { tab = "trophy"; syncUrl(); renderTab(); } }, "獎盃任務"),
     h("button", { class: "chip", type: "button", role: "tab", "data-ct": "progress", "aria-pressed": String(tab === "progress"),
       onclick: () => { tab = "progress"; syncUrl(); renderTab(); } }, "100%"));
+  const endBar = h("a", { class: "promo-bar", href: "#/endings", style: "margin:2px 0 8px;padding:10px 13px" },
+    ico("route"),
+    h("div", { class: "pt" },
+      h("b", { text: "無劇透結局條件與準備檢核" }),
+      h("small", { text: "3 項長期數值、7 條行前準備與 8 種結局觸發對照" })),
+    h("span", { class: "go", text: "查看 ›" }));
   const out = h("div", {});
-  view.append(topChips, out);
+  view.append(topChips, endBar, out);
 
   function buildChapFilterStrip(onPick) {
     const strip = h("div", { class: "chips", style: "padding-top:0;padding-bottom:6px", role: "tablist", "aria-label": "選擇章節" });
@@ -3064,6 +3424,15 @@ function buildIndex() {
       push({ k: "code", g: "o", ch: it.ch, it },
         [it.code, it.name, it.where, it.note, it.cat].filter(Boolean).map(plain).join(" "), 4);
     });
+    (G.secrets || []).forEach(s => {
+      push({ k: "sec", g: "o", ch: 0, s },
+        [s.title, s.sub, s.cat, s.reward, s.warn, ...(s.codes || []), ...(s.steps || []).map(x => x.t + " " + (x.d || ""))].filter(Boolean).map(plain).join(" "), 5);
+    });
+    if (G.endingGuide) {
+      const eg = G.endingGuide;
+      push({ k: "end", g: "n", ch: 0 },
+        ["結局條件 無劇透 8種結局", eg.summary, ...(eg.pillars || []).map(p => p.title + " " + p.target + " " + p.tip), ...(eg.routes || []).map(r => r.title + " " + r.trigger)].map(plain).join(" "), 5);
+    }
     missions.forEach(m => {
       const ch = m.chap.no;
       push({ k: "m", g: "m", ch, m, b: null }, [m.code, m.name, m.aka, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), 4);
@@ -3125,6 +3494,14 @@ function hitLink(e, terms) {
     href = "#/codes?ch=" + e.it.ch + "&hl=" + enc(e.it.id);
     title = `${e.it.code} · ${e.it.name}`;
     small = `密碼速查 · 第 ${e.it.ch} 章` + (e.it.where ? " · " + e.it.where : "");
+  } else if (e.k === "sec") {
+    href = "#/secrets?hl=" + enc(e.s.id);
+    title = e.s.title;
+    small = `特別彩蛋玩法 · ${e.s.cat} · 第 ${e.s.ch} 章起`;
+  } else if (e.k === "end") {
+    href = "#/endings";
+    title = "結局條件與準備檢核（無劇透版）";
+    small = "8 種結局觸發・零劇情劇透";
   } else if (e.k === "m") {
     href = "#/m/" + enc(e.m.id) + (e.md ? "?md=" + e.md + (e.b != null ? "&p=" + e.b : "") : "");
     title = `${e.m.code} ${e.m.name}`; small = e.m.chap.title + (e.m.en ? " · " + e.m.en : "") + (e.sub ? " · " + e.sub : "");
@@ -3392,6 +3769,8 @@ function route(keepScroll) {
   else if (root === "progress") { view.dataset.v = "checklists"; checklistsView(q, "progress"); }
   else if (root === "index") { view.dataset.v = "checklists"; checklistsView(q, "miss"); }
   else if (root === "codes") { view.dataset.v = "codes"; codesView(q); }
+  else if (root === "endings") { view.dataset.v = "endings"; endingsView(q); }
+  else if (root === "secrets") { view.dataset.v = "secrets"; secretsView(q); }
   else if (root === "wiki") { view.dataset.v = "wiki"; wikiView(q, "guides"); }
   else if (root === "codex") { view.dataset.v = "wiki"; wikiView(q, "codex"); }
   else if (root === "notes") { view.dataset.v = "wiki"; wikiView(q, "guides"); }
