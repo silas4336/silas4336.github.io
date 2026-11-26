@@ -31,6 +31,7 @@ from datetime import date
 from html.parser import HTMLParser
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import clean_tw  # noqa: E402
 import oplay_parse  # noqa: E402
 
 YOUMIN_URL = "https://www.gamersky.com/tools/guide-map/roadbooks/55"
@@ -472,15 +473,15 @@ def merge(youmin_missions, oplay_chapters):
 
 
 def collect_index(chapters):
-    """從遊民段落抓「獎盃【…】」「可選任務【…】」，再加上 oplay 各章的「獎盃」區塊。p 是段落在任務 blocks 裡的位置。"""
+    """從圖文段落抓「獎盃〈…〉」「可選任務〈…〉」，再加上各章的「獎盃」區塊。p 是段落在任務 blocks 裡的位置。"""
     trophies, optionals = [], []
     for ch in chapters:
         for m in ch["missions"]:
             for i, b in enumerate(m.get("blocks", [])):
                 if isinstance(b, str):
-                    for name in re.findall(r"獎盃\s*【(.+?)】", b):
+                    for name in re.findall(r"獎盃\s*[【〈](.+?)[】〉]", b):
                         trophies.append({"name": name, "m": m["id"], "p": i})
-                    for name in re.findall(r"可選任務\s*【(.+?)】", b):
+                    for name in re.findall(r"可選任務\s*[【〈](.+?)[】〉]", b):
                         optionals.append({"name": name, "m": m["id"], "p": i})
         for sec in ch.get("info", []):
             if sec["title"] == "獎盃":
@@ -528,17 +529,21 @@ def main(argv):
     cache = argv[2] if len(argv) > 2 else ".oplay-cache"
     out = argv[3] if len(argv) > 3 else "gta6/data.js"
     data = build(load(youmin), read_oplay(cache), make_converter())
+    data = clean_tw.process_guide(data)
+    data["trophies"], data["optionals"] = collect_index(data["chapters"])
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write("// 由 scripts/build_gta6.py 產生，不要手改。\n")
         f.write("window.GUIDE = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n")
     ms = [m for c in data["chapters"] for m in c["missions"]]
     imgs = sum(1 for m in ms for b in m.get("blocks", []) if isinstance(b, dict))
+    n_chk = sum(len(g["items"]) for g in data.get("checklists", []))
     print(f"{len(data['chapters'])} 章、{len(ms)} 個任務（{sum(1 for m in ms if m.get('steps'))} 個有逐步文字、"
-          f"{sum(1 for m in ms if m.get('blocks'))} 個有遊民圖文）、{imgs} 張圖、{len(data['notes'])} 篇筆記、"
-          f"{len(data['trophies'])} 個獎盃、{len(data['aliases'])} 個舊 ID 對照 → {out}（{os.path.getsize(out) // 1024} KB）")
+          f"{sum(1 for m in ms if m.get('blocks'))} 個有圖文截圖）、{imgs} 張圖、{n_chk} 項該做清單、"
+          f"{len(data['notes'])} 篇實用攻略、{len(data['trophies'])} 個獎盃 → {out}（{os.path.getsize(out) // 1024} KB）")
 
     codex = read_oplay_codex(cache)
     if codex:
+        codex = clean_tw.process_codex(codex)
         codex_out = os.path.join(os.path.dirname(out) or ".", "codex.js")
         with open(codex_out, "w", encoding="utf-8", newline="\n") as f:
             f.write("// 由 scripts/build_gta6.py 產生，不要手改。\n")
@@ -549,9 +554,6 @@ def main(argv):
         n_upd = sum(len(d["items"]) for d in codex["updates"])
         print(f"圖鑑 {len(codex['cards'])} 分類 {n_cards} 則、彩蛋 {n_eggs} 個、圖示 {n_hud} 個、更新 {n_upd} 則 → {codex_out}（{os.path.getsize(codex_out) // 1024} KB）")
 
-    for n in data["notices"]:
-        print(f"遊民作者預告：{n['title']}　{n['text']}")
-    print(f"遊民原文更新時間：{data['sourceUpdated']}")
     return 0
 
 

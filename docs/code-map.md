@@ -47,8 +47,9 @@ GitHub Pages ◀── main 分支（整個 repo 原樣發佈，.nojekyll）
 | `check_i18n.py` | 逐對比較中英頁：內文數字（`eight` 也能對上 `8`，年份與日期不比）、圖片檔（忽略 `-zh`／`-en`）、作品頁連結、英文頁不連回中文頁（`../`、`/en/` 以外的站內絕對路徑或完整網址，`hreflang` 除外）。`main(root)` 回傳結束碼，有不一致回 1 |
 | `fetch_oplay.py` | 把 oplay.cc 的 62 頁（5 章、筆記索引＋28 篇筆記、圖鑑索引＋23 分類、彩蛋、圖示全解、更新紀錄、進度清單）抓進 `.oplay-cache/`（已列入 `.gitignore`）。**會連網、會寫檔** |
 | `oplay_parse.py` | oplay 頁面解析（任務、本章重點、筆記、圖鑑 `data-d`／`dxc-card`／`dxa-row`、彩蛋、HUD 圖示、更新紀錄、進度總表、內文轉純文字），沒有副作用，由 `build_gta6.py` 使用 |
-| `build_gta6.py` | 產生 `gta6/data.js` 與 `gta6/codex.js`，見下一節。**會寫檔**，除了它和 `fetch_oplay.py`，其餘腳本都是唯讀 |
-| `test_site.py` | `check_i18n.py` 各規則的單元測試（暫存資料夾假頁面）；`gta6/data.js` 與 `gta6/codex.js` 結構與內容完整性（每個任務有步驟與連結、行內標記成對、`see`/`covers` 指向有效任務、筆記、圖鑑不收原站圖片）、離線檔案清單、不在 sitemap；`oplay_parse.py` 與 `build_gta6.py` 的解析與合併（含一對多與無標籤有圖節點）；12 頁本機連結與圖片都存在；sitemap 與主站頁面一致；robots.txt；隱藏區（含 `gta6/`）每頁有 noindex；`.gitignore` 擋住快取與 `.env`，且版控裡沒有這些檔 |
+| `build_gta6.py` | 產生 `gta6/data.js` 與 `gta6/codex.js`，並呼叫 `clean_tw.py` 注入必做清單與台灣用語清理，見下一節。**會寫檔**，除了它和 `fetch_oplay.py`，其餘腳本都是唯讀 |
+| `clean_tw.py` | 查證後重點修訂、44 項各章必做清單（`CHAPTER_CHECKLISTS`）與關鍵任務提醒（`MISSION_TODOS`）、移除第三方站名與系統編目雜訊、統一為台灣繁體用語，由 `build_gta6.py` 呼叫 |
+| `test_site.py` | `check_i18n.py` 各規則的單元測試（暫存資料夾假頁面）；`gta6/data.js` 與 `gta6/codex.js` 結構與內容完整性（每個任務有步驟與連結、行內標記成對、`see`/`covers`/`todo` 與 `checklists` 指向有效項目、不含第三方站名或常見陸詞、筆記、圖鑑不收原站圖片）、離線檔案清單、不在 sitemap；`oplay_parse.py`、`build_gta6.py`、`clean_tw.py` 的解析、合併與清洗規則；12 頁本機連結與圖片都存在；sitemap 與主站頁面一致；robots.txt；隱藏區（含 `gta6/`）每頁有 noindex；`.gitignore` 擋住快取與 `.env`，且版控裡沒有這些檔 |
 
 資料流：
 
@@ -62,36 +63,36 @@ en/index.html、en/work-*.html ─┴▶ check_i18n.parse()：數字、圖片、
 ## gta6/（攻略 PWA）
 
 ```
-oplay.cc（繁體：5 章 130 個任務、章節重點、28 篇筆記、23 圖鑑分類、彩蛋、HUD、更新、進度表）
+oplay.cc（5 章 130 個任務、章節速查、28 篇實用攻略、23 圖鑑分類、彩蛋、HUD、更新、進度表）
   ─▶ scripts/fetch_oplay.py ─▶ .oplay-cache/（本機快取，不進版控）─┐
-                                                                    ├▶ scripts/build_gta6.py ─▶ gta6/data.js ＋ gta6/codex.js ─▶ gta6/index.html
-遊民星空原站路書（gamersky.com，簡體：截圖圖文，已至第 2 章 D9）─▶ OpenCC s2twp 簡轉繁 ────┘
+                                                                    ├▶ scripts/build_gta6.py ─▶ scripts/clean_tw.py ─▶ gta6/data.js ＋ gta6/codex.js ─▶ gta6/index.html
+遊民星空原站路書（gamersky.com，截圖圖文，已至第 2 章 D9）─▶ OpenCC s2twp 簡轉繁 ────┘
 ```
 
 | 檔案 | 作用 |
 |---|---|
-| `index.html` | 整個 App（CSS、JS 都內嵌），採遊民路書風格（深色垂直時間軸抽屜／桌機側欄、旗標章節 A～E、頂端 sticky 目前節點列與 scroll-spy、節點卡 `content-visibility:auto`）。底部 5 頁：路書／圖鑑／筆記／搜尋／更多。hash 路由：`#/` 總覽與目錄、`#/book/<章>` 章節路書、`#/m/<任務ID>?md=s\|p&p=<序號>` 開啟該章路書並捲至節點、`#/ch/<章>?r=<區塊>-<列>` 本章重點、`#/codex` 與 `#/codex/<分類>?hl=<ID>` 圖鑑、`#/eggs?hl=<ID>` 彩蛋、`#/hud?hl=<ID>` 圖示全解、`#/updates` 更新紀錄、`#/progress` 進度儀表板（含 100%／白金檢核表）、`#/notes` 與 `#/n/<代號>` 筆記、`#/index` 索引、`#/search?q=` 全站搜尋、`#/more` 更多、`#/settings` 設定。資料文字一律用 DOM 方法放進頁面，不用 `innerHTML`；`**粗體**`、`⟦按鍵⟧` 兩種標記由 `rich()` 轉成 `<strong>`、`<kbd>` |
-| `data.js` | `window.GUIDE`，**由腳本產生，不要手改**（約 714KB，gzip 後 277KB）。`chapters` → `missions`（`steps`／`keys`／`stuck` 來自 oplay，`blocks`／`ytags` 來自遊民，`see`／`seeLabel`／`covers` 用於一對多對應）、每章 `info`（本章重點）；另有 `notes`、`noteCats`、`progress`（100%／白金總表）、`aliases`、`trophies`、`optionals`、`notices` |
-| `codex.js` | `window.CODEX`，**由腳本產生，不要手改**（約 262KB，gzip 後 80KB），首次渲染後於閒置時或進入圖鑑／搜尋／進度頁時動態載入，避免拖慢首屏。含 `groups`、`cards`（23 分類 1,250 則，含載具／武器數值與作弊碼，不複製原站圖鑑圖片）、`eggs`（62 個彩蛋）、`hud`（27 個圖示說明）、`updates`（更新紀錄） |
-| `sw.js` | 離線（`gta6-guide-v6`）：預快取 `index.html`、`data.js`、`codex.js` 與圖示，有網路先抓新版（3 秒逾時退回快取）；遊民 CDN 圖片看過即暫存（上限 350 張，no-cors opaque 回應） |
+| `index.html` | 整個 App（CSS、JS 都內嵌），採路書時間軸風格（深色垂直時間軸抽屜／桌機側欄、旗標章節 A～E、頂端 sticky 目前節點列與 scroll-spy、節點卡 `content-visibility:auto`、關鍵節點內嵌可勾選「這關前後提醒」與本章必做清單即時同步）。底部 4 頁：章節（`#/`）／清單（`#/checklists`）／百科（`#/wiki`）／搜尋（`#/search`），頂欄左側在根分頁為設定鈕（`#/settings`）、內頁為返回鈕。完整 hash 路由：`#/` 章節總覽、`#/book/<章>` 章節路書、`#/m/<任務ID>?md=s\|p&p=<序號>` 開啟該章路書並捲至節點、`#/ch/<章>?r=<區塊>-<列>` 本章速查、`#/checklists?t=chap\|miss\|trophy\|progress` 清單中心（相容 `#/progress`、`#/index`）、`#/wiki?t=guides\|codex` 百科中心（相容 `#/notes`、`#/codex`、`#/more`）、`#/codex/<分類>?hl=<ID>` 圖鑑分類、`#/eggs?hl=<ID>` 彩蛋、`#/hud?hl=<ID>` 畫面圖示全解、`#/updates` 更新紀錄、`#/n/<代號>` 實用攻略、`#/search?q=` 全站搜尋、`#/settings` 設定。資料文字一律用 DOM 方法放進頁面，不用 `innerHTML`；`**粗體**`、`⟦按鍵⟧` 兩種標記由 `rich()` 轉成 `<strong>`、`<kbd>` |
+| `data.js` | `window.GUIDE`，**由腳本產生，不要手改**（約 663KB）。`chapters` → `missions`（`steps`／`keys`／`stuck`／`todo`、`blocks`／`ytags`、`see`／`seeLabel`／`covers` 用於一對多對應）、每章 `info`（本章速查）；另有 `checklists`（6 組共 44 項可勾必做清單）、`notes`、`noteCats`、`progress`（100%／白金總表）、`aliases`、`trophies`、`optionals` |
+| `codex.js` | `window.CODEX`，**由腳本產生，不要手改**（約 258KB），首次渲染後於閒置時或進入百科圖鑑／搜尋／100% 進度時動態載入，避免拖慢首屏。含 `groups`、`cards`（23 分類 1,250 則，含載具／武器數值與 61 組秘技，不複製原站圖鑑圖片）、`eggs`（62 個彩蛋）、`hud`（27 個畫面圖示說明）、`updates`（更新紀錄） |
+| `sw.js` | 離線（`gta6-guide-v7`）：預快取 `index.html`、`data.js`、`codex.js` 與圖示，有網路先抓新版（3 秒逾時退回快取）；截圖看過即暫存（上限 350 張，no-cors opaque 回應） |
 | `manifest.webmanifest`、`icons/` | 安裝到主畫面用 |
 
-`scripts/` 裡跟它有關的三支：`fetch_oplay.py`（客氣地爬 oplay：62 頁，間隔 1 秒，遵守 robots.txt，已抓過的不重抓）、`oplay_parse.py`（純文字＋小標記解析）、`build_gta6.py`（讀快取與遊民頁面，合併產出 `data.js` 與 `codex.js`）。
+`scripts/` 裡跟它有關的四支：`fetch_oplay.py`（客氣地爬 oplay：62 頁，間隔 1 秒，遵守 robots.txt，已抓過的不重抓）、`oplay_parse.py`（純文字＋小標記解析）、`build_gta6.py`（讀快取與遊民頁面，合併並呼叫 `clean_tw.py` 產出 `data.js` 與 `codex.js`）、`clean_tw.py`（台灣用語正規化、清除第三方站名與編目廢話、注入查證修訂與各章／任務該做清單）。
 
-**資料怎麼合併**：以 oplay 的順序（官方順序、台灣官方譯名、5 章 130 個任務）為骨架；`YOUMIN_TO_SLUG` 把遊民任務對到 oplay 代號，對上的就把遊民截圖掛到同一個任務（遊民叫法留在 `aka`），且不覆蓋原本的主線類型；若遊民一個節點涵蓋多個 oplay 任務（如「買槍、理髮、買衣服」），`YOUMIN_TO_SLUG` 填多個 slug 的 tuple，圖文掛在第一個並記 `covers`，其餘任務記 `see`／`seeLabel` 顯示跳轉橫幅。遊民獨有的支線、搶劫、陌生人插在它前一個已對上的任務後面；遊民漏標標籤但有截圖的節點（如 D7、D9）仍保留為任務，僅無標籤且無截圖的節點（如 D10）歸為 `notices`。
+**資料怎麼合併**：以 oplay 的順序（官方順序、台灣官方譯名、5 章 130 個任務）為骨架；`YOUMIN_TO_SLUG` 把遊民任務對到 oplay 代號，對上的就把遊民截圖掛到同一個任務，且不覆蓋原本的主線類型；若遊民一個節點涵蓋多個 oplay 任務（如「買槍、理髮、買衣服」），`YOUMIN_TO_SLUG` 填多個 slug 的 tuple，圖文掛在第一個並記 `covers`，其餘任務記 `see`／`seeLabel` 顯示跳轉橫幅。遊民獨有的支線、搶劫、陌生人插在它前一個已對上的任務後面；遊民漏標標籤但有截圖的節點（如 D7、D9）仍保留為任務。最後由 `clean_tw.py` 套用查證修訂、移除外站雜訊與作者預告、統一台灣用語並注入 `checklists` 與任務 `todo`。
 
-- 瀏覽器儲存（`localStorage`，鍵都以 `gta6.` 開頭）：`done` 已完成任務 ID、`fav` 收藏、`ticks` 本章重點與會錯過勾選、`steps`（任務 ID → 已標記步驟的內容雜湊）、`col` 圖鑑與彩蛋已收集 ID、`pcounts` 100% 檢核表的計數與旗標、`pos` 上次閱讀位置、`fs` 字級、`theme`、`imgs` 是否載入圖片、`stepsOn`／`swipe`／`awake` 三個開關、`open` 目錄展開的章節。設定頁的「備份進度」輸出 `GTA6:` 開頭的 v2 備份碼（包含 `col` 與 `pcounts`），還原時向下相容舊版 v1。
+- 瀏覽器儲存（`localStorage`，鍵都以 `gta6.` 開頭）：`done` 已完成任務 ID、`fav` 收藏、`ticks` 各章必做清單（`chk.*`）與會錯過項目勾選、`steps`（任務 ID → 已標記步驟的內容雜湊）、`col` 圖鑑與彩蛋已收集 ID、`pcounts` 100% 檢核表的計數與旗標、`pos` 上次閱讀位置、`fs` 字級、`theme`、`imgs` 是否載入圖片、`stepsOn`／`swipe`／`awake` 三個開關、`open` 目錄展開的章節。設定頁的「備份進度」輸出 `GTA6:` 開頭的 v2 備份碼（包含 `ticks`、`col` 與 `pcounts`），還原時向下相容舊版 v1。
 - 任務 ID：oplay 的任務用 `p-<oplay 代號>`（`p-gone-fishing`），只有遊民有的用遊民的節點編號（`y-1468083467`）。來源改標題、補內容時 ID 都不變，已勾選進度不會跑掉。**加／改 `YOUMIN_TO_SLUG` 對照會讓遊民任務從 `y-` 變成 `p-`，舊 ID 要有對照：** `LEGACY_Y_IDS`、`LEGACY_P_IDS`，輸出的 `aliases` 讓頁面啟動時把舊進度轉成新 ID。
-- 步驟標記與閱讀位置存的是「段落內容的雜湊」（`data-k`），不是段落序號，原作者改文章、插圖時不會錯位；找不到時退回序號。
+- 步驟標記與閱讀位置存的是「段落內容的雜湊」（`data-k`），不是段落序號，來源改文章、插圖時不會錯位；找不到時退回序號。
 - 圖片直接引用 `img1.gamersky.com`，不複製進 repo。`_S.jpg` 是 600 寬縮圖（約 25KB），去掉 `_S` 是原圖（約 100KB，點圖放大時才載）。每張圖帶寬高，頁面先用 `aspect-ratio` 留好位置。
 - **圖床有防盜連結：請求帶 Referer（連自己網站的都算）會 403，不帶才正常。** 所以 `<head>` 有 `<meta name="referrer" content="no-referrer">`，每個 `<img>`、`fetch` 也都明確設 no-referrer。新加任何載圖的地方都不能漏。
-- 圖片離線的限制：原站圖片沒有 CORS，只能存成 opaque 回應，瀏覽器配額每張估計約 7MB，不保證存得滿全部圖片。`sw.js` 存不進去時會丟掉最舊的 15 張再試；下載完頁面會比對實際存了幾張並告知。文字（路書步驟、章節重點、筆記、圖鑑、彩蛋、HUD、更新紀錄）全在 `data.js` 與 `codex.js`，一定能離線看。
-- 互動地圖不複製，僅於「更多」與各項目外連至 `https://oplay.cc/gta6/map`。
+- 圖片離線的限制：截圖沒有 CORS，只能存成 opaque 回應，瀏覽器配額每張估計約 7MB，不保證存得滿全部圖片。`sw.js` 存不進去時會丟掉最舊的 15 張再試；下載完頁面會比對實際存了幾張並告知。文字（路書步驟、必做清單、章節速查、實用攻略、圖鑑、彩蛋、HUD、更新紀錄）全在 `data.js` 與 `codex.js`，一定能離線看。
+- 互動地圖不複製，僅於「百科」與各項目外連至網頁互動地圖。
 
-**原作者／oplay 更新內容時**：
+**來源更新內容時**：
 
 1. `py -3 scripts/fetch_oplay.py --refresh` 重抓 oplay（約 1 分鐘）。
-2. 第一次要裝簡轉繁套件：`py -3 -m pip install opencc-python-reimplemented`（只有重新產生資料時才要）。然後 `py -3 scripts/build_gta6.py`（遊民頁面線上抓；oplay 讀快取）。遊民新寫的任務若 oplay 已有，把（繁體）中文名對應加進 `YOUMIN_TO_SLUG`（一對多用 tuple）；沒對上的主線任務腳本會印警告。
+2. 第一次要裝簡轉繁套件：`py -3 -m pip install opencc-python-reimplemented`（只有重新產生資料時才要）。然後 `py -3 scripts/build_gta6.py`（遊民頁面線上抓；oplay 讀快取；自動經過 `clean_tw.py` 清理與注入清單）。新寫的任務若已有對應，把（繁體）中文名加進 `YOUMIN_TO_SLUG`（一對多用 tuple）；沒對上的主線任務腳本會印警告。
 3. 把 `gta6/sw.js` 的 `CACHE` 版本號加 1，已安裝的 PWA 才會收到新內容。
 4. 跑測試（`unittest` + `check_i18n.py`），push。
 

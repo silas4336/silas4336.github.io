@@ -24,6 +24,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 import build_gta6  # noqa: E402
+import clean_tw  # noqa: E402
 import oplay_parse  # noqa: E402
 import check_i18n  # noqa: E402
 
@@ -365,6 +366,60 @@ class Gta6DataTest(unittest.TestCase):
         with open(os.path.join(ROOT, "sitemap.xml"), encoding="utf-8") as f:
             self.assertNotIn("gta6", f.read())
 
+    def test_checklists_and_clean_tw_integrity(self):
+        """必做清單與任務提醒參照完整，且產出的 data.js / codex.js 不含第三方站名與常見陸詞。"""
+        d = load_gta6_data()
+        c = load_gta6_codex()
+        mission_ids = {m["id"] for ch in d["chapters"] for m in ch["missions"]}
+
+        groups = d.get("checklists", [])
+        self.assertEqual([g["ch"] for g in groups], [1, 2, 3, 4, 5, 0])
+        chk_ids = []
+        for g in groups:
+            self.assertTrue(g.get("title") and g.get("items"))
+            for it in g["items"]:
+                self.assertTrue(it["id"].startswith("chk."), it["id"])
+                self.assertIn(it["cat"], {"miss", "prep", "do", "end"}, it["id"])
+                self.assertTrue(it.get("title"), it["id"])
+                if "m" in it:
+                    self.assertIn(it["m"], mission_ids, "清單項目指向不存在任務：" + it["id"])
+                chk_ids.append(it["id"])
+        self.assertEqual(len(chk_ids), len(set(chk_ids)), "清單 ID 重複")
+        self.assertGreaterEqual(len(chk_ids), 40)
+        chk_set = set(chk_ids)
+        for ch in d["chapters"]:
+            for m in ch["missions"]:
+                for tid in m.get("todo", []):
+                    self.assertIn(tid, chk_set, f"{m['id']} 的 todo 指向不存在清單：{tid}")
+
+        skip_keys = {"url", "map", "imgBase", "i", "id", "slug", "tick", "m", "see", "covers", "todo", "aliases", "items"}
+        site_re = re.compile(
+            r"PowerPyx|Output\s*Lag|GamesRadar|GTABase|MetaForge|4Gamers|Game8|Gameriv|thegameswiki|"
+            r"oplay\.cc|遊民星空|本站未實測|還沒核到|一家說|兩說",
+            re.I,
+        )
+        cn_re = re.compile(r"圖標|手柄|鎖屏|視頻|便利店|公交|作弊碼|僵立停|飛車兄弟|(?<!水上)摩托車|通關(?!密語)")
+
+        def walk(obj, path=""):
+            if isinstance(obj, str):
+                if site_re.search(obj):
+                    leaks.append(("site", path, obj[:60]))
+                if cn_re.search(obj):
+                    leaks.append(("cn", path, obj[:60]))
+            elif isinstance(obj, list):
+                for idx, val in enumerate(obj):
+                    walk(val, f"{path}[{idx}]")
+            elif isinstance(obj, dict):
+                for k, v in obj.items():
+                    if k in skip_keys:
+                        continue
+                    walk(v, f"{path}.{k}")
+
+        leaks = []
+        walk(d, "data")
+        walk(c, "codex")
+        self.assertEqual(leaks, [], f"發現外站名或陸詞殘留：{leaks[:5]}")
+
 
 def node(nid, label, title, tag, body):
     tags = (f'<div class="reader-node-card__tags"><div class="reader-node-card__tag"><span class="reader-node-card__tag-text">'
@@ -656,6 +711,28 @@ class BuildGta6Test(unittest.TestCase):
                      "info": [{"title": "獎盃", "rows": [{"n": "丙", "a": "做某事"}]}, {"title": "地點", "rows": [{"n": "丁"}]}]}]
         self.assertEqual(build_gta6.collect_index(chapters),
                          ([{"name": "甲", "m": "a", "p": 0}, {"name": "丙", "ch": 1, "a": "做某事"}], [{"name": "乙", "m": "a", "p": 2}]))
+
+
+class CleanTwTest(unittest.TestCase):
+    def test_strips_third_party_sites_and_normalizes_tw_terms(self):
+        raw = "PowerPyx 寫這段要騎摩托車配水上摩托車（本站未實測），按手柄圖標輸入通關密語後即可通關並領僵立停與作弊碼〈暫譯〉。"
+        out = clean_tw.clean_text(raw)
+        for bad in ("PowerPyx", "本站未實測", "手柄", "圖標", "作弊碼", "僵立停", "暫譯"):
+            self.assertNotIn(bad, out)
+        self.assertIn("騎機車", out)
+        self.assertIn("水上摩托車", out)
+        self.assertIn("手把圖示", out)
+        self.assertIn("通關密語", out)
+        self.assertIn("破關", out)
+        self.assertIn("喪必斯", out)
+        self.assertIn("秘技", out)
+        self.assertEqual(out.count("**") % 2, 0)
+
+    def test_unbalanced_bold_recovered_after_cleanup(self):
+        out = clean_tw.clean_text("**PowerPyx 說重點**保留這裡")
+        self.assertEqual(out.count("**") % 2, 0)
+        self.assertNotIn("PowerPyx", out)
+        self.assertIn("保留這裡", out)
 
 
 if __name__ == "__main__":

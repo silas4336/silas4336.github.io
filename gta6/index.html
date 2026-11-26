@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>GTA 6 全任務路書攻略</title>
-<meta name="description" content="GTA 6 全任務路書攻略：分章路書時間軸、圖鑑、彩蛋、圖示全解、100% 進度與全文搜尋（個人使用）">
+<title>GTA 6 章節與任務攻略</title>
+<meta name="description" content="GTA 6 章節與任務攻略：分章流程路書、各章必做清單、會錯過提醒、收集圖鑑與全文搜尋（個人使用）">
 <meta name="theme-color" content="#111318">
 <meta name="color-scheme" content="dark light">
 <meta name="referrer" content="no-referrer">
@@ -231,8 +231,34 @@ details.rb-steps[open] .chev,.ch-ov-miss[open] .chev,.rb-stuck[open] .chev{trans
 .ch-ov-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .ch-ov-miss{margin-top:10px;border:1px solid color-mix(in srgb,var(--accent2) 45%,var(--line));border-radius:12px;overflow:clip;
   background:color-mix(in srgb,var(--accent2) 8%,var(--surface))}
-.ch-ov-miss>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;font-size:.85rem;font-weight:750;color:var(--accent2);cursor:pointer}
+.ch-ov-miss>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;font-size:.86rem;font-weight:750;color:var(--accent2);cursor:pointer}
 .ch-ov-miss>summary::-webkit-details-marker{display:none}
+.ch-ov-miss .chev{transition:transform .2s;flex:none}
+.ch-ov-miss[open]>summary .chev{transform:rotate(90deg)}
+
+/* 任務與章節「該做清單」 */
+.m-todo{margin:6px 0 12px;border:1px solid color-mix(in srgb,var(--accent2) 45%,var(--line));border-radius:12px;overflow:clip;
+  background:color-mix(in srgb,var(--accent2) 7%,var(--surface))}
+.m-todo-h{padding:7px 12px;font-size:.78rem;font-weight:800;color:var(--accent2);letter-spacing:.04em;
+  background:color-mix(in srgb,var(--accent2) 10%,var(--surface2));border-bottom:1px solid color-mix(in srgb,var(--accent2) 25%,var(--line))}
+.chkrow{display:flex;align-items:flex-start;border-top:1px solid var(--line);scroll-margin-top:calc(var(--hh) + 64px)}
+.chkrow:first-child,.m-todo-h+.chkrow{border-top:0}
+.chkrow .chk{flex:none;width:46px;align-self:stretch;border:0;background:none;display:grid;place-items:start center;padding-top:12px}
+.chkrow .chk span{width:23px;height:23px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center}
+.chkrow .chk svg{width:15px;height:15px;stroke-width:3;opacity:0}
+.chkrow.done .chk span{background:var(--ok);border-color:var(--ok);color:#06251a}
+.chkrow.done .chk svg{opacity:1}
+.chkrow .cb2{flex:1;min-width:0;padding:10px 12px 10px 0}
+.chkrow .ct2{display:flex;flex-wrap:wrap;align-items:center;gap:5px 7px;line-height:1.4}
+.chkrow .ct2 b{font-size:.9rem;font-weight:700}
+.chkrow.done .ct2 b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.chkrow .cn2{margin-top:3px;font-size:.82rem;line-height:1.55;color:var(--muted)}
+.chkrow .cgo{display:inline-flex;align-items:center;margin-top:5px;font-size:.76rem;font-weight:700;color:var(--accent);text-decoration:none}
+.ctag{font-size:.68rem;font-weight:750;padding:1px 6px;border-radius:5px;border:1px solid currentColor;line-height:1.4;white-space:nowrap}
+.ct-miss{color:#ff6b6b;background:rgba(255,107,107,.1)}
+.ct-prep{color:var(--b-side);background:color-mix(in srgb,var(--b-side) 12%,transparent)}
+.ct-do{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.ct-end{color:var(--accent2);background:color-mix(in srgb,var(--accent2) 12%,transparent)}
 
 /* 首頁（路書總覽／目錄） */
 .hero{position:relative;overflow:hidden;border-radius:18px;padding:20px 18px 16px;color:#fff;
@@ -530,12 +556,12 @@ noscript{display:block;padding:40px 20px;text-align:center}
 </head>
 <body>
 <header class="top">
-  <button class="ib" id="back" aria-label="返回" hidden></button>
+  <button class="ib" id="back" aria-label="設定"></button>
   <div class="tt" id="topTitle">GTA 6 攻略</div>
   <button class="ib aa" id="aa" aria-label="閱讀設定">Aa</button>
 </header>
 <div id="prog" aria-hidden="true"></div>
-<div id="offline" hidden>目前離線：文字、圖鑑與彩蛋都能看，沒存過的截圖不會顯示</div>
+<div id="offline" hidden>目前離線：文字、清單與圖鑑都能看，未預載的截圖不會顯示</div>
 <main id="view"></main>
 <nav class="nav" id="nav" aria-label="主選單"></nav>
 <noscript>需要開啟 JavaScript 才能閱讀攻略。</noscript>
@@ -571,10 +597,11 @@ function h(tag, props, ...kids) {
 }
 const ICONS = {
   book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/>',
+  chk: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.5 1.5L7.5 4.8M3.5 12l1.5 1.5L7.5 10.8M3.5 18l1.5 1.5L7.5 16.8"/>',
+  wiki: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   codex: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   notes: '<path d="M6 3h8l5 5v13H6zM14 3v5h5M9 13h7M9 17h7"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
-  more: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
   toc: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
   index: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M14 14.5h7M14 20.5h4"/>',
   set: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
@@ -587,7 +614,6 @@ const ICONS = {
   egg: '<path d="M12 3c-4 0-7 5.5-7 10.5a7 7 0 0 0 14 0C19 8.5 16 3 12 3z"/>',
   hud: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M6.5 9h5M6.5 12.5h3.5M16 14.5h2"/>',
   map: '<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20zM9 4v13.5M15 6.5V20"/>',
-  bell: '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>',
 };
 function ico(name, cls) {
   const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -603,6 +629,7 @@ const norm = s => String(s).normalize("NFKC").toLowerCase();
 const CHAP_LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
 const TYPES = [["主線", "main"], ["支線", "side"], ["搶劫", "heist"], ["陌生人", "stranger"], ["可選", "opt"], ["額外", "extra"]];
 const tkey = t => (TYPES.find(x => x[0] === t) || [0, "main"])[1];
+const CHK_CATS = { miss: "會錯過", prep: "行前", do: "必拿", end: "結局" };
 const missions = [], byId = {}, trophyByMission = {};
 (G.trophies || []).forEach(tr => { if (tr.m) trophyByMission[tr.m] = (trophyByMission[tr.m] || 0) + 1; });
 
@@ -618,6 +645,13 @@ G.chapters.forEach((ch, ci) => {
 });
 const IMG = G.imgBase;
 const noteBy = Object.fromEntries((G.notes || []).map(n => [n.slug, n]));
+const chkGroups = G.checklists || [];
+const chkById = {}, chkByChap = {};
+chkGroups.forEach(g => {
+  chkByChap[g.ch] = g;
+  g.items.forEach(it => { it.ch = g.ch; chkById[it.id] = it; });
+});
+const allChks = Object.values(chkById);
 
 /* 延遲載入圖鑑／彩蛋／圖示／更新紀錄（codex.js，離線由 SW 預快取） */
 let codexPromise = null;
@@ -730,15 +764,59 @@ function missables() {
   return out;
 }
 const missedLeft = () => missables().filter(x => !(x.row.tick && state.ticks.has(x.row.tick))).length;
+const chkDoneCount = list => (list || allChks).filter(x => state.ticks.has(x.id)).length;
+const chkMissLeft = () => allChks.filter(x => x.cat === "miss" && !state.ticks.has(x.id)).length;
 
-/* 導覽列（5 頁：路書／圖鑑／筆記／搜尋／更多） */
+function syncTickUI(tid) {
+  const on = state.ticks.has(tid);
+  $$(`[data-tid="${CSS.escape(tid)}"]`).forEach(el => {
+    el.classList.toggle("done", on);
+    const btn = $(".chk", el);
+    if (btn) btn.setAttribute("aria-pressed", String(on));
+  });
+  if (bookChap && chkByChap[bookChap.no]) {
+    const items = chkByChap[bookChap.no].items;
+    const sumEl = $("[data-ov-chk]");
+    if (sumEl) {
+      const left = items.filter(x => !state.ticks.has(x.id)).length;
+      const mLeft = items.filter(x => x.cat === "miss" && !state.ticks.has(x.id)).length;
+      sumEl.textContent = left ? `本章必做清單（剩 ${left}/${items.length}${mLeft ? `・會錯過 ${mLeft}` : ""}）` : `本章必做清單（已全數完成）`;
+    }
+  }
+}
+
+function renderChkRow(it, o = {}) {
+  const done = state.ticks.has(it.id);
+  const row = h("div", { class: "chkrow" + (done ? " done" : ""), "data-tid": it.id });
+  const btn = h("button", { class: "chk", type: "button", "aria-pressed": String(done), "aria-label": it.title,
+    onclick: () => {
+      if (state.ticks.has(it.id)) state.ticks.delete(it.id); else state.ticks.add(it.id);
+      saveTicks(); syncTickUI(it.id); o.onChange && o.onChange();
+    } }, h("span", {}, ico("check")));
+  const m = it.m && byId[it.m];
+  const goLink = (m && !o.hideJump) ? h("a", { class: "cgo", href: "#/m/" + enc(m.id), onclick: e => {
+    if (o.inBook && bookChap && m.chap.no === bookChap.no) { e.preventDefault(); jumpToNode(m.id, { smooth: true, flash: true }); }
+  }, text: `${m.code} ${m.name} ›` }) : null;
+  row.append(btn, h("div", { class: "cb2" },
+    h("div", { class: "ct2" },
+      it.cat && CHK_CATS[it.cat] ? h("span", { class: "ctag ct-" + it.cat, text: CHK_CATS[it.cat] }) : null,
+      h("b", { text: it.title })),
+    it.note ? h("div", { class: "cn2" }, rich(it.note)) : null,
+    goLink));
+  return row;
+}
+
+/* 導覽列（4 頁：章節／清單／百科／搜尋；頂欄左側在根分頁為設定鈕、內頁為返回鈕） */
 function setTop(title, back) {
   topTitle.textContent = title;
-  backBtn.hidden = !back;
-  document.title = title === "GTA 6 攻略" ? "GTA 6 全任務路書攻略" : title + " · GTA 6 攻略";
+  backBtn.dataset.mode = back ? "back" : "set";
+  backBtn.setAttribute("aria-label", back ? "返回" : "設定");
+  backBtn.replaceChildren(ico(back ? "back" : "set"));
+  backBtn.hidden = false;
+  document.title = title === "GTA 6 攻略" ? "GTA 6 章節與任務攻略" : title + " · GTA 6 攻略";
 }
 function tabs(active) {
-  const items = [["book", "#/", "路書"], ["codex", "#/codex", "圖鑑"], ["notes", "#/notes", "筆記"], ["search", "#/search", "搜尋"], ["more", "#/more", "更多"]];
+  const items = [["book", "#/", "章節"], ["chk", "#/checklists", "清單"], ["wiki", "#/wiki", "百科"], ["search", "#/search", "搜尋"]];
   nav.replaceChildren(...items.map(([k, href, label]) =>
     h("a", { href, "aria-current": k === active ? "page" : null, onclick: () => { if (k === active && location.hash === href) scrollTo(0, 0); } }, ico(k), label)));
 }
@@ -899,15 +977,9 @@ async function wakeSync() {
 }
 
 function sourcesFoot(full) {
-  if (!full) {
-    return h("div", { class: "foot" }, "來源：",
-      h("a", { href: G.sources[0].url, target: "_blank", rel: "noopener noreferrer", text: "oplay.cc" }), " · ",
-      G.sources[1] ? h("a", { href: G.sources[1].url, target: "_blank", rel: "noopener noreferrer", text: "遊民星空" }) : null,
-      "（個人閱讀）");
-  }
+  if (!full) return null;
   return h("div", { class: "foot" },
-    G.sources.map(s => h("div", {}, h("a", { href: s.url, target: "_blank", rel: "noopener noreferrer", text: s.name }))),
-    h("div", { text: `整理 ${G.builtOn}${G.sourceUpdated ? `・遊民更新 ${G.sourceUpdated}` : ""}。oplay 少數條目原站標註「還沒確認／兩說」；遊民為簡轉繁。版權屬原作者，僅供個人閱讀。文字與圖鑑可離線看，截圖連網載入或於上方預載。` }));
+    h("div", { text: `資料整理 ${G.builtOn}・文字、必做清單與收集圖鑑皆可離線閱讀，流程截圖連網載入或於上方預載。` }));
 }
 
 /* ───── 路書檢視（#/book/<章> 與 #/m/<id>） ───── */
@@ -1120,9 +1192,15 @@ function renderNodeCard(m) {
   (m.ytags || []).forEach(t => tags.append(h("span", { class: "rtag", text: t })));
   card.append(tags);
 
-  /* 正文區（摘要→重點→一對多→遊民圖文→收合/展開逐步清單→常見卡關） */
+  /* 正文區（摘要→這關前後提醒→重點→一對多→圖文流程→收合/展開逐步清單→常見卡關） */
   const body = h("div", { class: "rcard-b" + (state.stepsOn ? " steps" : "") });
   if (m.sum && !EMPTY_SUM.test(m.sum.trim())) body.append(h("div", { class: "sumline" }, m.sum));
+  const todoItems = (m.todo || []).map(id => chkById[id]).filter(Boolean);
+  if (todoItems.length) {
+    body.append(h("div", { class: "m-todo" },
+      h("div", { class: "m-todo-h", text: "這關前後提醒" }),
+      todoItems.map(it => renderChkRow(it, { hideJump: true }))));
+  }
   if (m.keys && m.keys.length) {
     body.append(h("div", { class: "keys" }, h("b", { class: "t", text: "重點" }),
       h("ul", { class: "bl" }, m.keys.map(k => h("li", {}, rich(k))))));
@@ -1149,7 +1227,7 @@ function renderNodeCard(m) {
     body.append(bar);
   }
 
-  /* 遊民路書正文 */
+  /* 圖文路書正文 */
   if (m.full) {
     const prose = h("div", { class: "rb-prose" });
     m.blocks.forEach((b, i) => {
@@ -1160,7 +1238,7 @@ function renderNodeCard(m) {
     body.append(prose);
   }
 
-  /* oplay 逐步清單 */
+  /* 逐步清單 */
   let stepCounter = null;
   if (m.walk) {
     const stWrap = h("div", { class: "rb-steps-scope" }, renderBlocks(m.steps, { tap: state.stepsOn, sd }));
@@ -1223,7 +1301,6 @@ function renderNodeCard(m) {
     clrBtn);
   const paths = imgPaths([m]);
   if (paths.length) foot.append(downloadBtn(paths, "存圖", true));
-  if (m.url) foot.append(h("a", { class: "rbtn", href: m.url, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "原站"));
   card.append(foot);
 
   return card;
@@ -1255,9 +1332,7 @@ function bookView(no, focusId, q) {
   /* 本章概況卡 */
   const done = ch.missions.filter(m => state.done.has(m.id)).length;
   const chImgs = imgPaths(ch.missions);
-  const missSec = (ch.info || []).find(x => x.title === "這章結束前要做");
-  const missRows = missSec ? missSec.rows : [];
-  const missLeftCnt = missRows.filter(r => !(r.tick && state.ticks.has(r.tick))).length;
+  const chChks = chkByChap[ch.no] ? chkByChap[ch.no].items : [];
 
   const ov = h("section", { class: "ch-ov" },
     h("div", { class: "ch-ov-top" },
@@ -1269,19 +1344,17 @@ function bookView(no, focusId, q) {
 
   const ovBody = h("div", { class: "ch-ov-body" });
   if (ch.lead) ovBody.append(h("p", { class: "lead" }, rich(ch.lead)));
-  if (missRows.length) {
-    const si = (ch.info || []).indexOf(missSec);
-    const missSum = h("span", { text: missLeftCnt ? `會錯過的事（剩 ${missLeftCnt}/${missRows.length}）` : `會錯過的事（已清空）` });
-    const onMissChange = () => {
-      const leftNow = missRows.filter(r => !(r.tick && state.ticks.has(r.tick))).length;
-      missSum.textContent = leftNow ? `會錯過的事（剩 ${leftNow}/${missRows.length}）` : `會錯過的事（已清空）`;
-    };
+  if (chChks.length) {
+    const left = chChks.filter(x => !state.ticks.has(x.id)).length;
+    const mLeft = chChks.filter(x => x.cat === "miss" && !state.ticks.has(x.id)).length;
+    const sumEl = h("span", { "data-ov-chk": "",
+      text: left ? `本章必做清單（剩 ${left}/${chChks.length}${mLeft ? `・會錯過 ${mLeft}` : ""}）` : "本章必做清單（已全數完成）" });
     ovBody.append(h("details", { class: "ch-ov-miss" },
-      h("summary", {}, missSum, ico("next", "chev")),
-      missRows.map((r, ri) => infoRow(r, si, ri, onMissChange))));
+      h("summary", {}, sumEl, ico("next", "chev")),
+      chChks.map(it => renderChkRow(it, { inBook: true }))));
   }
   const acts = h("div", { class: "ch-ov-acts" },
-    (ch.info || []).length ? h("a", { class: "rbtn", href: "#/ch/" + ch.no }, ico("index"), "本章重點") : null,
+    (ch.info || []).length ? h("a", { class: "rbtn", href: "#/ch/" + ch.no }, ico("index"), "本章速查") : null,
     chImgs.length ? downloadBtn(chImgs, "離線截圖", true) : null);
   ovBody.append(acts);
   ov.append(ovBody);
@@ -1304,7 +1377,6 @@ function bookView(no, focusId, q) {
   view.append(h("div", { class: "cta" },
     prevCh ? h("a", { class: "btn", href: "#/book/" + prevCh.no }, ico("back"), `${prevCh.letter} ${prevCh.title}`) : null,
     nextCh ? h("a", { class: "btn pri", href: "#/book/" + nextCh.no }, `${nextCh.letter} ${nextCh.title}`, ico("next")) : null));
-  view.append(sourcesFoot());
 
   setActiveNode(firstM);
 
@@ -1362,16 +1434,18 @@ function savePos() {
   store.set("pos", state.pos);
 }
 
-/* ───── 目錄／路書總覽（#/） ───── */
+/* ───── 章節總覽（#/） ───── */
 function tocView() {
   setTop("GTA 6 攻略", false); tabs("book");
-  const s = stats(), next = missions.find(m => !state.done.has(m.id)), left = missedLeft();
+  const s = stats(), next = missions.find(m => !state.done.has(m.id));
+  const chkDone = chkDoneCount(), chkLeft = allChks.length - chkDone, missLeft = chkMissLeft();
   view.append(h("section", { class: "hero" },
-    h("h1", { style: "margin-top:0", text: "GTA 6 路書攻略" }),
+    h("h1", { style: "margin-top:0", text: "GTA 6 攻略" }),
     h("div", { class: "bar" }, h("i", { style: "width:" + (s.done / s.all * 100).toFixed(1) + "%" })),
     h("div", { class: "stats tnum" },
-      h("span", { text: `完成 ${s.done} / ${s.all}` }),
-      h("span", { text: `主線 ${s.mainDone} / ${s.main}` }))));
+      h("span", { text: `任務 ${s.done} / ${s.all}` }),
+      h("span", { text: `主線 ${s.mainDone} / ${s.main}` }),
+      h("span", { text: `必做 ${chkDone} / ${allChks.length}` }))));
 
   /* 繼續閱讀／下一個任務 */
   let curChap = next ? next.chap.id : null;
@@ -1402,10 +1476,8 @@ function tocView() {
   view.append(strip);
 
   view.append(h("div", { class: "quick" },
-    h("a", { href: "#/progress" }, h("small", { text: "進度儀表板" }), h("b", { text: `${Math.round(s.done / s.all * 100)}%・收集 ${state.col.size}` })),
-    h("a", { class: left ? "warn" : "", href: "#/index" }, h("small", { text: "會錯過的事" }), h("b", { text: left ? `剩 ${left} 件` : "已清空" }))));
-
-  (G.notices || []).forEach(n => view.append(h("div", { class: "notice" }, h("b", { text: "預告" }), h("span", { text: `${n.title}：${n.text}` }))));
+    h("a", { href: "#/checklists" }, h("small", { text: "各章必做清單" }), h("b", { text: chkLeft ? `剩 ${chkLeft} 項` : "已全數完成" })),
+    h("a", { class: missLeft ? "warn" : "", href: "#/checklists?t=miss" }, h("small", { text: "會錯過的事" }), h("b", { text: missLeft ? `剩 ${missLeft} 件` : "已清空" }))));
 
   /* 各章可展開清單 */
   const open = new Set(state.open || (curChap ? [curChap] : [G.chapters[0].id]));
@@ -1418,11 +1490,13 @@ function tocView() {
         h("span", { class: "cn", text: `${n}/${ch.missions.length}` }), ico("next", "chev")),
       h("div", { class: "cb" }, h("i", { style: "width:" + (n / ch.missions.length * 100) + "%" })));
     if (open.has(ch.id)) d.open = true;
-    const miss = ((ch.info || []).find(x => x.title === "這章結束前要做") || { rows: [] }).rows;
-    const mLeft = miss.filter(r => !(r.tick && state.ticks.has(r.tick))).length;
+    const chItems = chkByChap[ch.no] ? chkByChap[ch.no].items : [];
+    const chLeft = chItems.filter(x => !state.ticks.has(x.id)).length;
+    const chMiss = chItems.filter(x => x.cat === "miss" && !state.ticks.has(x.id)).length;
     d.append(h("div", { class: "chap-bar" },
       h("a", { class: "pri", href: "#/book/" + ch.no, text: "進入本章路書 ›" }),
-      (ch.info || []).length ? h("a", { class: mLeft ? "warn" : "", href: "#/ch/" + ch.no, text: mLeft ? `本章重點・會錯過 ${mLeft}` : "本章重點" }) : null));
+      (ch.info || []).length || chItems.length ? h("a", { class: chMiss ? "warn" : "", href: "#/ch/" + ch.no,
+        text: chLeft ? `本章速查・必做 ${chLeft}` : "本章速查" }) : null));
     ch.missions.forEach(m => d.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })));
     d.addEventListener("toggle", () => {
       const now = new Set($$("details.chap[open]").map(x => x.dataset.id).filter(Boolean));
@@ -1430,16 +1504,9 @@ function tocView() {
     });
     view.append(d);
   });
-
-  if (G.intro && G.intro.length) {
-    view.append(h("details", { class: "chap" },
-      h("summary", {}, h("div", { class: "ct" }, h("b", { text: "閱讀須知" })), ico("next", "chev")),
-      h("div", { class: "pad" }, G.intro.map(t => h("p", { class: "small", text: t })))));
-  }
-  view.append(sourcesFoot());
 }
 
-/* ───── 章節重點頁（#/ch/<章>） ───── */
+/* ───── 章節速查頁（#/ch/<章>） ───── */
 function infoRow(r, si, ri, onChange) {
   const ticked = !!(r.tick && state.ticks.has(r.tick));
   const row = h("div", { class: "inf" + (ticked ? " done" : ""), "data-r": si + "-" + ri });
@@ -1460,12 +1527,23 @@ function infoRow(r, si, ri, onChange) {
 }
 function chapterView(no, q) {
   const ch = G.chapters.find(c => c.no === no) || G.chapters[0];
-  setTop(`${ch.title} 重點`, true); tabs("book");
+  setTop(`${ch.title} 速查`, true); tabs("book");
   view.append(h("section", { class: "hero" },
     h("h1", { style: "margin-top:0", text: ch.title + (ch.sub ? "　" + ch.sub : "") }),
     ch.lead ? h("p", { class: "lead" }, rich(ch.lead)) : null));
   view.append(h("div", { class: "cta", style: "margin-top:12px" },
     h("a", { class: "btn pri", href: "#/book/" + ch.no }, `進入本章路書（${ch.missions.length}）›`)));
+
+  const chItems = chkByChap[ch.no] ? chkByChap[ch.no].items : [];
+  if (chItems.length) {
+    const cntEl = h("span", { class: "cn", text: `${chkDoneCount(chItems)}/${chItems.length}` });
+    const d = h("details", { class: "chap", open: true },
+      h("summary", {}, h("div", { class: "ct" }, h("b", { text: "本章必做清單" }), h("small", { text: "會錯過、行前準備與必拿項目" })),
+        cntEl, ico("next", "chev")),
+      chItems.map(it => renderChkRow(it, { onChange: () => { cntEl.textContent = `${chkDoneCount(chItems)}/${chItems.length}`; } })));
+    view.append(d);
+  }
+
   const want = (q.get("r") || "").split("-");
   (ch.info || []).forEach((sec, si) => {
     const important = sec.title === "這章結束前要做" || sec.title === "卡住了";
@@ -1476,50 +1554,84 @@ function chapterView(no, q) {
     sec.rows.forEach((r, ri) => d.append(infoRow(r, si, ri)));
     view.append(d);
   });
-  view.append(sourcesFoot());
   if (want.length === 2) requestAnimationFrame(() => {
     const el = $(`[data-r="${want[0]}-${want[1]}"]`);
     if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); }
   });
 }
 
-/* ───── 圖鑑（#/codex、#/codex/<slug>） ───── */
-async function codexHomeView() {
-  setTop("圖鑑", false); tabs("codex");
-  const C = await ensureCodex();
-  if (!C) { view.append(h("div", { class: "empty", text: "圖鑑資料載入失敗，請重新整理。" })); return; }
-  if (view.dataset.v !== "codex") return;
+/* ───── 百科：實用攻略 ＋ 收集圖鑑（#/wiki、#/codex、#/notes） ───── */
+function wikiView(q, defaultTab) {
+  setTop("百科", false); tabs("wiki");
+  let tab = q.get("t") || defaultTab || "guides";
+  if (tab !== "guides" && tab !== "codex") tab = "guides";
 
-  C.groups.forEach((grp, gi) => {
-    view.append(h("div", { class: "sect", style: gi === 0 ? "margin-top:2px" : null, text: grp.group }));
-    const grid = h("div", { class: "cgrid" });
-    grp.cats.forEach(c => {
-      const href = c.egg ? "#/eggs" : c.slug === "hud" ? "#/hud" : "#/codex/" + enc(c.slug);
-      let have = 0, total = c.count || 0, showBar = false;
-      if (c.egg) {
-        const allEggs = C.eggs.flatMap(g => g.items);
-        total = allEggs.length;
-        have = allEggs.filter(x => x.id && state.col.has(x.id)).length;
-        showBar = true;
-      } else if (c.col && C.cards[c.slug]) {
-        const list = C.cards[c.slug];
-        total = list.length;
-        have = list.filter(x => x.id && state.col.has(x.id)).length;
-        showBar = true;
-      }
-      grid.append(h("a", { class: "ctile", href },
-        h("div", { class: "ctile-h" }, h("b", { text: c.name }),
-          h("em", { text: showBar ? `${have}/${total}` : `${total}` })),
-        c.preview ? h("div", { class: "ctile-p", text: c.preview }) : null,
-        showBar ? h("div", { class: "ctile-bar" }, h("i", { style: "width:" + (total ? (have / total * 100).toFixed(1) : 0) + "%" })) : null));
+  const topChips = h("div", { class: "chips", role: "tablist", "aria-label": "百科分類" },
+    [["guides", "實用攻略", (G.notes || []).length], ["codex", "收集圖鑑", null]].map(([k, label, cnt]) =>
+      h("button", { class: "chip", type: "button", role: "tab", "data-wt": k, "aria-pressed": String(tab === k),
+        onclick: () => {
+          tab = k;
+          history.replaceState(null, "", k === "guides" ? "#/wiki" : "#/wiki?t=" + k);
+          renderTab();
+        } }, label, cnt != null ? h("small", { text: String(cnt) }) : null)));
+  const out = h("div", {});
+  view.append(topChips, out);
+
+  const renderTab = async () => {
+    $$("[data-wt]", topChips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.wt === tab)));
+    out.replaceChildren();
+    if (tab === "guides") {
+      out.append(h("div", { class: "mgrid", style: "margin-bottom:4px" },
+        h("a", { class: "mtile", href: "#/hud" }, ico("hud"), h("b", { text: "畫面圖示全解" }), h("small", { text: "血條、星星與小地圖" })),
+        h("a", { class: "mtile", href: "#/eggs" }, ico("egg"), h("b", { text: "彩蛋地點" }), h("small", { text: "依地區分組・可勾選" })),
+        h("a", { class: "mtile", href: "#/codex/cheat" }, ico("codex"), h("b", { text: "秘技密碼" }), h("small", { text: "61 組按鍵與解鎖條件" })),
+        h("a", { class: "mtile", href: "https://oplay.cc/gta6/map", target: "_blank", rel: "noopener noreferrer" }, ico("map"), h("b", { text: "互動地圖 ↗" }), h("small", { text: "開啟網頁互動地圖" }))));
+      (G.noteCats || []).forEach(cat => {
+        const list = (G.notes || []).filter(n => n.cat === cat.id);
+        if (!list.length) return;
+        out.append(h("div", { class: "sect", text: `${cat.title} · ${list.length}` }),
+          h("div", { class: "card" }, list.map(n => h("a", { class: "hit", href: "#/n/" + enc(n.slug) },
+            h("b", {}, n.title, n.badge ? h("span", { class: "badge b-opt", style: "margin-left:8px", text: n.badge }) : null),
+            n.sub ? h("small", { text: plain(n.sub) }) : null))));
+      });
+      return;
+    }
+
+    const C = await ensureCodex();
+    if (view.dataset.v !== "wiki" || tab !== "codex") return;
+    if (!C) { out.append(h("div", { class: "empty", text: "圖鑑資料載入失敗，請重新整理。" })); return; }
+
+    C.groups.forEach((grp, gi) => {
+      out.append(h("div", { class: "sect", style: gi === 0 ? "margin-top:4px" : null, text: grp.group }));
+      const grid = h("div", { class: "cgrid" });
+      grp.cats.forEach(c => {
+        const href = c.egg ? "#/eggs" : c.slug === "hud" ? "#/hud" : "#/codex/" + enc(c.slug);
+        let have = 0, total = c.count || 0, showBar = false;
+        if (c.egg) {
+          const allEggs = C.eggs.flatMap(g => g.items);
+          total = allEggs.length;
+          have = allEggs.filter(x => x.id && state.col.has(x.id)).length;
+          showBar = true;
+        } else if (c.col && C.cards[c.slug]) {
+          const list = C.cards[c.slug];
+          total = list.length;
+          have = list.filter(x => x.id && state.col.has(x.id)).length;
+          showBar = true;
+        }
+        grid.append(h("a", { class: "ctile", href },
+          h("div", { class: "ctile-h" }, h("b", { text: c.name }),
+            h("em", { text: showBar ? `${have}/${total}` : `${total}` })),
+          c.preview ? h("div", { class: "ctile-p", text: c.preview }) : null,
+          showBar ? h("div", { class: "ctile-bar" }, h("i", { style: "width:" + (total ? (have / total * 100).toFixed(1) : 0) + "%" })) : null));
+      });
+      out.append(grid);
     });
-    view.append(grid);
-  });
-  view.append(sourcesFoot());
+  };
+  renderTab();
 }
 
 async function codexCatView(slug, q) {
-  setTop("圖鑑", true); tabs("codex");
+  setTop("圖鑑", true); tabs("wiki");
   const C = await ensureCodex();
   if (!C || !C.cards[slug]) { view.append(h("div", { class: "empty", text: "找不到這個分類。" })); return; }
   if (view.dataset.v !== "codex-cat") return;
@@ -1660,7 +1772,6 @@ async function codexCatView(slug, q) {
         if (byId[mid]) links.push(h("a", { href: "#/m/" + enc(mid), text: `路書 ${byId[mid].code} ›` }));
       }
       if (it.map) links.push(h("a", { href: it.map, target: "_blank", rel: "noopener noreferrer", text: "地圖 ↗" }));
-      if (it.url) links.push(h("a", { href: it.url, target: "_blank", rel: "noopener noreferrer", text: "原站 ↗" }));
       if (links.length) db.append(h("div", { class: "dlinks" }, links));
 
       row.append(db);
@@ -1672,7 +1783,6 @@ async function codexCatView(slug, q) {
   let tmr = 0;
   searchInput.addEventListener("input", () => { clearTimeout(tmr); tmr = setTimeout(() => { kw = searchInput.value; draw(); }, 140); });
   draw();
-  view.append(sourcesFoot());
 
   const hl = q.get("hl");
   if (hl) requestAnimationFrame(() => {
@@ -1683,7 +1793,7 @@ async function codexCatView(slug, q) {
 
 /* ───── 彩蛋（#/eggs） ───── */
 async function eggsView(q) {
-  setTop("彩蛋", true); tabs("codex");
+  setTop("彩蛋地點", true); tabs("wiki");
   const C = await ensureCodex();
   if (!C) { view.append(h("div", { class: "empty", text: "資料載入失敗，請重新整理。" })); return; }
   if (view.dataset.v !== "eggs") return;
@@ -1751,8 +1861,7 @@ async function eggsView(q) {
         row.append(h("div", { class: "db" },
           h("div", { class: "dt" }, h("b", { text: it.n }), it.en ? h("span", { class: "den", text: it.en }) : null),
           tgs.length ? h("div", { class: "dtags" }, tgs) : null,
-          it.a ? h("div", { class: "da" }, rich(it.a)) : null,
-          it.url ? h("div", { class: "dlinks" }, h("a", { href: it.url, target: "_blank", rel: "noopener noreferrer", text: "原站 ↗" })) : null));
+          it.a ? h("div", { class: "da" }, rich(it.a)) : null));
         card.append(row);
       });
       out.append(card);
@@ -1763,7 +1872,6 @@ async function eggsView(q) {
   let tmr = 0;
   searchInput.addEventListener("input", () => { clearTimeout(tmr); tmr = setTimeout(() => { kw = searchInput.value; draw(); }, 140); });
   draw();
-  view.append(sourcesFoot());
 
   const hl = q.get("hl");
   if (hl) requestAnimationFrame(() => {
@@ -1772,9 +1880,9 @@ async function eggsView(q) {
   });
 }
 
-/* ───── HUD 圖示全解（#/hud） ───── */
+/* ───── 畫面圖示全解（#/hud） ───── */
 async function hudView(q) {
-  setTop("圖示全解", true); tabs("more");
+  setTop("畫面圖示全解", true); tabs("wiki");
   const C = await ensureCodex();
   if (!C) { view.append(h("div", { class: "empty", text: "資料載入失敗，請重新整理。" })); return; }
   if (view.dataset.v !== "hud") return;
@@ -1786,7 +1894,6 @@ async function hudView(q) {
         it.say ? h("div", { class: "hsay" }, rich(it.say)) : null,
         it.do ? h("div", { class: "hdo" }, rich(it.do)) : null))));
   });
-  view.append(sourcesFoot());
 
   const hl = q.get("hl");
   if (hl) requestAnimationFrame(() => {
@@ -1797,177 +1904,27 @@ async function hudView(q) {
 
 /* ───── 更新紀錄（#/updates） ───── */
 async function updatesView() {
-  setTop("更新紀錄", true); tabs("more");
+  setTop("更新紀錄", true); tabs("wiki");
   const C = await ensureCodex();
   if (!C) { view.append(h("div", { class: "empty", text: "資料載入失敗，請重新整理。" })); return; }
   if (view.dataset.v !== "updates") return;
 
-  if (G.sourceUpdated) view.append(h("div", { class: "notice", style: "margin:0 0 8px" }, h("b", { text: "遊民路書" }), h("span", { text: G.sourceUpdated })));
   C.updates.forEach(day => {
     const label = [day.year, day.date, day.dow].filter(Boolean).join(" ");
     view.append(h("div", { class: "sect", text: label }),
       h("div", { class: "card" }, day.items.map(it => h("div", { class: "hit" },
         h("div", { style: "display:flex;align-items:center;gap:8px" },
           it.tag ? h("span", { class: "dtag", text: it.tag }) : null,
-          h("span", { style: "flex:1;font-size:.9rem" }, rich(it.text))),
-        it.url ? h("small", {}, h("a", { href: it.url, target: "_blank", rel: "noopener noreferrer", style: "color:var(--accent);text-decoration:none", text: "原站 ↗" })) : null))));
+          h("span", { style: "flex:1;font-size:.9rem" }, rich(it.text)))))));
   });
-  view.append(sourcesFoot());
 }
 
-/* ───── 進度儀表板（#/progress） ───── */
-async function progressView() {
-  setTop("進度", true); tabs("more");
-  const C = await ensureCodex();
-  if (view.dataset.v !== "progress") return;
-
-  const s = stats(), miss = missables(), mLeft = missedLeft();
-  view.append(h("section", { class: "hero" },
-    h("h1", { style: "margin-top:0", text: `總進度 ${Math.round(s.done / s.all * 100)}%` }),
-    h("div", { class: "bar" }, h("i", { style: "width:" + (s.done / s.all * 100).toFixed(1) + "%" })),
-    h("div", { class: "stats tnum" },
-      h("span", { text: `任務 ${s.done}/${s.all}` }),
-      h("span", { text: `主線 ${s.mainDone}/${s.main}` }),
-      h("span", { text: `會錯過剩 ${mLeft}/${miss.length}` }))));
-
-  /* 各章進度 */
-  view.append(h("div", { class: "sect", text: "各章" }));
-  const chCard = h("div", { class: "card" });
-  G.chapters.forEach(ch => {
-    const d = ch.missions.filter(m => state.done.has(m.id)).length;
-    const pct = d / ch.missions.length * 100;
-    chCard.append(h("a", { class: "prow", style: "text-decoration:none", href: "#/book/" + ch.no },
-      h("span", { class: "ncode", text: ch.letter }),
-      h("div", { class: "pt" }, h("b", { text: ch.title + (ch.sub ? " · " + ch.sub : "") }),
-        h("div", { class: "pbar" }, h("i", { class: pct >= 100 ? "full" : "", style: "width:" + pct.toFixed(1) + "%" }))),
-      h("span", { class: "pnum", text: `${d}/${ch.missions.length}` })));
-  });
-  view.append(chCard);
-
-  /* 各類型任務完成度 */
-  view.append(h("div", { class: "sect", text: "任務類型" }));
-  const tGrid = h("div", { class: "pgrid" });
-  TYPES.forEach(([label]) => {
-    const arr = missions.filter(m => m.type === label);
-    if (!arr.length) return;
-    const d = arr.filter(m => state.done.has(m.id)).length;
-    tGrid.append(h("div", { class: "pstat" },
-      h("small", { text: label }), h("b", { text: `${d} / ${arr.length}` }),
-      h("div", { class: "mini" }, h("i", { style: "width:" + (d / arr.length * 100).toFixed(1) + "%" }))));
-  });
-  view.append(tGrid);
-
-  /* 圖鑑收集進度 */
-  if (C) {
-    view.append(h("div", { class: "sect", text: "收集" }));
-    const colCats = [
-      ["vehicle", "載具", "#/codex/vehicle"], ["animal", "動物", "#/codex/animal"],
-      ["weapon", "武器", "#/codex/weapon"], ["style", "外觀", "#/codex/style"],
-      ["collect", "收藏品", "#/codex/collect"], ["trophy", "獎盃", "#/codex/trophy"],
-      ["challenge", "挑戰", "#/codex/challenge"], ["egg", "彩蛋", "#/eggs"],
-    ];
-    const colGrid = h("div", { class: "pgrid" });
-    colCats.forEach(([slug, name, href]) => {
-      const arr = slug === "egg" ? C.eggs.flatMap(g => g.items) : (C.cards[slug] || []);
-      const d = arr.filter(x => x.id && state.col.has(x.id)).length;
-      colGrid.append(h("a", { class: "pstat", style: "text-decoration:none", href },
-        h("small", { text: name + " ›" }), h("b", { text: `${d} / ${arr.length}` }),
-        h("div", { class: "mini" }, h("i", { style: "width:" + (arr.length ? (d / arr.length * 100).toFixed(1) : 0) + "%" }))));
-    });
-    view.append(colGrid);
-  }
-
-  /* 100% / 白金檢核表 */
-  if (G.progress && G.progress.rows && G.progress.rows.length) {
-    view.append(h("div", { class: "sect", text: "100% 與白金檢核" }));
-    let goal = "100";
-    const gChips = h("div", { class: "chips" },
-      [["100", "100%"], ["plat", "白金"], ["all", "全部"]].map(([k, l]) =>
-        h("button", { class: "chip", type: "button", "data-g": k, "aria-pressed": String(goal === k), text: l,
-          onclick: () => { goal = k; drawProg(); } })));
-    const pWrap = h("div", {});
-    view.append(gChips, pWrap);
-
-    const rowDone = r => {
-      if (r.type === "cards" && r.items) {
-        if (r.id === "main") return r.items.filter(id => state.done.has("p-" + id.slice(6))).length;
-        if (r.id === "miss") return r.items.filter(id => state.ticks.has(id) || state.col.has(id)).length;
-        return r.items.filter(id => state.col.has(id)).length;
-      }
-      return Math.max(0, Math.min(r.total || 1, state.pcounts[r.id] | 0));
-    };
-
-    const drawProg = () => {
-      $$("[data-g]", gChips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.g === goal)));
-      pWrap.replaceChildren();
-      const rows = G.progress.rows.filter(r => goal === "all" || (r.goals || []).includes(goal));
-      const bySec = {};
-      rows.forEach(r => { (bySec[r.sec] = bySec[r.sec] || []).push(r); });
-      Object.entries(bySec).forEach(([sec, list]) => {
-        const card = h("div", { class: "card", style: "margin-bottom:10px" }, h("div", { class: "sub", text: sec }));
-        list.forEach(r => {
-          const cur = rowDone(r);
-          const denom = (goal === "100" && r.need) ? r.need : (r.total || 1);
-          const pct = Math.min(100, cur / denom * 100);
-          const numEl = h("span", { class: "pnum", text: `${cur}/${denom}` });
-          const barI = h("i", { class: cur >= denom ? "full" : "", style: "width:" + pct.toFixed(1) + "%" });
-          const subTxt = (r.need && r.need !== r.total) ? `100% 需 ${r.need}（共 ${r.total}）` : null;
-          let ctl = null;
-          const rowEl = h("div", { class: "prow" + (cur >= denom ? " done" : "") });
-          if (r.type === "flag") {
-            ctl = h("button", { class: "chk", type: "button", "aria-pressed": String(!!cur), "aria-label": r.name,
-              onclick: () => { state.pcounts[r.id] = cur ? 0 : 1; savePcounts(); drawProg(); } }, h("span", {}, ico("check")));
-          } else if (r.type === "count" || r.type === "map") {
-            const adj = d => {
-              state.pcounts[r.id] = Math.max(0, Math.min(r.total || 999, (state.pcounts[r.id] | 0) + d));
-              savePcounts();
-              const nc = rowDone(r);
-              numEl.textContent = `${nc}/${denom}`;
-              barI.style.width = Math.min(100, nc / denom * 100).toFixed(1) + "%";
-              barI.classList.toggle("full", nc >= denom);
-              rowEl.classList.toggle("done", nc >= denom);
-            };
-            ctl = h("div", { class: "pctl" },
-              h("button", { type: "button", "aria-label": "減一：" + r.name, text: "−", onclick: () => adj(-1) }),
-              h("button", { type: "button", "aria-label": "加一：" + r.name, text: "+", onclick: () => adj(1) }));
-          } else {
-            const jump = r.id === "main" ? "#/" : r.id === "egg" ? "#/eggs" : r.id === "miss" ? "#/index"
-              : r.id === "car" ? "#/codex/vehicle" : r.id === "gun" ? "#/codex/weapon" : r.id === "animal" ? "#/codex/animal"
-              : r.id === "style" ? "#/codex/style" : r.id === "chal" ? "#/codex/challenge"
-              : (r.id === "trophy" || r.id === "trophy2") ? "#/codex/trophy" : "#/codex";
-            ctl = h("a", { class: "rbtn", href: jump, text: "前往 ›" });
-          }
-          rowEl.append(h("div", { class: "pt" }, h("b", { text: r.name }), subTxt ? h("small", { text: subTxt }) : null, h("div", { class: "pbar" }, barI)),
-            numEl, ctl);
-          card.append(rowEl);
-        });
-        pWrap.append(card);
-      });
-    };
-    drawProg();
-  }
-  view.append(sourcesFoot());
-}
-
-/* ───── 筆記（#/notes、#/n/<slug>） ───── */
-function notesView() {
-  setTop("筆記", false); tabs("notes");
-  (G.noteCats || []).forEach((cat, ci) => {
-    const list = (G.notes || []).filter(n => n.cat === cat.id);
-    view.append(h("div", { class: "sect", style: ci === 0 ? "margin-top:2px" : null, text: `${cat.title} · ${list.length}` }),
-      h("div", { class: "card" }, list.map(n => h("a", { class: "hit", href: "#/n/" + enc(n.slug) },
-        h("b", {}, n.title, n.badge ? h("span", { class: "badge b-opt", style: "margin-left:8px", text: n.badge }) : null),
-        n.sub ? h("small", { text: plain(n.sub) }) : null))));
-  });
-  view.append(sourcesFoot());
-}
+/* ───── 實用攻略文章頁（#/n/<slug>） ───── */
 function noteView(n, q) {
-  setTop(n.title, true); tabs("notes");
+  setTop(n.title, true); tabs("wiki");
   const art = h("article", { class: "art" },
     h("h1", { style: "margin-top:0", text: n.title }),
-    n.stamp ? h("div", { class: "stamp", text: n.stamp }) : null,
-    renderBlocks(n.blocks, {}),
-    h("div", { class: "cta" }, h("a", { class: "btn", href: "https://oplay.cc/gta6/notes/" + n.slug, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "原站（含地圖）")));
+    renderBlocks(n.blocks, {}));
   view.append(art);
   const p = q.get("p");
   if (p != null) requestAnimationFrame(() => {
@@ -1976,89 +1933,333 @@ function noteView(n, q) {
   });
 }
 
-/* ───── 索引（#/index） ───── */
+/* ───── 清單總中心（#/checklists、#/progress、#/index） ───── */
 const filt = { type: "all", hideDone: false };
-function indexView() {
-  setTop("索引與獎盃", true); tabs("more");
-  const miss = missables();
-  if (miss.length) {
-    view.append(h("div", { class: "sect", style: "margin-top:2px", text: `會錯過的事 · ${miss.length}` }));
-    const card = h("div", { class: "card" });
-    let last = null;
-    miss.forEach(x => {
-      if (x.ch !== last) { last = x.ch; card.append(h("div", { class: "sub", text: `${x.ch.letter} · ${x.ch.title}${x.ch.sub ? " " + x.ch.sub : ""}` })); }
-      card.append(infoRow(x.row, x.si, x.ri));
-    });
-    view.append(card);
+function checklistsView(q, defaultTab) {
+  setTop("清單", false); tabs("chk");
+  let tab = q.get("t") || defaultTab || "chap";
+  if (!["chap", "miss", "trophy", "progress"].includes(tab)) tab = "chap";
+  let onlyLeft = false;
+
+  const missBadge = h("small", { text: String(chkMissLeft()) });
+  const topChips = h("div", { class: "chips", role: "tablist", "aria-label": "清單分類" },
+    h("button", { class: "chip", type: "button", role: "tab", "data-ct": "chap", "aria-pressed": String(tab === "chap"),
+      onclick: () => switchTab("chap") }, "各章必做", h("small", { text: String(allChks.length) })),
+    h("button", { class: "chip", type: "button", role: "tab", "data-ct": "miss", "aria-pressed": String(tab === "miss"),
+      onclick: () => switchTab("miss") }, "會錯過", missBadge),
+    h("button", { class: "chip", type: "button", role: "tab", "data-ct": "trophy", "aria-pressed": String(tab === "trophy"),
+      onclick: () => switchTab("trophy") }, "獎盃任務"),
+    h("button", { class: "chip", type: "button", role: "tab", "data-ct": "progress", "aria-pressed": String(tab === "progress"),
+      onclick: () => switchTab("progress") }, "100%"));
+  const out = h("div", {});
+  view.append(topChips, out);
+
+  function switchTab(k) {
+    tab = k;
+    history.replaceState(null, "", k === "chap" ? "#/checklists" : "#/checklists?t=" + k);
+    renderTab();
   }
 
-  view.append(h("div", { class: "sect", text: "任務篩選" }));
-  const count = f => missions.filter(f).length;
-  const chipDefs = [["all", "全部", () => true], ["fav", "★ 收藏", m => state.fav.has(m.id)], ["hard", "常卡", m => m.hard],
-    ["full", "有截圖", m => m.full], ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
-  const chips = h("div", { class: "chips", role: "group", "aria-label": "任務篩選" });
-  const list = h("div", { class: "card" });
-  const draw = () => {
-    const def = chipDefs.find(c => c[0] === filt.type) || chipDefs[0];
-    $$(".chip", chips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === filt.type)));
-    list.replaceChildren();
-    let last = null, n = 0;
-    missions.filter(m => def[2](m) && !(filt.hideDone && state.done.has(m.id))).forEach(m => {
-      if (m.chap !== last) { last = m.chap; list.append(h("div", { class: "sub", text: `${m.chap.letter} · ${m.chap.title}${m.chap.sub ? " " + m.chap.sub : ""}` })); }
-      list.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })); n++;
-    });
-    if (!n) list.append(h("div", { class: "empty", text: "沒有符合的任務" }));
-  };
-  chipDefs.forEach(([k, label, f]) => chips.append(h("button", { class: "chip", type: "button", "data-k": k, "aria-pressed": "false",
-    onclick: () => { filt.type = k; draw(); } }, label, h("small", { text: String(count(f)) }))));
-  chips.append(h("button", { class: "chip", type: "button", "aria-pressed": String(filt.hideDone), text: "未完成",
-    onclick: e => { filt.hideDone = !filt.hideDone; e.currentTarget.setAttribute("aria-pressed", String(filt.hideDone)); draw(); } }));
-  view.append(chips, list); draw();
+  async function renderTab() {
+    $$("[data-ct]", topChips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.ct === tab)));
+    missBadge.textContent = String(chkMissLeft());
+    out.replaceChildren();
 
-  const link = x => x.ch
-    ? h("a", { class: "hit", href: `#/ch/${x.ch}` }, h("b", { text: x.name }), h("small", { text: `第 ${x.ch} 章重點` }), x.a ? h("p", {}, plain(x.a)) : null)
-    : h("a", { class: "hit", href: `#/m/${enc(x.m)}?md=p&p=${x.p}` }, h("b", { text: x.name }), h("small", { text: `${byId[x.m].code} · ${byId[x.m].name}` }));
-  if (G.trophies.length) view.append(h("div", { class: "sect", text: "獎盃 · " + G.trophies.length }), h("div", { class: "card" }, G.trophies.map(link)));
-  if (G.optionals.length) view.append(h("div", { class: "sect", text: "可選任務 · " + G.optionals.length }), h("div", { class: "card" }, G.optionals.map(link)));
+    if (tab === "chap") {
+      const statEl = h("div", { class: "small muted tnum" });
+      const syncTop = () => {
+        const done = chkDoneCount(), mLeft = chkMissLeft();
+        statEl.textContent = `已完成 ${done} / ${allChks.length}・會錯過剩 ${mLeft} 件`;
+        missBadge.textContent = String(mLeft);
+      };
+      const bar = h("div", { style: "display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 10px" },
+        statEl,
+        h("button", { class: "chip", type: "button", "aria-pressed": String(onlyLeft), text: "只看未勾",
+          onclick: e => { onlyLeft = !onlyLeft; e.currentTarget.setAttribute("aria-pressed", String(onlyLeft)); drawChap(); } }));
+      const body = h("div", {});
+      out.append(bar, body);
+
+      const drawChap = () => {
+        syncTop();
+        body.replaceChildren();
+        let shown = 0;
+        chkGroups.forEach(g => {
+          const items = onlyLeft ? g.items.filter(x => !state.ticks.has(x.id)) : g.items;
+          if (!items.length) return;
+          shown += items.length;
+          const cntEl = h("span", { class: "tnum", text: `${chkDoneCount(g.items)}/${g.items.length}` });
+          const chObj = G.chapters.find(c => c.no === g.ch);
+          const head = h("div", { class: "sub" },
+            h("span", { text: g.title }),
+            h("span", { style: "display:flex;align-items:center;gap:10px" },
+              cntEl,
+              chObj ? h("a", { href: "#/book/" + chObj.no, text: "路書 ›" }) : null));
+          const card = h("div", { class: "card", style: "margin-bottom:12px" }, head,
+            items.map(it => renderChkRow(it, { onChange: () => {
+              cntEl.textContent = `${chkDoneCount(g.items)}/${g.items.length}`;
+              syncTop();
+              if (onlyLeft) drawChap();
+            } })));
+          body.append(card);
+        });
+        if (!shown) body.append(h("div", { class: "empty", text: "各章必做清單已全數勾選完成！" }));
+      };
+      drawChap();
+      return;
+    }
+
+    if (tab === "miss") {
+      const missChks = allChks.filter(x => x.cat === "miss");
+      const statEl = h("div", { class: "small muted tnum" });
+      const syncMiss = () => {
+        const left = chkMissLeft();
+        statEl.textContent = left ? `共 ${missChks.length} 項關鍵會錯過提醒（剩 ${left} 件未勾）` : `全部 ${missChks.length} 項關鍵會錯過皆已完成`;
+        missBadge.textContent = String(left);
+      };
+      const bar = h("div", { style: "display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 10px" },
+        statEl,
+        h("button", { class: "chip", type: "button", "aria-pressed": String(onlyLeft), text: "只看未勾",
+          onclick: e => { onlyLeft = !onlyLeft; e.currentTarget.setAttribute("aria-pressed", String(onlyLeft)); drawMiss(); } }));
+      const body = h("div", {});
+      out.append(bar, body);
+
+      const drawMiss = () => {
+        syncMiss();
+        body.replaceChildren();
+        let shown = 0;
+        chkGroups.forEach(g => {
+          const items = g.items.filter(x => x.cat === "miss" && (!onlyLeft || !state.ticks.has(x.id)));
+          if (!items.length) return;
+          shown += items.length;
+          const chObj = G.chapters.find(c => c.no === g.ch);
+          const card = h("div", { class: "card", style: "margin-bottom:12px" },
+            h("div", { class: "sub" }, h("span", { text: g.title }),
+              chObj ? h("a", { href: "#/book/" + chObj.no, text: "路書 ›" }) : null),
+            items.map(it => renderChkRow(it, { onChange: () => { syncMiss(); if (onlyLeft) drawMiss(); } })));
+          body.append(card);
+        });
+        if (!shown) body.append(h("div", { class: "empty", text: "會錯過的關鍵項目已全部清空！" }));
+
+        const extraMiss = missables();
+        if (extraMiss.length) {
+          const det = h("details", { class: "chap" },
+            h("summary", {}, h("div", { class: "ct" }, h("b", { text: "各章結束前補充明細" }),
+              h("small", { text: `共 ${extraMiss.length} 條細節提醒` })), ico("next", "chev")));
+          let last = null;
+          extraMiss.forEach(x => {
+            if (x.ch !== last) { last = x.ch; det.append(h("div", { class: "sub", text: `${x.ch.letter} · ${x.ch.title}${x.ch.sub ? " " + x.ch.sub : ""}` })); }
+            det.append(infoRow(x.row, x.si, x.ri));
+          });
+          body.append(det);
+        }
+      };
+      drawMiss();
+      return;
+    }
+
+    if (tab === "trophy") {
+      out.append(h("div", { class: "sect", style: "margin-top:4px", text: "任務篩選" }));
+      const count = f => missions.filter(f).length;
+      const chipDefs = [["all", "全部", () => true], ["fav", "★ 收藏", m => state.fav.has(m.id)], ["hard", "常卡", m => m.hard],
+        ["full", "有截圖", m => m.full], ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
+      const chips = h("div", { class: "chips", role: "group", "aria-label": "任務篩選" });
+      const list = h("div", { class: "card" });
+      const drawList = () => {
+        const def = chipDefs.find(c => c[0] === filt.type) || chipDefs[0];
+        $$("[data-k]", chips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === filt.type)));
+        list.replaceChildren();
+        let last = null, n = 0;
+        missions.filter(m => def[2](m) && !(filt.hideDone && state.done.has(m.id))).forEach(m => {
+          if (m.chap !== last) { last = m.chap; list.append(h("div", { class: "sub", text: `${m.chap.letter} · ${m.chap.title}${m.chap.sub ? " " + m.chap.sub : ""}` })); }
+          list.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })); n++;
+        });
+        if (!n) list.append(h("div", { class: "empty", text: "沒有符合的任務" }));
+      };
+      chipDefs.forEach(([k, label, f]) => chips.append(h("button", { class: "chip", type: "button", "data-k": k, "aria-pressed": "false",
+        onclick: () => { filt.type = k; drawList(); } }, label, h("small", { text: String(count(f)) }))));
+      chips.append(h("button", { class: "chip", type: "button", "aria-pressed": String(filt.hideDone), text: "未完成",
+        onclick: e => { filt.hideDone = !filt.hideDone; e.currentTarget.setAttribute("aria-pressed", String(filt.hideDone)); drawList(); } }));
+      out.append(chips, list); drawList();
+
+      const link = x => x.ch
+        ? h("a", { class: "hit", href: `#/ch/${x.ch}` }, h("b", { text: x.name }), h("small", { text: `第 ${x.ch} 章速查` }), x.a ? h("p", {}, plain(x.a)) : null)
+        : h("a", { class: "hit", href: `#/m/${enc(x.m)}?md=p&p=${x.p}` }, h("b", { text: x.name }), h("small", { text: `${byId[x.m].code} · ${byId[x.m].name}` }));
+      if (G.trophies.length) out.append(h("div", { class: "sect", text: "獎盃 · " + G.trophies.length }), h("div", { class: "card" }, G.trophies.map(link)));
+      if (G.optionals.length) out.append(h("div", { class: "sect", text: "可選任務 · " + G.optionals.length }), h("div", { class: "card" }, G.optionals.map(link)));
+      return;
+    }
+
+    /* 100% 進度與白金檢核 */
+    const C = await ensureCodex();
+    if (view.dataset.v !== "checklists" || tab !== "progress") return;
+
+    const s = stats();
+    out.append(h("section", { class: "hero" },
+      h("h1", { style: "margin-top:0", text: `總進度 ${Math.round(s.done / s.all * 100)}%` }),
+      h("div", { class: "bar" }, h("i", { style: "width:" + (s.done / s.all * 100).toFixed(1) + "%" })),
+      h("div", { class: "stats tnum" },
+        h("span", { text: `任務 ${s.done}/${s.all}` }),
+        h("span", { text: `主線 ${s.mainDone}/${s.main}` }),
+        h("span", { text: `必做 ${chkDoneCount()}/${allChks.length}` }))));
+
+    out.append(h("div", { class: "sect", text: "各章進度" }));
+    const chCard = h("div", { class: "card" });
+    G.chapters.forEach(ch => {
+      const d = ch.missions.filter(m => state.done.has(m.id)).length;
+      const pct = d / ch.missions.length * 100;
+      chCard.append(h("a", { class: "prow", style: "text-decoration:none", href: "#/book/" + ch.no },
+        h("span", { class: "ncode", text: ch.letter }),
+        h("div", { class: "pt" }, h("b", { text: ch.title + (ch.sub ? " · " + ch.sub : "") }),
+          h("div", { class: "pbar" }, h("i", { class: pct >= 100 ? "full" : "", style: "width:" + pct.toFixed(1) + "%" }))),
+        h("span", { class: "pnum", text: `${d}/${ch.missions.length}` })));
+    });
+    out.append(chCard);
+
+    out.append(h("div", { class: "sect", text: "任務類型" }));
+    const tGrid = h("div", { class: "pgrid" });
+    TYPES.forEach(([label]) => {
+      const arr = missions.filter(m => m.type === label);
+      if (!arr.length) return;
+      const d = arr.filter(m => state.done.has(m.id)).length;
+      tGrid.append(h("div", { class: "pstat" },
+        h("small", { text: label }), h("b", { text: `${d} / ${arr.length}` }),
+        h("div", { class: "mini" }, h("i", { style: "width:" + (d / arr.length * 100).toFixed(1) + "%" }))));
+    });
+    out.append(tGrid);
+
+    if (C) {
+      out.append(h("div", { class: "sect", text: "圖鑑收集" }));
+      const colCats = [
+        ["vehicle", "載具", "#/codex/vehicle"], ["animal", "動物", "#/codex/animal"],
+        ["weapon", "武器", "#/codex/weapon"], ["style", "外觀", "#/codex/style"],
+        ["collect", "收藏品", "#/codex/collect"], ["trophy", "獎盃", "#/codex/trophy"],
+        ["challenge", "挑戰", "#/codex/challenge"], ["egg", "彩蛋", "#/eggs"],
+      ];
+      const colGrid = h("div", { class: "pgrid" });
+      colCats.forEach(([slug, name, href]) => {
+        const arr = slug === "egg" ? C.eggs.flatMap(g => g.items) : (C.cards[slug] || []);
+        const d = arr.filter(x => x.id && state.col.has(x.id)).length;
+        colGrid.append(h("a", { class: "pstat", style: "text-decoration:none", href },
+          h("small", { text: name + " ›" }), h("b", { text: `${d} / ${arr.length}` }),
+          h("div", { class: "mini" }, h("i", { style: "width:" + (arr.length ? (d / arr.length * 100).toFixed(1) : 0) + "%" }))));
+      });
+      out.append(colGrid);
+    }
+
+    if (G.progress && G.progress.rows && G.progress.rows.length) {
+      out.append(h("div", { class: "sect", text: "100% 與白金檢核" }));
+      let goal = "100";
+      const gChips = h("div", { class: "chips" },
+        [["100", "100%"], ["plat", "白金"], ["all", "全部"]].map(([k, l]) =>
+          h("button", { class: "chip", type: "button", "data-g": k, "aria-pressed": String(goal === k), text: l,
+            onclick: () => { goal = k; drawProg(); } })));
+      const pWrap = h("div", {});
+      out.append(gChips, pWrap);
+
+      const rowDone = r => {
+        if (r.type === "cards" && r.items) {
+          if (r.id === "main") return r.items.filter(id => state.done.has("p-" + id.slice(6))).length;
+          if (r.id === "miss") return r.items.filter(id => state.ticks.has(id) || state.col.has(id)).length;
+          return r.items.filter(id => state.col.has(id)).length;
+        }
+        return Math.max(0, Math.min(r.total || 1, state.pcounts[r.id] | 0));
+      };
+
+      const drawProg = () => {
+        $$("[data-g]", gChips).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.g === goal)));
+        pWrap.replaceChildren();
+        const rows = G.progress.rows.filter(r => goal === "all" || (r.goals || []).includes(goal));
+        const bySec = {};
+        rows.forEach(r => { (bySec[r.sec] = bySec[r.sec] || []).push(r); });
+        Object.entries(bySec).forEach(([sec, list]) => {
+          const card = h("div", { class: "card", style: "margin-bottom:10px" }, h("div", { class: "sub", text: sec }));
+          list.forEach(r => {
+            const cur = rowDone(r);
+            const denom = (goal === "100" && r.need) ? r.need : (r.total || 1);
+            const pct = Math.min(100, cur / denom * 100);
+            const numEl = h("span", { class: "pnum", text: `${cur}/${denom}` });
+            const barI = h("i", { class: cur >= denom ? "full" : "", style: "width:" + pct.toFixed(1) + "%" });
+            const subTxt = (r.need && r.need !== r.total) ? `100% 需 ${r.need}（共 ${r.total}）` : null;
+            let ctl = null;
+            const rowEl = h("div", { class: "prow" + (cur >= denom ? " done" : "") });
+            if (r.type === "flag") {
+              ctl = h("button", { class: "chk", type: "button", "aria-pressed": String(!!cur), "aria-label": r.name,
+                onclick: () => { state.pcounts[r.id] = cur ? 0 : 1; savePcounts(); drawProg(); } }, h("span", {}, ico("check")));
+            } else if (r.type === "count" || r.type === "map") {
+              const adj = d => {
+                state.pcounts[r.id] = Math.max(0, Math.min(r.total || 999, (state.pcounts[r.id] | 0) + d));
+                savePcounts();
+                const nc = rowDone(r);
+                numEl.textContent = `${nc}/${denom}`;
+                barI.style.width = Math.min(100, nc / denom * 100).toFixed(1) + "%";
+                barI.classList.toggle("full", nc >= denom);
+                rowEl.classList.toggle("done", nc >= denom);
+              };
+              ctl = h("div", { class: "pctl" },
+                h("button", { type: "button", "aria-label": "減一：" + r.name, text: "−", onclick: () => adj(-1) }),
+                h("button", { type: "button", "aria-label": "加一：" + r.name, text: "+", onclick: () => adj(1) }));
+            } else {
+              const jump = r.id === "main" ? "#/" : r.id === "egg" ? "#/eggs" : r.id === "miss" ? "#/checklists?t=miss"
+                : r.id === "car" ? "#/codex/vehicle" : r.id === "gun" ? "#/codex/weapon" : r.id === "animal" ? "#/codex/animal"
+                : r.id === "style" ? "#/codex/style" : r.id === "chal" ? "#/codex/challenge"
+                : (r.id === "trophy" || r.id === "trophy2") ? "#/codex/trophy" : "#/wiki?t=codex";
+              ctl = h("a", { class: "rbtn", href: jump, text: "前往 ›" });
+            }
+            rowEl.append(h("div", { class: "pt" }, h("b", { text: r.name }), subTxt ? h("small", { text: subTxt }) : null, h("div", { class: "pbar" }, barI)),
+              numEl, ctl);
+            card.append(rowEl);
+          });
+          pWrap.append(card);
+        });
+      };
+      drawProg();
+    }
+  }
+  renderTab();
 }
 
 /* ───── 全文搜尋（#/search） ───── */
 let haystack = null, codexIndexed = false;
+const compactQ = s => s.replace(/(?<=\d),(?=\d)/g, "").replace(/(\d)\s+([萬千百億])/g, "$1$2");
 function buildIndex() {
+  const push = (e, t, pri) => { e.t = t; e.q = norm(t); e.qc = compactQ(e.q); e.pri = pri || 0; haystack.push(e); };   // q＝正規化文字（別用 n）
   if (!haystack) {
     haystack = [];
-    const add = (e, t, pri) => { e.t = t; e.q = norm(t); e.pri = pri || 0; haystack.push(e); };   // q＝正規化文字（別用 n）
+    allChks.forEach(it => {
+      const g = chkByChap[it.ch];
+      push({ k: "chk", g: "chk", it, chTitle: g ? g.title : "" },
+        [it.title, it.note, CHK_CATS[it.cat] || "", g ? g.title : ""].filter(Boolean).map(plain).join(" "), 5);
+    });
     missions.forEach(m => {
-      add({ k: "m", g: "m", m, b: null }, [m.code, m.name, m.aka, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), 4);
-      (m.keys || []).forEach(t => add({ k: "m", g: "m", m, b: null, md: "s" }, plain(t), 1));
-      textBlocks(m.steps).forEach(x => add({ k: "m", g: "m", m, b: x.i, md: "s" }, x.t));
-      (m.blocks || []).forEach((b, i) => { if (typeof b === "string") add({ k: "m", g: "m", m, b: i, md: "p" }, b); });
-      (m.stuck || []).forEach(r => add({ k: "m", g: "m", m, b: null, md: "s", sub: "常見卡關" }, [r.n, r.a].filter(Boolean).map(plain).join("："), 1));
+      push({ k: "m", g: "m", m, b: null }, [m.code, m.name, m.aka, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), 4);
+      (m.keys || []).forEach(t => push({ k: "m", g: "m", m, b: null, md: "s" }, plain(t), 1));
+      textBlocks(m.steps).forEach(x => push({ k: "m", g: "m", m, b: x.i, md: "s" }, x.t));
+      (m.blocks || []).forEach((b, i) => { if (typeof b === "string") push({ k: "m", g: "m", m, b: i, md: "p" }, b); });
+      (m.stuck || []).forEach(r => push({ k: "m", g: "m", m, b: null, md: "s", sub: "常見卡關" }, [r.n, r.a].filter(Boolean).map(plain).join("："), 1));
     });
     G.chapters.forEach(ch => (ch.info || []).forEach((sec, si) => sec.rows.forEach((r, ri) =>
-      add({ k: "r", g: "o", ch, sec, si, ri }, [r.n, r.en, r.k, r.a].filter(Boolean).map(plain).join(" "), 2))));
+      push({ k: "r", g: "o", ch, sec, si, ri }, [r.n, r.en, r.k, r.a].filter(Boolean).map(plain).join(" "), 2))));
     (G.notes || []).forEach(n => {
-      add({ k: "n", g: "n", n, b: null }, n.title + " " + (n.sub || ""), 3);
-      textBlocks(n.blocks).forEach(x => add({ k: "n", g: "n", n, b: x.i }, x.t));
+      push({ k: "n", g: "n", n, b: null }, n.title + " " + (n.sub || ""), 3);
+      textBlocks(n.blocks).forEach(x => push({ k: "n", g: "n", n, b: x.i }, x.t));
     });
   }
   if (!codexIndexed && window.CODEX) {
     codexIndexed = true;
     const C = window.CODEX;
-    const add = (e, t, pri) => { e.t = t; e.q = norm(t); e.pri = pri || 0; haystack.push(e); };
     const catName = Object.fromEntries(C.groups.flatMap(g => g.cats).map(c => [c.slug, c.name]));
     Object.entries(C.cards || {}).forEach(([slug, items]) => {
       if (slug === "story") return;
       const cn = catName[slug] || slug;
-      items.forEach(it => add({ k: "c", g: "c", slug, cn, it },
+      items.forEach(it => push({ k: "c", g: "c", slug, cn, it },
         [it.n, it.en, it.cat, it.where, it.val, it.gift, it.code, it.a, it.how, (it.tags || []).join(" ")].filter(Boolean).map(plain).join(" "), 3));
     });
     (C.eggs || []).forEach(grp => grp.items.forEach(it =>
-      add({ k: "e", g: "e", reg: grp.region, it }, [grp.region, it.n, it.en, it.cat, it.gift, it.a].filter(Boolean).map(plain).join(" "), 3)));
+      push({ k: "e", g: "c", reg: grp.region, it }, [grp.region, it.n, it.en, it.cat, it.gift, it.a].filter(Boolean).map(plain).join(" "), 3)));
     (C.hud || []).forEach(grp => grp.items.forEach(it =>
-      add({ k: "h", g: "o", title: grp.title, it }, [grp.title, it.n, it.say, it.do].filter(Boolean).map(plain).join(" "), 2)));
+      push({ k: "h", g: "o", title: grp.title, it }, [grp.title, it.n, it.say, it.do].filter(Boolean).map(plain).join(" "), 2)));
     (C.updates || []).forEach(day => day.items.forEach(it =>
-      add({ k: "u", g: "o", date: day.date, it }, [day.date, it.tag, it.text].filter(Boolean).map(plain).join(" "), 1)));
+      push({ k: "u", g: "o", date: day.date, it }, [day.date, it.tag, it.text].filter(Boolean).map(plain).join(" "), 1)));
   }
 }
 function snippet(text, terms) {
@@ -2078,19 +2279,24 @@ function snippet(text, terms) {
 }
 function hitLink(e, terms) {
   let href, title, small;
-  if (e.k === "m") {
+  if (e.k === "chk") {
+    const m = e.it.m && byId[e.it.m];
+    href = m ? "#/m/" + enc(m.id) : "#/checklists";
+    title = e.it.title;
+    small = `必做清單 · ${e.chTitle}` + (m ? ` · ${m.code} ${m.name}` : "");
+  } else if (e.k === "m") {
     href = "#/m/" + enc(e.m.id) + (e.md ? "?md=" + e.md + (e.b != null ? "&p=" + e.b : "") : "");
     title = `${e.m.code} ${e.m.name}`; small = e.m.chap.title + (e.m.en ? " · " + e.m.en : "") + (e.sub ? " · " + e.sub : "");
   } else if (e.k === "r") {
     href = `#/ch/${e.ch.no}?r=${e.si}-${e.ri}`; title = plain(e.sec.rows[e.ri].n); small = `${e.ch.title} · ${e.sec.title}`;
   } else if (e.k === "n") {
-    href = "#/n/" + enc(e.n.slug) + (e.b != null ? "?p=" + e.b : ""); title = e.n.title; small = "筆記";
+    href = "#/n/" + enc(e.n.slug) + (e.b != null ? "?p=" + e.b : ""); title = e.n.title; small = "實用攻略";
   } else if (e.k === "c") {
     href = "#/codex/" + enc(e.slug) + (e.it.id ? "?hl=" + enc(e.it.id) : ""); title = e.it.n; small = `圖鑑 · ${e.cn}` + (e.it.cat ? " · " + e.it.cat : "");
   } else if (e.k === "e") {
     href = "#/eggs" + (e.it.id ? "?hl=" + enc(e.it.id) : ""); title = e.it.n; small = `彩蛋 · ${e.reg}`;
   } else if (e.k === "h") {
-    href = "#/hud" + (e.it.id ? "?hl=" + enc(e.it.id) : ""); title = e.it.n; small = `圖示 · ${e.title}`;
+    href = "#/hud" + (e.it.id ? "?hl=" + enc(e.it.id) : ""); title = e.it.n; small = `畫面圖示 · ${e.title}`;
   } else {
     href = "#/updates"; title = plain(e.it.text); small = `更新 · ${e.date}`;
   }
@@ -2099,10 +2305,10 @@ function hitLink(e, terms) {
 function searchView(q) {
   setTop("搜尋", false); tabs("search");
   let scope = "all";
-  const input = h("input", { type: "search", placeholder: "搜尋任務、圖鑑、彩蛋、筆記…", value: q.get("q") || "",
+  const input = h("input", { type: "search", placeholder: "搜尋任務、清單、圖鑑、攻略…", value: q.get("q") || "",
     enterkeyhint: "search", autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "搜尋攻略" });
   const chips = h("div", { class: "chips", style: "margin-top:10px;padding-bottom:4px" },
-    [["all", "全部"], ["m", "任務"], ["c", "圖鑑"], ["e", "彩蛋"], ["n", "筆記"], ["o", "其他"]].map(([k, l]) =>
+    [["all", "全部"], ["m", "任務"], ["chk", "清單"], ["c", "圖鑑"], ["n", "攻略"], ["o", "其他"]].map(([k, l]) =>
       h("button", { class: "chip", type: "button", "data-s": k, "aria-pressed": String(scope === k), text: l,
         onclick: () => { scope = k; run(); } })));
   const out = h("div", { style: "margin-top:8px" });
@@ -2115,8 +2321,9 @@ function searchView(q) {
     out.replaceChildren();
     const terms = norm(raw).split(/\s+/).filter(Boolean);
     if (!terms.length) { out.append(h("div", { class: "empty", text: "輸入關鍵字（多詞用空白分開）" })); return; }
+    const cterms = terms.map(compactQ);
     buildIndex();
-    const hits = haystack.filter(e => (scope === "all" || e.g === scope) && terms.every(t => e.q.includes(t))).sort((a, b) => b.pri - a.pri);
+    const hits = haystack.filter(e => (scope === "all" || e.g === scope) && cterms.every(t => e.qc.includes(t))).sort((a, b) => b.pri - a.pri);
     if (!hits.length) { out.append(h("div", { class: "empty", text: "找不到符合的內容" })); return; }
     const MAX = 80;
     out.append(h("div", { class: "small muted", style: "margin:0 4px 8px", text: `${hits.length} 筆` + (hits.length > MAX ? `（顯示前 ${MAX} 筆）` : "") }));
@@ -2127,22 +2334,6 @@ function searchView(q) {
   run();
   if (!window.CODEX) ensureCodex().then(() => { if (view.dataset.v === "search") { buildIndex(); if (input.value.trim()) run(); } });
   if (!input.value) input.focus({ preventScroll: true });
-}
-
-/* ───── 更多（#/more） ───── */
-function moreView() {
-  setTop("更多", false); tabs("more");
-  const s = stats(), left = missedLeft();
-  view.append(h("div", { class: "mgrid" },
-    h("a", { class: "mtile", href: "#/progress" }, ico("chart"), h("b", { text: "進度儀表板" }), h("small", { text: `任務 ${s.done}/${s.all}・收集 ${state.col.size}` })),
-    h("a", { class: "mtile", href: "#/index" }, ico("trophy"), h("b", { text: "索引與獎盃" }), h("small", { text: left ? `會錯過剩 ${left} 件` : "會錯過已清空" })),
-    h("a", { class: "mtile", href: "#/eggs" }, ico("egg"), h("b", { text: "彩蛋" }), h("small", { text: "62 個・依地區分組" })),
-    h("a", { class: "mtile", href: "#/hud" }, ico("hud"), h("b", { text: "圖示全解" }), h("small", { text: "血條、星星與小地圖" })),
-    h("a", { class: "mtile", href: "#/codex/cheat" }, ico("codex"), h("b", { text: "作弊碼" }), h("small", { text: "61 組按鍵與解鎖條件" })),
-    h("a", { class: "mtile", href: "#/updates" }, ico("bell"), h("b", { text: "更新紀錄" }), h("small", { text: "攻略與資料更新日誌" })),
-    h("a", { class: "mtile", href: "https://oplay.cc/gta6/map", target: "_blank", rel: "noopener noreferrer" }, ico("map"), h("b", { text: "互動地圖 ↗" }), h("small", { text: "開啟 oplay.cc 地圖" })),
-    h("a", { class: "mtile", href: "#/settings" }, ico("set"), h("b", { text: "設定" }), h("small", { text: "外觀、備份、離線圖片" }))));
-  view.append(sourcesFoot());
 }
 
 /* ───── 設定與備份（#/settings） ───── */
@@ -2164,7 +2355,7 @@ function controls(full) {
     h("div", { class: "opt" }, h("span", { text: "主題" }), seg),
     sw("顯示圖片", state.imgs, v => { state.imgs = v; store.set("imgs", v); }, "關閉可省流量，重開路書套用"),
   ];
-  if ("wakeLock" in navigator) rows.push(sw("螢幕常亮", state.awake, v => { state.awake = v; store.set("awake", v); wakeSync(); }, "閱讀路書時不自動鎖屏"));
+  if ("wakeLock" in navigator) rows.push(sw("螢幕常亮", state.awake, v => { state.awake = v; store.set("awake", v); wakeSync(); }, "閱讀路書時不自動鎖定螢幕"));
   if (full) {
     rows.push(sw("點擊標記步驟", state.stepsOn, v => { state.stepsOn = v; store.set("stepsOn", v); }, "點一下變淡，再點取消"),
       sw("左右滑切節點", state.swipe, v => { state.swipe = v; store.set("swipe", v); }, "路書頁橫滑切換上下節點"));
@@ -2202,13 +2393,13 @@ function restoreCode(text) {
 }
 
 function settingsView() {
-  setTop("設定", true); tabs("more");
+  setTop("設定", true); tabs("");
   const s = stats();
   view.append(h("div", { class: "sect", style: "margin-top:2px", text: "閱讀" }), h("div", { class: "card" }, controls(true)));
 
   view.append(h("div", { class: "sect", text: "進度與備份" }),
     h("div", { class: "card" },
-      h("div", { class: "opt" }, h("span", {}, `任務 ${s.done}/${s.all}・收集 ${state.col.size}`,
+      h("div", { class: "opt" }, h("span", {}, `任務 ${s.done}/${s.all}・必做 ${chkDoneCount()}/${allChks.length}・收集 ${state.col.size}`,
         h("small", { text: "進度存在本機瀏覽器" }))),
       h("div", { class: "opt" }, h("span", {}, "備份進度", h("small", { text: "換機或清資料前複製" })),
         h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "複製", onclick: async () => {
@@ -2235,7 +2426,7 @@ function settingsView() {
   view.append(h("div", { class: "sect", text: "離線與更新" }),
     h("div", { class: "card" },
       h("div", { class: "pad" }, downloadBtn(all, "預載全部截圖", false),
-        h("div", { class: "small muted", style: "margin-top:8px", text: "文字與圖鑑已可離線閱讀；跨域截圖受瀏覽器配額限制，可能無法存滿全部 " + all.length + " 張。" })),
+        h("div", { class: "small muted", style: "margin-top:8px", text: "文字、清單與圖鑑已可離線閱讀；截圖受瀏覽器儲存配額限制，可能無法存滿全部 " + all.length + " 張。" })),
       h("div", { class: "opt" }, h("span", { text: "檢查更新" }),
         h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "檢查", onclick: checkUpdate })),
       h("div", { class: "opt" }, h("span", { text: "清除離線圖片" }),
@@ -2247,7 +2438,7 @@ function settingsView() {
     h("div", { class: "card" }, h("div", { class: "how" },
       h("div", {}, h("b", { text: "iPhone：" }), "Safari 分享 → 加入主畫面"),
       h("div", {}, h("b", { text: "Android：" }), "Chrome 選單 → 安裝應用程式"))));
-  view.append(h("div", { class: "sect", text: "資料來源" }), sourcesFoot(true));
+  view.append(sourcesFoot(true));
 }
 async function checkUpdate() {
   if (!("serviceWorker" in navigator)) { toast("這個瀏覽器不支援離線更新"); return; }
@@ -2312,16 +2503,18 @@ function route(keepScroll) {
 
   routeKey = parts.length > 1 ? root + "/" + parts[1] : root;
   if (root === "codex" && parts[1]) { view.dataset.v = "codex-cat"; codexCatView(parts[1], q); }
-  else if (root === "codex") { view.dataset.v = "codex"; codexHomeView(); }
+  else if (root === "checklists") { view.dataset.v = "checklists"; checklistsView(q, "chap"); }
+  else if (root === "progress") { view.dataset.v = "checklists"; checklistsView(q, "progress"); }
+  else if (root === "index") { view.dataset.v = "checklists"; checklistsView(q, "miss"); }
+  else if (root === "wiki") { view.dataset.v = "wiki"; wikiView(q, "guides"); }
+  else if (root === "codex") { view.dataset.v = "wiki"; wikiView(q, "codex"); }
+  else if (root === "notes") { view.dataset.v = "wiki"; wikiView(q, "guides"); }
+  else if (root === "more") { view.dataset.v = "wiki"; wikiView(q, "guides"); }
   else if (root === "eggs") { view.dataset.v = "eggs"; eggsView(q); }
   else if (root === "hud") { view.dataset.v = "hud"; hudView(q); }
   else if (root === "updates") { view.dataset.v = "updates"; updatesView(); }
-  else if (root === "progress") { view.dataset.v = "progress"; progressView(); }
-  else if (root === "more") { view.dataset.v = "more"; moreView(); }
-  else if (root === "index") { view.dataset.v = "index"; indexView(); }
   else if (root === "search") { view.dataset.v = "search"; searchView(q); }
   else if (root === "settings") { view.dataset.v = "settings"; settingsView(); }
-  else if (root === "notes") { view.dataset.v = "notes"; notesView(); }
   else if (root === "ch") { view.dataset.v = "ch"; chapterView(+parts[1] || 1, q); }
   else if (root === "n" && noteBy[parts[1]]) { view.dataset.v = "n"; noteView(noteBy[parts[1]], q); }
   else { view.dataset.v = "toc"; tocView(); }
@@ -2339,7 +2532,10 @@ addEventListener("scroll", () => {
 document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); wakeSync(); });
 addEventListener("pagehide", savePos);
 addEventListener("hashchange", () => { navCount++; route(); });
-backBtn.addEventListener("click", () => { if (navCount > 0) history.back(); else location.hash = "#/"; });
+backBtn.addEventListener("click", () => {
+  if (backBtn.dataset.mode === "set") { location.hash = "#/settings"; return; }
+  if (navCount > 0) history.back(); else location.hash = "#/";
+});
 $("#aa").addEventListener("click", () => sheet("閱讀設定", controls(false)));
 
 /* 鍵盤左右鍵與手機左右滑：在路書頁切換上下節點 */

@@ -2,7 +2,7 @@
 // 頁面與文字（index.html、data.js、codex.js）：有網路時先抓新版（3 秒內沒回應就用快取），沒網路用快取。
 // 圖片在原站 CDN：看過的存起來（上限 IMG_MAX 張，全部約 275 張），下次沒網路也看得到。
 // 重跑 scripts/build_gta6.py 更新 data.js／codex.js 或改了 index.html 後，把 CACHE 的版本號加 1，已安裝的 PWA 才會收到新內容。
-const CACHE = "gta6-guide-v6";
+const CACHE = "gta6-guide-v7";
 const IMG_CACHE = "gta6-images-v2";
 const IMG_HOST = "img1.gamersky.com";
 const IMG_MAX = 350;
