@@ -189,8 +189,9 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .nosteps{margin-top:18px;padding:18px 16px;border-radius:16px;border:1px dashed var(--line);background:var(--surface);font-size:.95em;line-height:1.7}
 .nosteps b{display:block;margin-bottom:4px}
 
-.art.steps p[data-b]{cursor:pointer;transition:opacity .15s}
+.art.steps p[data-k]{cursor:pointer;transition:opacity .15s}
 .art p.sd{opacity:.45;box-shadow:inset 3px 0 0 var(--ok);padding-left:11px;margin-left:-11px}
+.art .bl>li.sd{opacity:.45}
 .notice{margin-top:14px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:.9rem;line-height:1.6;display:flex;gap:10px}
 .notice b{color:var(--accent2);white-space:nowrap}
 .star{color:var(--accent2);font-size:.85em;flex:none}
@@ -199,6 +200,58 @@ mark{background:color-mix(in srgb,var(--accent2) 55%,transparent);color:inherit;
 .btn:disabled{opacity:.7}
 .how{padding:12px 16px;font-size:.86rem;line-height:1.75;color:var(--muted);border-top:1px solid var(--line)}
 .how b{color:var(--text)}
+
+/* 內文：行內標記、步驟、重點、表格 */
+kbd.k{display:inline-block;min-width:1.7em;padding:0 .4em;margin:0 .1em;border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;background:var(--surface2);font:700 .78em/1.7 system-ui,sans-serif;text-align:center;letter-spacing:0;white-space:nowrap;vertical-align:.05em}
+.art ol.stp,.art ul.bl{margin:.9em 0;padding:0;list-style:none}
+.stp{counter-reset:stp}
+.stp>li{counter-increment:stp;position:relative;padding:12px 13px 12px 46px;margin:10px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface);line-height:1.8}
+.stp>li::before{content:counter(stp);position:absolute;left:13px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:.74em;font-weight:800;display:grid;place-items:center;line-height:1}
+.art.steps .stp>li,.art.steps ul.bl>li{cursor:pointer}
+.stp>li.sd{opacity:.5;border-color:var(--ok);box-shadow:none;margin-left:0;padding-left:46px}
+.stp>li.sd::before{content:"✓";background:var(--ok);color:#06251a}
+.bl>li{position:relative;margin:.5em 0;padding-left:1.1em}
+.bl>li::before{content:"•";position:absolute;left:.1em;color:var(--accent2);font-weight:800}
+.keys{margin:14px 0 6px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent2) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--accent2) 40%,var(--line));font-size:.92em}
+.keys .t{display:block;font-size:.8em;font-weight:800;letter-spacing:.12em;color:var(--accent2)}
+.keys .bl{margin:.3em 0 0!important}
+.seg.full{display:flex;margin:16px 0 4px}
+.seg.full button{flex:1;padding:10px 6px}
+.art .sh{margin:1.7em 0 .4em;line-height:1.4}
+.art h2.sh{font-size:1.18em}.art h3.sh{font-size:1.05em;color:var(--accent2)}.art h4.sh{font-size:1em}
+.tblw{overflow-x:auto;margin:1em -4px;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch}
+.tblw table{border-collapse:collapse;min-width:100%;font-size:.86em;line-height:1.55}
+.tblw th,.tblw td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;min-width:5em}
+.tblw tr:last-child td{border-bottom:0}
+.tblw th{background:var(--surface2);white-space:nowrap}
+.b-hard{color:var(--accent2)}
+.art li.flash,.art h2.flash,.art h3.flash,.art div.flash{animation:flash 2.2s ease-out}
+.stamp{font-size:.76rem;color:var(--muted);margin:2px 0 10px}
+.lead{margin:6px 0 0;font-size:.92rem;line-height:1.65;opacity:.95}
+.quick{display:flex;gap:10px;margin-top:14px}
+.quick a{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-decoration:none}
+.quick small{color:var(--muted);font-size:.74rem}
+.quick b{font-size:.95rem;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quick a.warn{border-color:color-mix(in srgb,var(--accent2) 55%,var(--line))}
+.quick a.warn small{color:var(--accent2);font-weight:700}
+.row.cinfo{background:color-mix(in srgb,var(--accent2) 9%,var(--surface))}
+.row.cinfo .rl{min-height:50px}
+.row.cinfo .nm{color:var(--accent2)}
+.inf{display:flex;align-items:flex-start;border-top:1px solid var(--line)}
+.inf .ib2{flex:1;min-width:0;padding:11px 14px}
+.inf:not(:has(.chk)) .ib2{padding-left:16px}
+.inf .t{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.inf .en{font-size:.78rem;color:var(--muted)}
+.inf .a{font-size:.88rem;line-height:1.6;color:var(--muted);margin-top:3px}
+.inf.done .t b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.inf.flash{animation:flash 2.2s ease-out}
+.inf .chk{flex:none;width:52px;align-self:stretch;border:0;background:none;display:grid;place-items:start center;padding-top:14px;color:var(--line)}
+.inf .chk span{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center}
+.inf .chk svg{width:16px;height:16px;stroke-width:3;opacity:0}
+.inf.done .chk span{background:var(--ok);border-color:var(--ok);color:#06251a}
+.inf.done .chk svg{opacity:1}
+.nav a,.nav button{font-size:.68rem}
+.nb .lead{margin-bottom:8px}
 
 /* 彈層 */
 .sheet-back{position:fixed;inset:0;z-index:50;background:rgba(5,2,12,.55);animation:fade .15s}
@@ -289,6 +342,7 @@ const ICONS = {
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   img: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 9"/>',
   ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  notes: '<path d="M6 3h8l5 5v13H6zM14 3v5h5M9 13h7M9 17h7"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 20h8"/>',
 };
 function ico(name, cls) {
@@ -306,7 +360,7 @@ const TYPES = [["主線", "main"], ["支線", "side"], ["搶劫", "heist"], ["�
 const tkey = t => (TYPES.find(x => x[0] === t) || [0, "main"])[1];
 const missions = [], byId = {};
 G.chapters.forEach(ch => ch.missions.forEach(m => {
-  m.chap = ch; m.n = missions.length + 1; m.full = !!(m.blocks && m.blocks.length);
+  m.chap = ch; m.n = missions.length + 1; m.full = !!(m.blocks && m.blocks.length); m.walk = !!(m.steps && m.steps.length);
   missions.push(m); byId[m.id] = m;
 }));
 const IMG = G.imgBase;
@@ -324,6 +378,7 @@ const state = {
   stepsOn: store.get("stepsOn", true),
   swipe: store.get("swipe", true),
   awake: store.get("awake", false),
+  ticks: new Set(store.get("ticks", [])),
 };
 /* 步驟標記用「段落內容的雜湊」當鍵，原作者改了前面的段落、插了圖，標記也不會錯位；舊版存的是段落序號，直接丟掉 */
 const hkey = t => { let x = 5381; for (let i = 0; i < t.length; i++) x = ((x << 5) + x + t.charCodeAt(i)) >>> 0; return x.toString(36); };
@@ -337,6 +392,7 @@ if (state.pos && !byId[state.pos.id]) state.pos = null;
 const saveDone = () => store.set("done", [...state.done]);
 const saveFav = () => store.set("fav", [...state.fav]);
 const saveSteps = () => store.set("steps", state.steps);
+const saveTicks = () => store.set("ticks", [...state.ticks]);
 saveDone(); saveFav(); saveSteps(); store.set("pos", state.pos && byId[state.pos.id] ? state.pos : null);
 
 function applyPrefs() {
@@ -386,20 +442,21 @@ function sheet(title, body, onClose) {
 function badge(m) { return m.type !== "主線" ? h("span", { class: "badge b-" + tkey(m.type), text: m.type }) : null; }
 function whoChip(who) {
   if (!who) return null;
-  const c = /^Jason/.test(who) && !/Lucia/.test(who) ? " j" : /^Lucia/.test(who) && !/Jason/.test(who) ? " l" : "";
+  const c = /傑森/.test(who) && !/露西亞/.test(who) ? " j" : /露西亞/.test(who) && !/傑森/.test(who) ? " l" : "";
   return h("span", { class: "who" + c, text: who });
 }
 
 function missionRow(m, o = {}) {
   const done = state.done.has(m.id);
-  const sub = m.full ? [m.en, m.note || m.sum].filter(Boolean).join(" · ") : [m.who, m.sum].filter(Boolean).join(" · ");
+  const sub = [m.en && m.en !== m.name ? m.en : "", m.sum].filter(Boolean).join(" · ");
   const extra = o.showChap ? m.chap.title + (m.chap.sub ? " · " + m.chap.sub : "") : "";
-  return h("div", { class: "row" + (done ? " done" : "") + (m.full ? "" : " sumonly") + (o.cur ? " cur" : ""), "data-id": m.id },
+  return h("div", { class: "row" + (done ? " done" : "") + (o.cur ? " cur" : ""), "data-id": m.id },
     h("a", { class: "rl", href: "#/m/" + enc(m.id), onclick: o.onGo },
       h("span", { class: "num", text: String(m.n).padStart(2, "0") }),
       h("span", { class: "rt" },
         h("span", { class: "nm" }, m.name, state.fav.has(m.id) && h("span", { class: "star", text: "★" }), m.full && ico("img")),
         (sub || extra) && h("span", { class: "nt", text: [extra, sub].filter(Boolean).join(" ‧ ") })),
+      m.hard ? h("span", { class: "badge b-hard", text: "常卡" }) : null,
       badge(m)),
     h("button", { class: "chk", type: "button", "aria-pressed": String(done), "aria-label": (done ? "取消完成：" : "標記完成：") + m.name,
       onclick: e => { e.preventDefault(); e.stopPropagation(); toggleDone(m.id); } },
@@ -418,9 +475,18 @@ function stats() {
   return {
     all: missions.length, done: missions.filter(m => state.done.has(m.id)).length,
     main: main.length, mainDone: main.filter(m => state.done.has(m.id)).length,
-    full: missions.filter(m => m.full).length,
+    full: missions.filter(m => m.full).length, walk: missions.filter(m => m.walk).length,
   };
 }
+/* 各章「這章結束前要做」（會錯過的事）：[{ch, si, ri, row}] */
+function missables() {
+  const out = [];
+  G.chapters.forEach(ch => (ch.info || []).forEach((sec, si) => {
+    if (sec.title === "這章結束前要做") sec.rows.forEach((row, ri) => out.push({ ch, si, ri, row }));
+  }));
+  return out;
+}
+const missedLeft = () => missables().filter(x => !(x.row.tick && state.ticks.has(x.row.tick))).length;
 
 /* ───── 導覽列 ───── */
 function setTop(title, back) {
@@ -429,7 +495,7 @@ function setTop(title, back) {
   document.title = title === "GTA 6 攻略" ? "GTA 6 全任務攻略" : title + " · GTA 6 攻略";
 }
 function tabs(active) {
-  const items = [["toc", "#/", "目錄"], ["index", "#/index", "索引"], ["search", "#/search", "搜尋"], ["settings", "#/settings", "設定"]];
+  const items = [["toc", "#/", "目錄"], ["notes", "#/notes", "筆記"], ["index", "#/index", "索引"], ["search", "#/search", "搜尋"], ["settings", "#/settings", "設定"]];
   nav.replaceChildren(...items.map(([k, href, label]) =>
     h("a", { href, "aria-current": k === active ? "page" : null, onclick: () => { if (k === active) scrollTo(0, 0); } }, ico(k === "settings" ? "set" : k), label)));
 }
@@ -453,6 +519,61 @@ function openDrawer(cur) {
   if (c) c.scrollIntoView({ block: "center" });
 }
 
+/* ───── 內文渲染（**粗體**、⟦按鍵⟧ 兩種標記；全部用 DOM 方法，不經過 innerHTML） ───── */
+function rich(text) {
+  const frag = document.createDocumentFragment();
+  let bold = false, kbd = false;
+  String(text).split(/(\*\*|⟦|⟧)/).forEach(tok => {
+    if (tok === "**") { bold = !bold; return; }
+    if (tok === "⟦") { kbd = true; return; }
+    if (tok === "⟧") { kbd = false; return; }
+    if (!tok) return;
+    let node = document.createTextNode(tok);
+    if (kbd) { const k = h("kbd", { class: "k" }); k.append(node); node = k; }
+    if (bold) { const b = document.createElement("strong"); b.append(node); node = b; }
+    frag.append(node);
+  });
+  return frag;
+}
+const plain = t => String(t).replace(/\*\*|⟦|⟧/g, "");
+
+/* 內容區塊 → DOM。序號規則：段落、標題、表格各 1，清單每個項目 1；textBlocks() 用同一套規則，所以搜尋跳得到 */
+function renderBlocks(blocks, o = {}) {
+  const frag = document.createDocumentFragment();
+  const sd = o.sd || new Set();
+  let i = 0;
+  const tag = (el, text) => {
+    el.dataset.b = i++;
+    if (o.tap) { const k = hkey(text); el.dataset.k = k; if (sd.has(k)) el.classList.add("sd"); }
+    return el;
+  };
+  (blocks || []).forEach(b => {
+    if (typeof b === "string") frag.append(tag(h("p", {}, rich(b)), b));
+    else if (b.h) { const el = h("h" + Math.min(4, Math.max(2, b.l || 2)), { class: "sh" }, b.h); el.dataset.b = i++; frag.append(el); }
+    else if (b.ol || b.ul) {
+      const list = h(b.ol ? "ol" : "ul", { class: b.ol ? "stp" : "bl" });
+      (b.ol || b.ul).forEach(t => list.append(tag(h("li", {}, rich(t)), t)));
+      frag.append(list);
+    } else if (b.tb) {
+      const rows = b.tb.slice(), tbl = h("table", {});
+      if (b.hd) tbl.append(h("thead", {}, h("tr", {}, rows.shift().map(c => h("th", {}, rich(c))))));
+      tbl.append(h("tbody", {}, rows.map(r => h("tr", {}, r.map(c => h("td", {}, rich(c)))))));
+      const w = h("div", { class: "tblw" }, tbl); w.dataset.b = i++; frag.append(w);
+    }
+  });
+  return frag;
+}
+function textBlocks(blocks) {
+  const out = []; let i = 0;
+  (blocks || []).forEach(b => {
+    if (typeof b === "string") out.push({ i: i++, t: plain(b) });
+    else if (b.h) out.push({ i: i++, t: b.h });
+    else if (b.ol || b.ul) (b.ol || b.ul).forEach(t => out.push({ i: i++, t: plain(t) }));
+    else if (b.tb) out.push({ i: i++, t: plain(b.tb.map(r => r.join(" ")).join(" ")) });
+  });
+  return out;
+}
+
 /* ───── 目錄 ───── */
 function tocView() {
   setTop("GTA 6 攻略", false); tabs("toc");
@@ -462,21 +583,24 @@ function tocView() {
     h("h1", { text: "GTA 6 全任務攻略" }),
     h("div", { class: "bar" }, h("i", { style: "width:" + (s.done / s.all * 100).toFixed(1) + "%" })),
     h("div", { class: "stats" }, h("span", { text: `已完成 ${s.done} / ${s.all}` }), h("span", { text: `主線 ${s.mainDone} / ${s.main}` }),
-      h("span", { text: `${s.full} 個有逐步圖文` }))));
+      h("span", { text: `${s.walk} 個有逐步攻略・${s.full} 個有截圖` }))));
+
+  const next = missions.find(m => !state.done.has(m.id));
+  const left = missedLeft();
+  view.append(h("div", { class: "quick" },
+    next ? h("a", { href: "#/m/" + enc(next.id) }, h("small", { text: "下一個任務" }), h("b", { text: next.name })) : null,
+    h("a", { class: left ? "warn" : "", href: "#/index" }, h("small", { text: left ? "⚠ 會錯過的事" : "會錯過的事" }), h("b", { text: left ? `還有 ${left} 件沒勾` : "都處理好了" }))));
 
   (G.notices || []).forEach(n => view.append(h("div", { class: "notice" }, h("b", { text: "作者預告" }), h("span", { text: `${n.title}：${n.text}` }))));
 
-  let curChap = null;
+  let curChap = next ? next.chap.id : null;
   if (state.pos && byId[state.pos.id]) {
     const m = byId[state.pos.id]; curChap = m.chap.id;
-    const pct = m.full && m.blocks.length > 1 ? Math.round(state.pos.b / (m.blocks.length - 1) * 100) : 0;
+    const pct = state.pos.n > 1 ? Math.round(state.pos.b / (state.pos.n - 1) * 100) : 0;
     view.append(h("a", { class: "cont", href: "#/m/" + enc(m.id) },
       h("small", { text: "繼續閱讀" }),
       h("strong", {}, h("span", { text: `${String(m.n).padStart(2, "0")}　${m.name}` }), h("span", { class: "go", text: pct ? `讀到 ${pct}% ›` : "開始 ›" })),
       pct ? h("div", { class: "mini" }, h("i", { style: "width:" + pct + "%" })) : null));
-  } else {
-    const first = missions.find(m => !state.done.has(m.id));
-    if (first) curChap = first.chap.id;
   }
 
   const open = new Set(state.open || (curChap ? [curChap] : [G.chapters[0].id]));
@@ -488,9 +612,18 @@ function tocView() {
         h("span", { class: "cn", text: `${n} / ${ch.missions.length}` }), ico("next", "chev")),
       h("div", { class: "cb" }, h("i", { style: "width:" + (n / ch.missions.length * 100) + "%" })));
     if (open.has(ch.id)) d.open = true;
+    if ((ch.info || []).length) {
+      const miss = (ch.info.find(x => x.title === "這章結束前要做") || { rows: [] }).rows;
+      const left = miss.filter(r => !(r.tick && state.ticks.has(r.tick))).length;
+      d.append(h("div", { class: "row cinfo" }, h("a", { class: "rl", href: "#/ch/" + ch.no },
+        h("span", { class: "num", text: "★" }),
+        h("span", { class: "rt" }, h("span", { class: "nm", text: "本章重點" }),
+          h("span", { class: "nt", text: left ? `會錯過 ${left} 件・卡關、賺錢、開放功能、人物…` : "卡關、賺錢、開放功能、支線、人物、彩蛋…" })),
+        ico("next"))));
+    }
     ch.missions.forEach(m => d.append(missionRow(m, { cur: state.pos && state.pos.id === m.id })));
     d.addEventListener("toggle", () => {
-      const now = new Set($$("details.chap[open]").map(x => x.dataset.id));
+      const now = new Set($$("details.chap[open]").map(x => x.dataset.id).filter(Boolean));
       state.open = [...now]; store.set("open", state.open);
     });
     view.append(d);
@@ -498,7 +631,7 @@ function tocView() {
 
   if (G.intro && G.intro.length) {
     view.append(h("details", { class: "chap" },
-      h("summary", {}, h("div", { class: "ct" }, h("b", { text: "閱讀須知（作者前言）" })), ico("next", "chev")),
+      h("summary", {}, h("div", { class: "ct" }, h("b", { text: "閱讀須知（遊民作者前言）" })), ico("next", "chev")),
       h("div", { class: "pad" }, G.intro.map(t => h("p", { class: "small", text: t })))));
   }
   view.append(sourcesFoot());
@@ -508,16 +641,104 @@ function sourcesFoot() {
   return h("div", { class: "foot" },
     h("div", {}, "資料來源："),
     G.sources.map(s => h("div", {}, h("a", { href: s.url, target: "_blank", rel: "noopener noreferrer", text: s.name }))),
-    h("div", { text: `整理於 ${G.builtOn}${G.sourceUpdated ? `（遊民原文更新於 ${G.sourceUpdated}）` : ""}。遊民原文是簡體，這裡自動轉成繁體，用詞偶爾會不太自然。內容版權屬原作者，這份只供個人閱讀。有圖文的任務（${stats().full} 個）文字存在手機裡可離線看；其他任務是摘要，點進去可連到原站。` }));
+    h("div", { text: `整理於 ${G.builtOn}${G.sourceUpdated ? `（遊民原文更新於 ${G.sourceUpdated}）` : ""}。oplay 是繁體；遊民原文是簡體，這裡自動轉成繁體，用詞偶爾會不太自然。內容版權屬原作者，這份只供個人閱讀。文字（${stats().walk} 個任務的逐步攻略、章節重點、${(G.notes || []).length} 篇筆記）存在手機裡可離線看；截圖來自遊民星空，連網才會顯示（可在設定下載供離線）。` }));
+}
+
+/* ───── 章節重點頁 ───── */
+function infoRow(r, si, ri) {
+  const ticked = !!(r.tick && state.ticks.has(r.tick));
+  const row = h("div", { class: "inf" + (ticked ? " done" : ""), "data-r": si + "-" + ri });
+  if (r.tick) {
+    const btn = h("button", { class: "chk", type: "button", "aria-pressed": String(ticked), "aria-label": "標成完成：" + r.n,
+      onclick: () => {
+        if (state.ticks.has(r.tick)) state.ticks.delete(r.tick); else state.ticks.add(r.tick);
+        saveTicks(); const on = state.ticks.has(r.tick);
+        row.classList.toggle("done", on); btn.setAttribute("aria-pressed", String(on));
+      } }, h("span", {}, ico("check")));
+    row.append(btn);
+  }
+  row.append(h("div", { class: "ib2" },
+    h("div", { class: "t" }, h("b", { text: r.n }), r.en ? h("span", { class: "en", text: r.en }) : null, r.k ? h("span", { class: "badge b-extra", text: r.k }) : null),
+    r.a ? h("div", { class: "a" }, rich(r.a)) : null));
+  return row;
+}
+function chapterView(no, q) {
+  const ch = G.chapters.find(c => c.no === no) || G.chapters[0];
+  setTop(ch.title + (ch.sub ? " · " + ch.sub : ""), true); tabs("toc");
+  view.append(h("section", { class: "hero" },
+    h("div", { class: "eyebrow", text: "本章重點" }),
+    h("h1", { text: ch.title + (ch.sub ? "　" + ch.sub : "") }),
+    ch.lead ? h("p", { class: "lead" }, rich(ch.lead)) : null));
+  view.append(h("div", { class: "cta", style: "margin-top:14px" }, h("button", { class: "btn", type: "button",
+    onclick: () => { state.open = [...new Set([...(state.open || []), ch.id])]; store.set("open", state.open); location.hash = "#/"; } },
+    `看本章 ${ch.missions.length} 個任務 ›`)));
+  const want = (q.get("r") || "").split("-");
+  (ch.info || []).forEach((sec, si) => {
+    const important = sec.title === "這章結束前要做" || sec.title === "卡住了";
+    const d = h("details", { class: "chap" },
+      h("summary", {}, h("div", { class: "ct" }, h("b", { text: sec.title }), sec.count ? h("small", { text: sec.count }) : null),
+        h("span", { class: "cn", text: String(sec.rows.length) }), ico("next", "chev")));
+    if (important || want[0] === String(si)) d.open = true;
+    sec.rows.forEach((r, ri) => d.append(infoRow(r, si, ri)));
+    view.append(d);
+  });
+  view.append(sourcesFoot());
+  if (want.length === 2) requestAnimationFrame(() => {
+    const el = $(`[data-r="${want[0]}-${want[1]}"]`);
+    if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); }
+  });
+}
+
+/* ───── 筆記 ───── */
+const noteBy = Object.fromEntries((G.notes || []).map(n => [n.slug, n]));
+function notesView() {
+  setTop("筆記", false); tabs("notes");
+  view.append(h("p", { class: "small muted", style: "margin:2px 4px 0", text: "oplay.cc 整理的攻略筆記：會錯過什麼、賺錢、載具、結局、卡關速查…" }));
+  (G.noteCats || []).forEach(cat => {
+    const list = (G.notes || []).filter(n => n.cat === cat.id);
+    view.append(h("div", { class: "sect", text: `${cat.title} · ${list.length}` }),
+      h("div", { class: "card" }, list.map(n => h("a", { class: "hit", href: "#/n/" + enc(n.slug) },
+        h("b", {}, n.title, n.badge ? h("span", { class: "badge b-opt", style: "margin-left:8px", text: n.badge }) : null),
+        n.sub ? h("small", { text: plain(n.sub) }) : null))));
+  });
+  view.append(sourcesFoot());
+}
+function noteView(n, q) {
+  setTop(n.title, true); tabs("notes");
+  const art = h("article", { class: "art nb" },
+    h("div", { class: "kick", text: "攻略筆記" }), h("h1", { text: n.title }),
+    n.stamp ? h("div", { class: "stamp", text: n.stamp }) : null,
+    renderBlocks(n.blocks, {}),
+    h("div", { class: "cta" }, h("a", { class: "btn", href: "https://oplay.cc/gta6/notes/" + n.slug, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "在 oplay 看原文（含地圖）")));
+  view.append(art);
+  const p = q.get("p");
+  if (p != null) requestAnimationFrame(() => {
+    const el = $(`#view [data-b="${+p}"]`);
+    if (el) { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); }
+  });
 }
 
 /* ───── 索引 ───── */
 const filt = { type: "all", hideDone: false };
 function indexView() {
   setTop("索引", false); tabs("index");
+
+  const miss = missables();
+  if (miss.length) {
+    view.append(h("div", { class: "sect", text: `會錯過的事 · ${miss.length}（過了就沒有）` }));
+    const card = h("div", { class: "card" });
+    let last = null;
+    miss.forEach(x => {
+      if (x.ch !== last) { last = x.ch; card.append(h("div", { class: "sub", text: x.ch.title + (x.ch.sub ? " · " + x.ch.sub : "") })); }
+      card.append(infoRow(x.row, x.si, x.ri));
+    });
+    view.append(card);
+  }
+
+  view.append(h("div", { class: "sect", text: "任務" }));
   const count = f => missions.filter(f).length;
-  const chipDefs = [["all", "全部", () => true], ["fav", "★ 收藏", m => state.fav.has(m.id)], ["full", "有圖文", m => m.full],
-    ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
+  const chipDefs = [["all", "全部", () => true], ["fav", "★ 收藏", m => state.fav.has(m.id)], ["hard", "⚠ 常卡", m => m.hard],
+    ["full", "有截圖", m => m.full], ...TYPES.map(([t]) => [t, t, m => m.type === t]).filter(c => count(c[2]) > 0)];
   const chips = h("div", { class: "chips", role: "group", "aria-label": "任務篩選" });
   const list = h("div", { class: "card" });
   const draw = () => {
@@ -538,28 +759,31 @@ function indexView() {
   chips.append(hide);
   view.append(chips, list); draw();
 
-  const link = (x, label) => h("a", { class: "hit", href: `#/m/${enc(x.m)}?p=${x.p}` },
-    h("b", { text: x.name }), h("small", { text: label(x) }));
-  const where = x => { const m = byId[x.m]; return `${m.chap.title} · ${m.name}`; };
-  if (G.trophies.length) {
-    view.append(h("div", { class: "sect", text: "獎盃 · " + G.trophies.length }),
-      h("div", { class: "card" }, G.trophies.map(x => link(x, where))));
-  }
-  if (G.optionals.length) {
-    view.append(h("div", { class: "sect", text: "內文提到的可選任務 · " + G.optionals.length }),
-      h("div", { class: "card" }, G.optionals.map(x => link(x, where))));
-  }
+  const link = x => x.ch
+    ? h("a", { class: "hit", href: `#/ch/${x.ch}` }, h("b", { text: x.name }), h("small", { text: `第 ${x.ch} 章 · 章節重點` }), x.a ? h("p", {}, plain(x.a)) : null)
+    : h("a", { class: "hit", href: `#/m/${enc(x.m)}?md=p&p=${x.p}` }, h("b", { text: x.name }), h("small", { text: `${byId[x.m].chap.title} · ${byId[x.m].name}` }));
+  if (G.trophies.length) view.append(h("div", { class: "sect", text: "獎盃 · " + G.trophies.length }), h("div", { class: "card" }, G.trophies.map(link)));
+  if (G.optionals.length) view.append(h("div", { class: "sect", text: "內文提到的可選任務 · " + G.optionals.length }), h("div", { class: "card" }, G.optionals.map(link)));
 }
 
 /* ───── 搜尋 ───── */
 let haystack = null;
 function buildIndex() {
   haystack = [];
+  const add = (e, t, pri) => { e.t = t; e.q = norm(t); e.pri = pri || 0; haystack.push(e); };   // q＝正規化文字（別用 n，筆記項目的 n 是筆記本身）
   missions.forEach(m => {
-    haystack.push({ m, b: null, t: [m.name, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), n: null });
-    (m.blocks || []).forEach((b, i) => { if (typeof b === "string") haystack.push({ m, b: i, t: b, n: null }); });
+    add({ k: "m", m, b: null }, [m.name, m.aka, m.en, m.note, m.sum, m.who].filter(Boolean).join(" "), 3);
+    (m.keys || []).forEach(t => add({ k: "m", m, b: null, md: "s" }, plain(t), 1));
+    textBlocks(m.steps).forEach(x => add({ k: "m", m, b: x.i, md: "s" }, x.t));
+    (m.blocks || []).forEach((b, i) => { if (typeof b === "string") add({ k: "m", m, b: i, md: "p" }, b); });
+    (m.stuck || []).forEach(r => add({ k: "m", m, b: null, md: "s", sub: "常見卡關" }, [r.n, r.a].filter(Boolean).map(plain).join("："), 1));
   });
-  haystack.forEach(e => { e.n = norm(e.t); });
+  G.chapters.forEach(ch => (ch.info || []).forEach((sec, si) => sec.rows.forEach((r, ri) =>
+    add({ k: "r", ch, sec, si, ri }, [r.n, r.en, r.k, r.a].filter(Boolean).map(plain).join(" "), 2))));
+  (G.notes || []).forEach(n => {
+    add({ k: "n", n, b: null }, n.title + " " + (n.sub || ""), 3);
+    textBlocks(n.blocks).forEach(x => add({ k: "n", n, b: x.i }, x.t));
+  });
 }
 function snippet(text, terms) {
   const n = norm(text);
@@ -576,9 +800,21 @@ function snippet(text, terms) {
   out.append(part.slice(p)); if (to < text.length) out.append("…");
   return out;
 }
+function hitLink(e, terms) {
+  let href, title, small;
+  if (e.k === "m") {
+    href = "#/m/" + enc(e.m.id) + (e.md ? "?md=" + e.md + (e.b != null ? "&p=" + e.b : "") : "");
+    title = e.m.name; small = e.m.chap.title + (e.m.en ? " · " + e.m.en : "") + (e.sub ? " · " + e.sub : "");
+  } else if (e.k === "r") {
+    href = `#/ch/${e.ch.no}?r=${e.si}-${e.ri}`; title = plain(e.sec.rows[e.ri].n); small = `${e.ch.title} · ${e.sec.title}`;
+  } else {
+    href = "#/n/" + enc(e.n.slug) + (e.b != null ? "?p=" + e.b : ""); title = e.n.title; small = "攻略筆記";
+  }
+  return h("a", { class: "hit", href }, h("b", { text: title }), h("small", { text: small }), snippet(e.t, terms));
+}
 function searchView(q) {
   setTop("搜尋", false); tabs("search");
-  const input = h("input", { type: "search", placeholder: "搜尋任務、地點、人物、獎盃…", value: q.get("q") || "", enterkeyhint: "search",
+  const input = h("input", { type: "search", placeholder: "搜尋任務、地點、人物、獎盃、筆記…", value: q.get("q") || "", enterkeyhint: "search",
     autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "搜尋攻略" });
   const out = h("div", { style: "margin-top:14px" });
   view.append(h("div", { class: "sbox" }, ico("search"), input), out);
@@ -590,12 +826,11 @@ function searchView(q) {
     const terms = norm(raw).split(/\s+/).filter(Boolean);
     if (!terms.length) { out.append(h("div", { class: "empty", text: "輸入關鍵字，多個詞用空白分開（要全部符合）。" })); return; }
     if (!haystack) buildIndex();
-    const hits = haystack.filter(e => terms.every(t => e.n.includes(t)));
+    const hits = haystack.filter(e => terms.every(t => e.q.includes(t))).sort((a, b) => b.pri - a.pri);
     if (!hits.length) { out.append(h("div", { class: "empty", text: "找不到符合的內容" })); return; }
     const MAX = 80;
     out.append(h("div", { class: "small muted", style: "margin:0 4px 8px", text: `${hits.length} 筆符合` + (hits.length > MAX ? `，只顯示前 ${MAX} 筆` : "") }));
-    out.append(h("div", { class: "card" }, hits.slice(0, MAX).map(e => h("a", { class: "hit", href: "#/m/" + enc(e.m.id) + (e.b != null ? "?p=" + e.b : "") },
-      h("b", { text: e.m.name }), h("small", { text: e.m.chap.title + (e.m.en ? " · " + e.m.en : "") }), snippet(e.t, terms)))));
+    out.append(h("div", { class: "card" }, hits.slice(0, MAX).map(e => hitLink(e, terms))));
   };
   input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 180); });
   input.addEventListener("keydown", e => { if (e.key === "Enter") input.blur(); });
@@ -634,7 +869,7 @@ function controls(full) {
 const toB64 = str => { let bin = ""; new TextEncoder().encode(str).forEach(c => { bin += String.fromCharCode(c); }); return btoa(bin); };
 const fromB64 = t => new TextDecoder().decode(Uint8Array.from(atob(t), c => c.charCodeAt(0)));
 function backupCode() {
-  return "GTA6:" + toB64(JSON.stringify({ v: 1, done: [...state.done], fav: [...state.fav], steps: state.steps, pos: state.pos }));
+  return "GTA6:" + toB64(JSON.stringify({ v: 1, done: [...state.done], fav: [...state.fav], steps: state.steps, ticks: [...state.ticks], pos: state.pos }));
 }
 function restoreCode(text) {
   const t = String(text || "").trim();
@@ -649,9 +884,10 @@ function restoreCode(text) {
     const keys = Array.isArray(arr) ? arr.filter(x => typeof x === "string") : [];
     if (byId[id] && keys.length) state.steps[id] = keys;
   });
+  state.ticks = new Set((o.ticks || []).filter(x => typeof x === "string"));
   const pid = o.pos && alias(o.pos.id);
-  state.pos = pid && byId[pid] ? { id: pid, b: Math.max(0, o.pos.b | 0), k: typeof o.pos.k === "string" ? o.pos.k : null } : null;
-  saveDone(); saveFav(); saveSteps(); store.set("pos", state.pos);
+  state.pos = pid && byId[pid] ? { id: pid, b: Math.max(0, o.pos.b | 0), k: typeof o.pos.k === "string" ? o.pos.k : null, md: o.pos.md === "p" ? "p" : "s", n: o.pos.n | 0 } : null;
+  saveDone(); saveFav(); saveSteps(); saveTicks(); store.set("pos", state.pos);
 }
 
 /* 預先下載圖片（要等 Service Worker 接管頁面才存得進去） */
@@ -731,7 +967,7 @@ function settingsView() {
         } })),
       h("div", { class: "opt" }, h("span", { text: "重設所有進度" }),
         h("button", { class: "btn danger", style: "flex:none;min-height:40px", type: "button", text: "重設",
-          onclick: () => { if (confirm("確定清除所有完成、收藏、步驟標記與閱讀位置？")) { state.done.clear(); state.fav.clear(); state.steps = {}; state.pos = null; saveDone(); saveFav(); saveSteps(); store.set("pos", null); toast("已重設"); route(true); } } }))));
+          onclick: () => { if (confirm("確定清除所有完成、收藏、步驟標記與閱讀位置？")) { state.done.clear(); state.fav.clear(); state.steps = {}; state.ticks.clear(); state.pos = null; saveDone(); saveFav(); saveSteps(); saveTicks(); store.set("pos", null); toast("已重設"); route(true); } } }))));
 
   const all = imgPaths(missions);
   const upd = h("button", { class: "btn", style: "flex:none;min-height:40px", type: "button", text: "檢查更新", onclick: checkUpdate });
@@ -788,10 +1024,15 @@ function mkShot(blk, i) {
   if (state.imgs) load(); else fig.append(h("button", { class: "imgbtn", type: "button", text: "顯示圖片", onclick: () => load() }));
   return fig;
 }
+let readerMode = "s";
 function readerView(m, q) {
   readerMission = m;
   view.dataset.v = "reader";
   setTop(m.name, true); readerBar(m);
+  const hasS = m.walk, hasP = m.full;
+  const want = q.get("md");
+  const mode = hasS && hasP ? (want === "p" || want === "s" ? want : store.get("mode", "s")) : hasS ? "s" : "p";
+  readerMode = mode;
   const art = h("article", { class: "art" + (state.stepsOn ? " steps" : ""), id: "art" });
   const favBtn = h("button", { class: "pill", type: "button", "aria-pressed": String(state.fav.has(m.id)),
     onclick: () => {
@@ -801,60 +1042,73 @@ function readerView(m, q) {
     } }, state.fav.has(m.id) ? "★ 已收藏" : "☆ 收藏");
   art.append(h("div", { class: "kick", text: `${m.chap.title}${m.chap.sub ? " · " + m.chap.sub : ""}　#${String(m.n).padStart(2, "0")}` }),
     h("h1", { text: m.name }),
-    h("div", { class: "meta" }, badge(m) || h("span", { class: "badge b-main", text: "主線" }), whoChip(m.who), m.en && m.en !== m.name ? h("span", { text: m.en }) : null,
-      m.note ? h("span", { text: "· " + m.note }) : null, favBtn));
+    h("div", { class: "meta" }, badge(m) || h("span", { class: "badge b-main", text: "主線" }), whoChip(m.who),
+      m.hard ? h("span", { class: "badge b-hard", text: "常卡關" }) : null,
+      m.en && m.en !== m.name ? h("span", { text: m.en }) : null, m.note ? h("span", { text: "· " + m.note }) : null, favBtn),
+    m.aka ? h("div", { class: "stamp", text: "另一種叫法：" + m.aka }) : null);
   if (m.sum) art.append(h("div", { class: "sum" }, h("b", { text: "摘要　" }), m.sum));
+  if (m.keys && m.keys.length) art.append(h("div", { class: "keys" }, h("b", { class: "t", text: "重點" }),
+    h("ul", { class: "bl" }, m.keys.map(k => h("li", {}, rich(k))))));
 
-  const sd = new Set(state.steps[m.id] || []);   // 已標記段落的雜湊鍵
-  if (m.full) {
+  if (hasS && hasP) {
+    const seg = h("div", { class: "seg full", role: "group", "aria-label": "攻略版本" },
+      [["s", "文字步驟"], ["p", "截圖圖文"]].map(([k, label]) => h("button", { type: "button", "aria-pressed": String(mode === k), text: label,
+        onclick: () => { if (mode === k) return; store.set("mode", k); history.replaceState(null, "", "#/m/" + enc(m.id)); route(); } })));
+    art.append(seg);
+  }
+
+  const sd = new Set(state.steps[m.id] || []);   // 已標記項目的雜湊鍵
+  if (mode === "s") {
+    art.append(renderBlocks(m.steps, { tap: state.stepsOn, sd }));
+  } else {
     m.blocks.forEach((b, i) => {
       if (typeof b !== "string") { art.append(mkShot(b, i)); return; }
       const k = hkey(b);
       art.append(h("p", { "data-b": i, "data-k": k, class: sd.has(k) ? "sd" : null, text: b }));
     });
-    art.addEventListener("click", e => {
-      const p = e.target.closest && e.target.closest("p[data-b]");
-      if (!p || !state.stepsOn || String(getSelection()).length) return;
-      const k = p.dataset.k, set = new Set(state.steps[m.id] || []);
-      if (set.has(k)) set.delete(k); else set.add(k);
-      p.classList.toggle("sd", set.has(k));
-      if (set.size) state.steps[m.id] = [...set]; else delete state.steps[m.id];
-      saveSteps();
-      if (!store.get("hintSteps", false)) { store.set("hintSteps", true); toast("已標記這一步，再點一下可取消"); }
-    });
-  } else {
-    art.append(h("div", { class: "nosteps" }, h("b", { text: "這個任務還沒有逐步圖文攻略" }),
-      "遊民星空的作者還沒寫到這裡。上面是 promptowy 的一句話摘要，要看詳細流程、條件與獎勵可以到原站。原作者更新後，重新整理資料就會自動補上圖文。"));
   }
+  art.addEventListener("click", e => {
+    const el = e.target.closest && e.target.closest("[data-k]");
+    if (!el || !state.stepsOn || String(getSelection()).length) return;
+    const k = el.dataset.k, set = new Set(state.steps[m.id] || []);
+    if (set.has(k)) set.delete(k); else set.add(k);
+    el.classList.toggle("sd", set.has(k));
+    if (set.size) state.steps[m.id] = [...set]; else delete state.steps[m.id];
+    saveSteps();
+    const clr = $("#clrSteps"); if (clr) clr.parentNode.hidden = !set.size;
+    if (!store.get("hintSteps", false)) { store.set("hintSteps", true); toast("已標記這一步，再點一下可取消"); }
+  });
+
+  if (m.stuck && m.stuck.length) art.append(h("div", { class: "sect", text: "常見卡關 · " + m.stuck.length }),
+    h("div", { class: "card" }, m.stuck.map(r => h("div", { class: "hit" }, h("b", { text: r.n }), r.k ? h("small", { text: r.k }) : null, r.a ? h("p", {}, rich(r.a)) : null))));
 
   doneBtn = h("button", { type: "button", onclick: () => { toggleDone(m.id); } });
   const next = missions[m.n];
   art.append(h("div", { class: "cta" }, doneBtn, next ? h("a", { class: "btn pri", href: "#/m/" + enc(next.id) }, "下一個", ico("next")) : null));
   const paths = imgPaths([m]);
-  if (paths.length) art.append(h("div", { class: "cta", style: "margin-top:0" }, downloadBtn(paths, "下載本任務圖片供離線")));
-  if (m.full) {
-    const clr = h("button", { class: "btn", type: "button", text: "清除本任務的步驟標記", onclick: () => {
-      delete state.steps[m.id]; saveSteps(); $$("#art p.sd").forEach(p => p.classList.remove("sd")); clr.parentNode.hidden = true;
-    } });
-    art.append(h("div", { class: "cta", style: "margin-top:0", hidden: (state.steps[m.id] || []).length ? null : true }, clr));
-  }
+  if (paths.length && mode === "p") art.append(h("div", { class: "cta", style: "margin-top:0" }, downloadBtn(paths, "下載本任務圖片供離線")));
+  const clr = h("button", { id: "clrSteps", class: "btn", type: "button", text: "清除本任務的步驟標記", onclick: () => {
+    delete state.steps[m.id]; saveSteps(); $$("#art .sd").forEach(p => p.classList.remove("sd")); clr.parentNode.hidden = true;
+  } });
+  art.append(h("div", { class: "cta", style: "margin-top:0", hidden: (state.steps[m.id] || []).length ? null : true }, clr));
   if (m.url) art.append(h("div", { class: "cta", style: "margin-top:0" },
-    h("a", { class: "btn", href: m.url, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "在 promptowy 看這個任務")));
+    h("a", { class: "btn", href: m.url, target: "_blank", rel: "noopener noreferrer" }, ico("ext"), "在 oplay 看這個任務（含地圖）")));
   if (!next) art.append(h("p", { class: "muted small", text: "已經讀到目前整理的最後一個任務。" }));
   view.append(art); updateDoneBtn();
 
   const p = q.get("p");
-  let target = p != null ? +p : (m.full && state.pos && state.pos.id === m.id ? state.pos.b : 0);
-  if (m.full && target > 0) {
+  const resume = state.pos && state.pos.id === m.id && state.pos.md === mode && state.pos.b > 0;
+  const target = p != null ? +p : resume ? state.pos.b : 0;
+  if (p != null || resume) {
     requestAnimationFrame(() => {
       const byKey = p == null && state.pos && state.pos.k ? $(`#art [data-k="${state.pos.k}"]`) : null;
       const el = byKey || $(`#art [data-b="${target}"]`);
       if (!el) return;
       el.scrollIntoView({ block: "start" });
       if (p != null) { el.classList.add("flash"); }
-      else toast("已回到上次讀到的位置", "從頭開始", () => { scrollTo(0, 0); state.pos = { id: m.id, b: 0 }; store.set("pos", state.pos); });
+      else toast("已回到上次讀到的位置", "從頭開始", () => { scrollTo(0, 0); state.pos = { id: m.id, b: 0, k: null, md: mode, n: $$("#art [data-b]").length }; store.set("pos", state.pos); });
     });
-  } else if (m.full) { state.pos = { id: m.id, b: 0 }; store.set("pos", state.pos); }
+  } else { state.pos = { id: m.id, b: 0, k: null, md: mode, n: $$("#art [data-b]").length }; store.set("pos", state.pos); }
   updateProg();
 }
 function updateProg() {
@@ -863,12 +1117,12 @@ function updateProg() {
   prog.style.width = (max > 0 ? Math.min(1, scrollY / max) * 100 : 0) + "%";
 }
 function savePos() {
-  if (view.dataset.v !== "reader" || !readerMission || !readerMission.full) return;
+  if (view.dataset.v !== "reader" || !readerMission) return;
   const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hh")) || 60;
-  let b = 0;
-  let k = null;
-  for (const el of $$("#art [data-b]")) { b = +el.dataset.b; k = el.dataset.k || null; if (el.getBoundingClientRect().bottom > top + 6) break; }
-  state.pos = { id: readerMission.id, b, k }; store.set("pos", state.pos);
+  let b = 0, k = null;
+  const els = $$("#art [data-b]");
+  for (const el of els) { b = +el.dataset.b; k = el.dataset.k || null; if (el.getBoundingClientRect().bottom > top + 6) break; }
+  state.pos = { id: readerMission.id, b, k, md: readerMode, n: els.length }; store.set("pos", state.pos);
 }
 addEventListener("scroll", () => { updateProg(); clearTimeout(saveT); saveT = setTimeout(savePos, 300); }, { passive: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); wakeSync(); });
@@ -904,15 +1158,19 @@ function route(keepScroll) {
   savePos();
   const { parts, q } = parseHash();
   const root = parts[0] || "toc";
-  routeKey = (root === "m" ? "m/" + parts[1] : root);
+  routeKey = (root === "m" || root === "ch" || root === "n" ? root + "/" + parts[1] : root);
   view.replaceChildren(); view.dataset.v = ""; readerMission = null; doneBtn = null; clearTimeout(saveT);
   if (root === "m" && byId[parts[1]]) { view.dataset.v = "reader"; readerView(byId[parts[1]], q); }
   else {
     view.dataset.v = root;
-    if (root === "index") indexView(); else if (root === "search") searchView(q); else if (root === "settings") settingsView(); else tocView();
+    if (root === "index") indexView(); else if (root === "search") searchView(q); else if (root === "settings") settingsView();
+    else if (root === "notes") notesView();
+    else if (root === "ch") chapterView(+parts[1] || 1, q);
+    else if (root === "n" && noteBy[parts[1]]) noteView(noteBy[parts[1]], q);
+    else tocView();
     scrollTo(0, keepScroll ? scrollY : (scrolls[routeKey] || 0));
   }
-  if (root === "m" && !(q.get("p") != null) && !(state.pos && state.pos.id === parts[1] && state.pos.b > 0)) scrollTo(0, 0);
+  if (root === "m" && q.get("p") == null && !(state.pos && state.pos.id === parts[1] && state.pos.md === readerMode && state.pos.b > 0)) scrollTo(0, 0);
   updateProg(); wakeSync();
 }
 addEventListener("hashchange", () => { navCount++; route(); });

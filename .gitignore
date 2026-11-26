@@ -13,3 +13,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# oplay.cc 爬取的原始頁面快取（scripts/fetch_oplay.py），別人的內容不進版控
+.oplay-cache/

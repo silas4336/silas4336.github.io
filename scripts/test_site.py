@@ -4,7 +4,8 @@
 2. 主站 12 頁（中英 index.html、work-*.html）的本機連結與圖片都找得到檔案
 3. sitemap.xml 列的網址都對得到檔案，主站每一頁也都在 sitemap 裡
 4. math-logic/、neko/、gta6/、preview-*/ 每頁都有 noindex
-5. gta6/ 攻略 PWA：data.js 結構、離線檔案清單、不在 sitemap；scripts/build_gta6.py 的解析與合併規則
+5. gta6/ 攻略 PWA：data.js 結構與內容完整性、離線檔案清單、不在 sitemap；
+   scripts/oplay_parse.py（oplay 頁面解析）與 scripts/build_gta6.py（遊民解析、合併）的規則
 """
 import contextlib
 import glob
@@ -23,6 +24,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 import build_gta6  # noqa: E402
+import oplay_parse  # noqa: E402
 import check_i18n  # noqa: E402
 
 PAGE = """<!doctype html><html><head><title>2024 標題 99</title><style>.a{{width:42px}}</style></head>
@@ -226,7 +228,7 @@ class Gta6DataTest(unittest.TestCase):
 
     def test_structure_and_unique_ids(self):
         d = load_gta6_data()
-        self.assertGreaterEqual(len(d["chapters"]), 2)
+        self.assertEqual([c["no"] for c in d["chapters"]], [1, 2, 3, 4, 5])
         ids = [m["id"] for c in d["chapters"] for m in c["missions"]]
         self.assertEqual(len(ids), len(set(ids)), "任務 ID 重複")
         types = {"主線", "支線", "搶劫", "陌生人", "可選", "額外"}
@@ -234,13 +236,61 @@ class Gta6DataTest(unittest.TestCase):
             for m in c["missions"]:
                 self.assertIn(m["type"], types, m["id"])
                 self.assertTrue(m["name"], m["id"])
+                self.assertTrue(m.get("steps") or m.get("blocks"), "任務沒有任何內容：" + m["id"])
+
+    def test_every_oplay_mission_has_steps_and_link(self):
+        """第 2～5 章的最後一個任務曾經因為截斷邏輯漏掉連結，這裡確保 oplay 的任務都有逐步文字與原站連結。"""
+        d = load_gta6_data()
+        oplay = [m for c in d["chapters"] for m in c["missions"] if m["id"].startswith("p-")]
+        self.assertGreaterEqual(len(oplay), 130)
+        for m in oplay:
+            self.assertTrue(m.get("steps"), m["id"])    # 「重點」有幾個任務原站本來就沒寫，不強求
+            self.assertTrue(m["url"].startswith("https://oplay.cc/gta6/chapters/"), m["id"])
+
+    def test_inline_markers_are_balanced(self):
+        """**粗體** 與 ⟦按鍵⟧ 沒成對，頁面渲染會整段變粗體或按鍵框。"""
+        d = load_gta6_data()
+
+        def texts(blocks):
+            for b in blocks or []:
+                if isinstance(b, str):
+                    yield b
+                elif isinstance(b, dict):
+                    for key in ("ol", "ul"):
+                        yield from b.get(key, [])
+                    for row in b.get("tb", []):
+                        yield from row
+                    if "h" in b:
+                        yield b["h"]
+
+        bad = []
+        for c in d["chapters"]:
+            pool = [t for m in c["missions"] for t in list(m.get("keys", [])) + list(texts(m.get("steps")))]
+            pool += [x for sec in c["info"] for r in sec["rows"] for x in (r.get("a", ""), r.get("k", ""))] + [c["lead"]]
+            for n in d["notes"] if c["no"] == 1 else []:
+                pool += list(texts(n["blocks"]))
+            for t in pool:
+                if t.count("**") % 2 or t.count("⟦") != t.count("⟧"):
+                    bad.append(t[:40])
+        self.assertEqual(bad, [])
+
+    def test_notes_structure(self):
+        d = load_gta6_data()
+        self.assertEqual(len(d["notes"]), 28)
+        cats = {c["id"] for c in d["noteCats"]}
+        slugs = [n["slug"] for n in d["notes"]]
+        self.assertEqual(len(slugs), len(set(slugs)))
+        for n in d["notes"]:
+            self.assertIn(n["cat"], cats)
+            self.assertRegex(n["slug"], r"^[a-z0-9-]+$")
+            self.assertTrue(n["title"] and n["blocks"], n["slug"])
 
     def test_only_safe_urls_and_images(self):
         d = load_gta6_data()
         for c in d["chapters"]:
             for m in c["missions"]:
                 if "url" in m:
-                    self.assertTrue(m["url"].startswith("https://promptowy.com/"), m["url"])
+                    self.assertTrue(m["url"].startswith("https://oplay.cc/"), m["url"])
                 for b in m.get("blocks", []):
                     if isinstance(b, dict):
                         self.assertRegex(b["i"], r"^[\w./-]+$", "圖片路徑只能是 img 網域下的相對路徑")
@@ -255,12 +305,14 @@ class Gta6DataTest(unittest.TestCase):
             self.assertIn(new, ids)
             self.assertNotIn(old, ids, "舊 ID 不該還在")
 
-    def test_trophies_point_to_real_paragraphs(self):
+    def test_trophies_point_to_real_places(self):
         d = load_gta6_data()
         by_id = {m["id"]: m for c in d["chapters"] for m in c["missions"]}
         for x in d["trophies"] + d["optionals"]:
-            self.assertIn(x["m"], by_id)
-            self.assertIsInstance(by_id[x["m"]]["blocks"][x["p"]], str)
+            if "ch" in x:       # oplay 章節「獎盃」區塊
+                self.assertIn(x["ch"], [c["no"] for c in d["chapters"]])
+            else:
+                self.assertIsInstance(by_id[x["m"]]["blocks"][x["p"]], str)
 
     def test_pwa_files_exist_and_not_in_sitemap(self):
         base = os.path.join(ROOT, "gta6")
@@ -303,12 +355,86 @@ YOUMIN = ('<html><head><meta name="description" content="我是游民星空攻�
           + '<script>var x = "<article id=\'reader-node-999\'>";</script></body></html>')
 
 
-def prompt_chapters(n_per=30):
-    return {1: {"sub": "Paradise", "missions": [
-                {"who": "Lucia", "en": "Prologue", "sum": "序", "url": "https://promptowy.com/a/"},
-                {"who": "Jason", "en": "Gone Fishing", "sum": "釣魚", "url": "https://promptowy.com/b/"},
-                {"who": "Jason", "en": "Extra One", "sum": "只有摘要", "url": "https://promptowy.com/c/"}]},
-            2: {"sub": "", "missions": [{"who": "", "en": "What's Next?", "sum": "下一章", "url": "https://promptowy.com/d/"}]}}
+def oplay_chapters():
+    def m(slug, n, en, k="用傑森", a="獎勵", body=("步驟",)):
+        return {"slug": "story." + slug, "n": n, "en": en, "k": k, "a": a, "keys": ["重點"], "body": list(body), "stuck": [],
+                "url": f"https://oplay.cc/gta6/chapters/1/{slug}"}
+    return [{"no": 1, "sub": "Paradise", "lead": "第一章", "sections": [{"title": "會錯過", "count": "", "rows": []}], "missions": [
+                m("prologue", "序章", "Prologue", "用露西亞・常卡"), m("gone-fishing", "出門獵魚", "Gone Fishing"),
+                m("extra-one", "額外一", "Extra One (Sub Title)"), m("hit-bank", "搶銀行", "Hit Bank")]},
+            {"no": 2, "sub": "", "lead": "", "sections": [], "missions": [m("whats-next", "下一章", "What's Next?")]}]
+
+
+class OplayParseTest(unittest.TestCase):
+    def test_inline_markers(self):
+        self.assertEqual(oplay_parse.inline('<strong>粗</strong>字<kbd class="pad">L2</kbd>／LT<br>下一行&amp;'), "**粗**字⟦L2⟧／LT 下一行&")
+
+    def test_prose_blocks(self):
+        html = ("<h2>標題</h2><p>段落 <b>粗</b></p><ul><li>甲<ul><li>子項</li></ul></li><li>乙</li></ul>"
+                "<ol><li><strong>步驟。</strong> 按 <kbd>L2</kbd></li></ol>"
+                '<figure><img src="x"><figcaption>地圖</figcaption></figure><details><summary>來源</summary>不收</details>'
+                "<table><thead><tr><th>欄</th></tr></thead><tbody><tr><td>值</td></tr></tbody></table>")
+        self.assertEqual(oplay_parse.to_blocks(html), [
+            {"h": "標題", "l": 2}, "段落 **粗**", {"ul": ["甲", "↳ 子項", "乙"]}, {"ol": ["**步驟。** 按 ⟦L2⟧"]},
+            {"tb": [["欄"], ["值"]], "hd": 1}])
+
+    def test_parse_row(self):
+        html = ('<li><button type="button" class="g6-tick" data-g6tick="miss.a" data-g6tick-name="甲">v</button>'
+                '<button type="button" class="g6-row g6-row--till" data-g6card="miss.a" data-kind="miss"> '
+                '<span class="g6-n"><span>甲名稱</span><span class="g6-en" lang="en">Alpha</span></span>'
+                '<span class="g6-k">會錯過</span> <span class="g6-a">第一章結束；<b>要先做</b></span> </button></li>')
+        row = oplay_parse.parse_row(next(oplay_parse.ROW.finditer(html)))
+        self.assertEqual(row, {"n": "甲名稱", "en": "Alpha", "k": "會錯過", "a": "第一章結束；**要先做**", "id": "miss.a", "tick": "miss.a"})
+
+    def test_parse_chapter_including_last_mission(self):
+        def mission(slug, name, en, last=False):
+            return (f'<li id="m-story.{slug}" class="g6-tk"><button class="g6-tick" data-g6tick="story.{slug}">v</button>'
+                    f'<button type="button" class="g6-row" data-g6walk="w-{slug}" data-kind="story"> '
+                    f'<span class="g6-n"><span>{name}</span><span class="g6-en" lang="en">{en}</span></span>'
+                    f'<span class="g6-k">用傑森・常卡</span> <span class="g6-a">$100</span> </button>'
+                    f'<div class="g6w" id="w-{slug}" hidden><div class="g6w-in"><ul class="g6w-keys"><li>重點<b>一</b></li></ul> '
+                    f'<div class="g6w-body"><ol><li><strong>步驟。</strong> 按 <kbd>L2</kbd></li></ol><p>收尾</p></div> '
+                    f'<section class="g6w-rel"><h3>卡關</h3><ul class="g6-rows"><li><button type="button" class="g6-row" '
+                    f'data-g6card="stuck.x" data-kind="stuck"> <span class="g6-n"><span>被抓</span></span>'
+                    f'<span class="g6-a">劇情</span> </button></li></ul></section>'
+                    f'<div class="g6w-acts"><a href="/gta6/chapters/1/{slug}">自己一頁</a></div></div></div></li>')
+        page = ("<html><h1>第一章攻略</h1><p>導覽 第一章（礁島群）有 2 個主線任務，從〈甲〉到〈乙〉。這章有 1 件事。</p>"
+                '<section><div><h2>主線順序</h2><span class="g6-cnt">2 個任務</span></div> <div class="g6-grp-b"><ol class="g6-rows g6c-seq">'
+                + mission("a", "甲", "Alpha") + mission("b", "乙", "Beta (Sub)", last=True)
+                + "</ol></div> </section>"
+                '<section><div><h2>賺錢方法</h2><span class="g6-cnt">這章新開放 1</span></div><div class="g6-grp-b"><ul class="g6-rows"><li>'
+                '<button type="button" class="g6-row" data-g6card="money.x" data-kind="money"> <span class="g6-n"><span>搶店</span></span> '
+                '<span class="g6-a">少</span> </button></li></ul></div></section>'
+                '<section><div><h2>之前就開放、現在還能做</h2></div><div class="g6-grp-b"><ul class="g6-rows"><li>'
+                '<button type="button" class="g6-row" data-g6card="old.x" data-kind="x"> <span class="g6-n"><span>重複</span></span> </button>'
+                "</li></ul></div></section></html>")
+        ch = oplay_parse.parse_chapter(page, 1)
+        self.assertEqual((ch["title"], ch["sub"]), ("第一章攻略", "礁島群"))
+        self.assertTrue(ch["lead"].startswith("導覽 第一章（礁島群）有 2 個") or ch["lead"].startswith("第一章（礁島群）有 2 個"))
+        self.assertEqual([m["slug"] for m in ch["missions"]], ["story.a", "story.b"])
+        for m in ch["missions"]:   # 最後一個任務（乙）以前會被截掉卡關與連結
+            self.assertEqual(m["keys"], ["重點**一**"])
+            self.assertEqual(m["body"], [{"ol": ["**步驟。** 按 ⟦L2⟧"]}, "收尾"])
+            self.assertEqual(m["stuck"], [{"n": "被抓", "a": "劇情", "id": "stuck.x"}])
+            self.assertEqual(m["url"], "https://oplay.cc/gta6/chapters/1/" + m["slug"].split(".")[1])
+        self.assertEqual((ch["missions"][1]["n"], ch["missions"][1]["en"], ch["missions"][1]["k"]), ("乙", "Beta (Sub)", "用傑森・常卡"))
+        self.assertEqual([x["title"] for x in ch["sections"]], ["賺錢方法"])   # 「之前就開放」略過
+        self.assertEqual(ch["sections"][0]["rows"], [{"n": "搶店", "a": "少", "id": "money.x"}])
+
+    def test_notes(self):
+        index = ('<section class="gh-row" id="cat-a"><h2><span class="baloo gh-hb-n">分類甲</span></h2>'
+                 '<a class="gh-it tool" href="/gta6/hud"><b>工具</b></a>'
+                 '<a class="gh-it gh-it--heavy" href="/gta6/notes/missables" data-card> <b>會錯過什麼</b> <i class="gh-bd gh-bd--big">大改</i>'
+                 ' <span class="gh-sb">只有三件事</span> </a></section>')
+        cats = oplay_parse.parse_notes_index(index)
+        self.assertEqual(cats, [{"id": "a", "title": "分類甲", "notes": [{"slug": "missables", "title": "會錯過什麼", "sub": "只有三件事", "badge": "大改"}]}])
+        page = ('<h1>會錯過什麼</h1><p class="gart-stamp tnum"><span>更新於 2026/11/24</span><span aria-hidden="true">・</span><span>首發版</span></p>'
+                '<div class="prose"><h2>先存檔</h2><p>內文</p><div class="inner"><p>巢狀 div 也要收</p></div></div><div>之外</div>')
+        note = oplay_parse.parse_note(page)
+        self.assertEqual(note["title"], "會錯過什麼")
+        self.assertEqual(note["blocks"], [{"h": "先存檔", "l": 2}, "內文", "巢狀 div 也要收"])
+        with self.assertRaises(SystemExit):
+            oplay_parse.parse_note("<h1>x</h1>")
 
 
 class BuildGta6Test(unittest.TestCase):
@@ -325,51 +451,63 @@ class BuildGta6Test(unittest.TestCase):
         self.assertEqual(ms[2]["blocks"], ["主線任務【垂釣】", "第二 行"])
         self.assertEqual(notices, [{"title": "正在推第2章", "text": "25號開更。"}])
 
-    def test_parse_promptowy(self):
-        cards = "".join(
-            f'<li><div><small>任務 {i} · Jason</small><br><a href="https://promptowy.com/m{i}/">Name {i}</a><br><small>摘要 {i}</small></div>'
-            f'<img src="x.webp"></li>' for i in range(1, 60))
-        page = (f'<h2>GTA 6 的章節</h2><li>不是任務</li><h2>GTA 6 任務：第 1 章（Just Like Paradise）</h2><ol>{cards}'
-                '<li><div><small>x</small><br><a href="https://evil.example/">壞連結</a></div></li></ol>'
-                '<h2>接下來</h2><li><small>x</small><br><a href="https://promptowy.com/z/">不該收</a></li>')
-        ch = build_gta6.parse_promptowy(page)
-        self.assertEqual(list(ch), [1])
-        self.assertEqual(ch[1]["sub"], "Just Like Paradise")
-        self.assertEqual(len(ch[1]["missions"]), 59)
-        self.assertEqual(ch[1]["missions"][0], {"who": "Jason", "en": "Name 1", "sum": "摘要 1", "url": "https://promptowy.com/m1/"})
-        with self.assertRaises(SystemExit):
-            build_gta6.parse_promptowy("<h2>GTA 6 任務：第 1 章（A）</h2>")
-
-    def test_merge_keeps_youmin_order_and_adds_missing(self):
-        _, _, _, ms = build_gta6.parse_youmin(YOUMIN, lambda t: t.replace("线", "線"))
-        old_map, old_legacy = dict(build_gta6.YOUMIN_TO_EN), dict(build_gta6.LEGACY_Y_IDS)
-        build_gta6.YOUMIN_TO_EN.clear()
-        build_gta6.YOUMIN_TO_EN.update({"序幕": "Prologue", "垂釣": "Gone Fishing"})
+    def _merge(self, youmin_html=YOUMIN):
+        _, _, _, ms = build_gta6.parse_youmin(youmin_html, lambda t: t.replace("线", "線"))
+        old_map, old_legacy = dict(build_gta6.YOUMIN_TO_SLUG), dict(build_gta6.LEGACY_Y_IDS)
+        build_gta6.YOUMIN_TO_SLUG.clear()
+        build_gta6.YOUMIN_TO_SLUG.update({"序幕": "prologue", "垂釣": "gone-fishing"})
         build_gta6.LEGACY_Y_IDS.clear()
         build_gta6.LEGACY_Y_IDS.update({"222": "y-女鄰居", "444": "y-偷戰鬥機"})
         try:
-            chapters, aliases = build_gta6.merge(ms, prompt_chapters())
+            return build_gta6.merge(ms, oplay_chapters())
         finally:
-            build_gta6.YOUMIN_TO_EN.clear()
-            build_gta6.YOUMIN_TO_EN.update(old_map)
+            build_gta6.YOUMIN_TO_SLUG.clear()
+            build_gta6.YOUMIN_TO_SLUG.update(old_map)
             build_gta6.LEGACY_Y_IDS.clear()
             build_gta6.LEGACY_Y_IDS.update(old_legacy)
+
+    def test_merge_uses_oplay_order_and_attaches_youmin(self):
+        chapters, aliases = self._merge()
         self.assertEqual([c["no"] for c in chapters], [1, 2])
         ch1 = [(m["id"], m["name"]) for m in chapters[0]["missions"]]
-        # 遊民順序為骨架；promptowy 的 Extra One 接在前一個（Gone Fishing）後面，遊民獨有的任務留在原位
-        self.assertEqual(ch1, [("p-prologue", "序幕"), ("y-222", "女鄰居"), ("p-gone-fishing", "垂釣"),
-                               ("p-extra-one", "Extra One"), ("y-444", "偷戰鬥機")])
-        # 遊民獨有任務改用節點編號當 ID，舊的中文名 ID 要能對到新 ID，使用者已勾的進度才不會跑掉
-        self.assertEqual(aliases, {"y-女鄰居": "y-222", "y-偷戰鬥機": "y-444"})
-        first = chapters[0]["missions"][0]
-        self.assertEqual((first["en"], first["who"], first["url"]), ("Prologue", "Lucia", "https://promptowy.com/a/"))
-        self.assertNotIn("blocks", chapters[0]["missions"][3])  # 只有摘要的任務沒有 blocks
-        self.assertEqual(chapters[1]["missions"][0]["id"], "p-what-s-next")
+        # oplay 的順序為骨架；遊民獨有的任務插在它前一個已對上的任務後面
+        self.assertEqual(ch1, [("p-prologue", "序章"), ("y-222", "女鄰居"), ("p-gone-fishing", "出門獵魚"), ("y-444", "偷戰鬥機"),
+                               ("p-extra-one", "額外一"), ("p-hit-bank", "搶銀行")])
+        first, fishing, extra, bank = (chapters[0]["missions"][i] for i in (0, 2, 4, 5))
+        self.assertEqual((first["aka"], first["en"], first["who"], first["hard"]), ("序幕", "Prologue", "露西亞", 1))
+        self.assertEqual(first["blocks"], ["開始主線任務【序幕】", {"i": "a/1_S.jpg", "w": 600, "h": 338}])  # 遊民圖文掛上去
+        self.assertEqual(fishing["blocks"], ["主線任務【垂釣】", "第二 行"])
+        self.assertEqual(first["steps"], ["步驟"])
+        self.assertEqual((extra["en"], extra["note"]), ("Extra One", "Sub Title"))
+        self.assertNotIn("blocks", extra)             # 遊民沒寫的任務只有 oplay 的文字
+        self.assertEqual(bank["type"], "搶劫")          # hit- 開頭的是搶案
+        self.assertEqual(chapters[1]["missions"][0]["id"], "p-whats-next")
+        self.assertEqual(chapters[0]["info"], [{"title": "會錯過", "count": "", "rows": []}])
+        # 舊 ID 對照：遊民獨有任務改用節點編號、已對上的任務舊的 y- ID 轉成 p- ID
+        self.assertEqual(aliases, {"y-111": "p-prologue", "y-333": "p-gone-fishing", "y-女鄰居": "y-222", "y-偷戰鬥機": "y-444"})
+
+    def test_name_without_english_title_prefers_youmin(self):
+        """oplay 有些任務的名稱不像標題（例如「第一章〈身陷沼澤〉之後的任務」），要改用遊民的名字。"""
+        chapters = oplay_chapters()
+        chapters[0]["missions"][1]["en"] = ""
+        chapters[0]["missions"][1]["n"] = "第一章〈某某〉之後的任務"
+        _, _, _, ms = build_gta6.parse_youmin(YOUMIN, lambda t: t.replace("线", "線"))
+        old = dict(build_gta6.YOUMIN_TO_SLUG)
+        build_gta6.YOUMIN_TO_SLUG.clear()
+        build_gta6.YOUMIN_TO_SLUG.update({"序幕": "prologue", "垂釣": "gone-fishing"})
+        try:
+            out, _ = build_gta6.merge(ms, chapters)
+        finally:
+            build_gta6.YOUMIN_TO_SLUG.clear()
+            build_gta6.YOUMIN_TO_SLUG.update(old)
+        fishing = next(m for m in out[0]["missions"] if m["id"] == "p-gone-fishing")
+        self.assertEqual((fishing["name"], fishing["aka"]), ("垂釣", "第一章〈某某〉之後的任務"))
 
     def test_collect_index(self):
-        chapters = [{"missions": [{"id": "a", "blocks": ["x 獎盃【甲】", {"i": "1.webp"}, "可選任務【乙】"]}]}]
+        chapters = [{"no": 1, "missions": [{"id": "a", "blocks": ["x 獎盃【甲】", {"i": "1.webp"}, "可選任務【乙】"]}],
+                     "info": [{"title": "獎盃", "rows": [{"n": "丙", "a": "做某事"}]}, {"title": "地點", "rows": [{"n": "丁"}]}]}]
         self.assertEqual(build_gta6.collect_index(chapters),
-                         ([{"name": "甲", "m": "a", "p": 0}], [{"name": "乙", "m": "a", "p": 2}]))
+                         ([{"name": "甲", "m": "a", "p": 0}, {"name": "丙", "ch": 1, "a": "做某事"}], [{"name": "乙", "m": "a", "p": 2}]))
 
 
 if __name__ == "__main__":
