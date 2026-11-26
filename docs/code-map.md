@@ -73,7 +73,7 @@ oplay.cc（繁體：5 章 130 個任務、章節重點、28 篇筆記、23 圖�
 | `index.html` | 整個 App（CSS、JS 都內嵌），採遊民路書風格（深色垂直時間軸抽屜／桌機側欄、旗標章節 A～E、頂端 sticky 目前節點列與 scroll-spy、節點卡 `content-visibility:auto`）。底部 5 頁：路書／圖鑑／筆記／搜尋／更多。hash 路由：`#/` 總覽與目錄、`#/book/<章>` 章節路書、`#/m/<任務ID>?md=s\|p&p=<序號>` 開啟該章路書並捲至節點、`#/ch/<章>?r=<區塊>-<列>` 本章重點、`#/codex` 與 `#/codex/<分類>?hl=<ID>` 圖鑑、`#/eggs?hl=<ID>` 彩蛋、`#/hud?hl=<ID>` 圖示全解、`#/updates` 更新紀錄、`#/progress` 進度儀表板（含 100%／白金檢核表）、`#/notes` 與 `#/n/<代號>` 筆記、`#/index` 索引、`#/search?q=` 全站搜尋、`#/more` 更多、`#/settings` 設定。資料文字一律用 DOM 方法放進頁面，不用 `innerHTML`；`**粗體**`、`⟦按鍵⟧` 兩種標記由 `rich()` 轉成 `<strong>`、`<kbd>` |
 | `data.js` | `window.GUIDE`，**由腳本產生，不要手改**（約 714KB，gzip 後 277KB）。`chapters` → `missions`（`steps`／`keys`／`stuck` 來自 oplay，`blocks`／`ytags` 來自遊民，`see`／`seeLabel`／`covers` 用於一對多對應）、每章 `info`（本章重點）；另有 `notes`、`noteCats`、`progress`（100%／白金總表）、`aliases`、`trophies`、`optionals`、`notices` |
 | `codex.js` | `window.CODEX`，**由腳本產生，不要手改**（約 262KB，gzip 後 80KB），首次渲染後於閒置時或進入圖鑑／搜尋／進度頁時動態載入，避免拖慢首屏。含 `groups`、`cards`（23 分類 1,250 則，含載具／武器數值與作弊碼，不複製原站圖鑑圖片）、`eggs`（62 個彩蛋）、`hud`（27 個圖示說明）、`updates`（更新紀錄） |
-| `sw.js` | 離線（`gta6-guide-v5`）：預快取 `index.html`、`data.js`、`codex.js` 與圖示，有網路先抓新版（3 秒逾時退回快取）；遊民 CDN 圖片看過即暫存（上限 350 張，no-cors opaque 回應） |
+| `sw.js` | 離線（`gta6-guide-v6`）：預快取 `index.html`、`data.js`、`codex.js` 與圖示，有網路先抓新版（3 秒逾時退回快取）；遊民 CDN 圖片看過即暫存（上限 350 張，no-cors opaque 回應） |
 | `manifest.webmanifest`、`icons/` | 安裝到主畫面用 |
 
 `scripts/` 裡跟它有關的三支：`fetch_oplay.py`（客氣地爬 oplay：62 頁，間隔 1 秒，遵守 robots.txt，已抓過的不重抓）、`oplay_parse.py`（純文字＋小標記解析）、`build_gta6.py`（讀快取與遊民頁面，合併產出 `data.js` 與 `codex.js`）。
