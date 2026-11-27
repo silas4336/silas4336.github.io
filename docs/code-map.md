@@ -13,7 +13,6 @@ GitHub Pages ◀── main 分支（整個 repo 原樣發佈，.nojekyll）
 │   └── assets/                        截圖；-zh／-en 結尾是分語言的同一張圖
 ├── math-logic/、neko/                 由 math-logic-games 的 deploy.sh 同步進來（部署工作區 ../_site_deploy）
 ├── gta6/                              個人用 GTA 6 攻略 PWA，noindex、不進 sitemap
-├── preview-*/                         設計預覽，noindex
 └── scripts/                           本機檢查，不影響網站
 ```
 
@@ -38,7 +37,7 @@ GitHub Pages ◀── main 分支（整個 repo 原樣發佈，.nojekyll）
 
 - 每頁 `<head>` 有 `<link rel="alternate" hreflang="zh-Hant|en|x-default">` 互相指向。
 - 頁內的語言切換按鈕帶 `hreflang`，是英文頁唯一可以連回中文頁的連結。
-- `sitemap.xml` 只列主站 12 頁；`robots.txt` 指向 sitemap。`math-logic/`、`neko/`、`preview-*/` 不擋 robots，改成每頁自己帶 `noindex`。
+- `sitemap.xml` 只列主站 12 頁；`robots.txt` 指向 sitemap。`math-logic/`、`neko/` 不擋 robots，改成每頁自己帶 `noindex`。
 
 ## 檢查腳本（`scripts/`）
 
