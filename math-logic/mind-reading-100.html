@@ -264,10 +264,10 @@
     const el = $("revealNum");
     if (missing >= 0) { $("revealNote").textContent = `第 ${missing + 1} 張卡還沒回答喔`; return; }
     const sum = CARDS.reduce((s, c, i) => s + (answers[i] ? c.v : 0), 0);
+    clearInterval(revealTimer); clearTimeout(revealDone); // 先停掉上一次的動畫，否則提示會被舊的計時器蓋掉
     el.classList.remove("hidden-num");
     if (sum === 0) { el.textContent = "?"; $("revealNote").textContent = "每張都說沒有？1～100 的數字一定會出現在某張卡上，再想一次吧！"; return; }
     if (sum > MAX) { el.textContent = "?"; $("revealNote").textContent = "咦，好像有一張答錯了，再玩一次看看！"; return; }
-    clearInterval(revealTimer); clearTimeout(revealDone);
     revealTimer = setInterval(() => { el.textContent = Math.floor(Math.random() * MAX) + 1; }, 60);
     revealDone = setTimeout(() => {
       clearInterval(revealTimer); el.textContent = sum;

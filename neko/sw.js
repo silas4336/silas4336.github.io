@@ -1,6 +1,6 @@
 // 貓咪數獨離線快取：有網路時先抓新版（3 秒內沒回應就用快取），沒網路時用快取。
 // 改了 index.html／levels.js 後也要改 CACHE 版本，玩家開著的頁面才會收到「有新版本」。
-const CACHE = "neko-app-v4";
+const CACHE = "neko-app-v5";
 const FILES = ["./", "./index.html", "./levels.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
 const NETWORK_TIMEOUT_MS = 3000;
@@ -32,9 +32,11 @@ self.addEventListener("fetch", event => {
       return res;
     });
     if (!cached) return fresh;
+    // 伺服器回 404／500 時不要把錯誤頁給玩家，改用快取的版本
+    const freshOrCached = fresh.then(res => (res.ok ? res : cached));
 
     const timeout = new Promise(resolve => setTimeout(() => resolve(cached), NETWORK_TIMEOUT_MS));
     event.waitUntil(fresh.catch(err => console.warn("背景更新失敗，先用快取", err)));
-    return Promise.race([fresh.catch(() => cached), timeout]);
+    return Promise.race([freshOrCached.catch(() => cached), timeout]);
   }));
 });
